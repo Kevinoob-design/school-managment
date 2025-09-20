@@ -1,0 +1,36 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    permissions:
+      contents: read
+      pull-requests: write
+
+  format:
+    needs: [build]
+    uses: ./.github/workflows/prettier.yml
+    permissions:
+      contents: read
+      pull-requests: write
+
+  lint:
+    needs: [build]
+    uses: ./.github/workflows/lint.yml
+    permissions:
+      contents: read
+      pull-requests: write
+
+  test:
+    needs: [format, lint]
+    uses: ./.github/workflows/test.yml
+    permissions:
+      contents: read
+      pull-requests: write
