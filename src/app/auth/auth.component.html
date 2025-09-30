@@ -74,6 +74,28 @@
             <div *ngIf="authError()" class="rounded-xl border border-[#f8c5c0] bg-[#fff5f5] px-4 py-3 text-sm text-[#c62828]" role="alert" aria-live="assertive">
               {{ authError() }}
             </div>
+            <section class="rounded-2xl bg-[#f4f6ff] px-5 py-4 text-sm text-[#6f7ba5]">
+              <p class="text-xs font-semibold uppercase tracking-[0.24em] text-[#8b96c4]">Accede como</p>
+              <div class="mt-3 grid gap-2 sm:grid-cols-2">
+                <button
+                  *ngFor="let role of availableRoles"
+                  type="button"
+                  class="flex items-center gap-3 rounded-xl border px-4 py-3 transition"
+                  [ngClass]="{
+                    'border-[#335ef7] bg-white text-[#1f2a55] shadow-sm shadow-[#335ef7]/20': loginRole() === role.value,
+                    'border-transparent bg-[#e9edff] text-[#6f7ba5] hover:bg-white hover:text-[#1f2a55]': loginRole() !== role.value
+                  }"
+                  (click)="setLoginRole(role.value)"
+                  [attr.aria-pressed]="loginRole() === role.value"
+                >
+                  <span class="material-symbols-outlined text-lg" [ngClass]="loginRole() === role.value ? 'text-[#335ef7]' : 'text-[#6f7ba5]'">
+                    {{ role.icon }}
+                  </span>
+                  <span class="text-sm font-semibold text-[#1f2a55]">{{ role.label }}</span>
+                </button>
+              </div>
+            </section>
+
             <div>
               <label class="mb-2 block text-sm font-medium text-[#1f2a55]" for="login-email">Correo institucional</label>
               <input
@@ -224,3 +246,4 @@
     </div>
   </div>
 </section>
+

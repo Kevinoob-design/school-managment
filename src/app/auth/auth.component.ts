@@ -1,14 +1,15 @@
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { Auth, signInAnonymously } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 
 type AuthView = 'login' | 'register';
+type UserRole = 'familia' | 'administrativo';
 
 @Component({
   selector: 'app-auth',
   standalone: true,
-  imports: [NgIf, NgClass],
+  imports: [NgIf, NgClass, NgFor],
   templateUrl: './auth.component.html',
   styleUrl: './auth.component.sass',
 })
@@ -20,9 +21,18 @@ export class AuthComponent {
   protected readonly isBusy = signal(false);
   protected readonly authError = signal<string | null>(null);
   protected readonly authMessage = signal<string | null>(null);
+  protected readonly loginRole = signal<UserRole>('familia');
+  protected readonly availableRoles: Array<{ value: UserRole; label: string; icon: string }> = [
+    { value: 'familia', label: 'Familia / Tutor', icon: 'family_restroom' },
+    { value: 'administrativo', label: 'Personal administrativo', icon: 'shield_person' },
+  ];
 
   protected setActiveView(view: AuthView) {
     this.activeView.set(view);
+  }
+
+  protected setLoginRole(role: UserRole) {
+    this.loginRole.set(role);
   }
 
   protected async loginAnonymously() {
@@ -38,11 +48,14 @@ export class AuthComponent {
       const credential = await signInAnonymously(this.auth);
       const uid = credential.user?.uid ?? '';
       const shortUid = uid ? `${uid.slice(0, 6)}...` : 'sin ID';
+      const role = this.loginRole();
+      const targetRoute = role === 'administrativo' ? '/admin-dashboard' : '/parent-portal';
+      const targetLabel = role === 'administrativo' ? 'portal administrativo' : 'portal familiar';
       this.authMessage.set(
-        `Acceso temporal concedido (${shortUid}). Redirigiendo al portal familiar...`,
+        `Acceso temporal concedido (${shortUid}). Redirigiendo al ${targetLabel}...`,
       );
       setTimeout(() => {
-        void this.router.navigate(['/parent-portal']);
+        void this.router.navigate([targetRoute]);
       }, 900);
     } catch (err) {
       const message =
