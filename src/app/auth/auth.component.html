@@ -1,0 +1,213 @@
+<section class="min-h-screen bg-[#9db9ff] flex items-center justify-center px-4 py-10">
+  <div class="w-full max-w-6xl rounded-[2.5rem] bg-white/95 backdrop-blur-md shadow-[0_24px_80px_rgba(37,56,130,0.18)] overflow-hidden">
+    <div class="grid lg:grid-cols-[1fr_1.05fr]">
+      <aside class="relative hidden lg:flex bg-[#eef3ff] text-[#1f2a55]">
+        <div class="absolute -left-24 top-16 h-52 w-52 rounded-full bg-[#d8e3ff] opacity-60 blur-3xl"></div>
+        <div class="absolute -bottom-20 -right-10 h-64 w-64 rounded-[3rem] bg-[#abc1ff] opacity-40 blur-3xl"></div>
+        <div class="relative z-10 flex flex-1 flex-col justify-between p-14">
+          <header>
+            <span class="inline-flex items-center gap-3 rounded-full bg-white/80 px-5 py-2 text-sm font-semibold shadow-sm">
+              <span class="material-symbols-outlined text-xl text-[#335ef7]">school</span>
+              EduConnect Portal
+            </span>
+            <h1 class="mt-8 text-4xl font-bold leading-tight">
+              Gestiona tu comunidad educativa desde un solo lugar
+            </h1>
+            <p class="mt-5 text-base text-[#33406f]">
+              Mantente al dia con las tareas, la asistencia y la comunicacion de tu institucion.
+              Administra estudiantes, docentes y tutores en cuestion de minutos.
+            </p>
+          </header>
+          <figure class="mt-12">
+            <div class="relative mx-auto flex h-80 w-80 items-center justify-center rounded-[3rem] bg-white/70 shadow-lg">
+              <div class="absolute -top-6 left-6 h-16 w-16 rounded-2xl border border-dashed border-[#335ef7]/40"></div>
+              <div class="absolute -bottom-8 right-4 h-24 w-24 rounded-3xl bg-[#335ef7]/10"></div>
+              <svg class="relative h-48 w-48 text-[#335ef7]" fill="none" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <path d="M135 44c-5-8-15-14-27-14s-22 6-27 14l-47 76a16 16 0 0 0 13 24h119a16 16 0 0 0 13-24l-44-76z" fill="currentColor" opacity="0.12" />
+                <path d="M78 75h44l23 37H55l23-37z" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M100 44v32" stroke="currentColor" stroke-width="6" stroke-linecap="round" />
+                <circle cx="100" cy="150" r="13" fill="currentColor" opacity="0.35" />
+              </svg>
+            </div>
+            <figcaption class="mt-10 text-sm font-medium text-[#4b5687]">
+              Acceso seguro para alumnos, docentes y personal administrativo.
+            </figcaption>
+          </figure>
+        </div>
+      </aside>
+      <div class="relative px-6 py-10 sm:px-12 sm:py-14 md:px-16 md:py-16">
+        <div class="mx-auto w-full max-w-md">
+          <header class="mb-10 text-center">
+            <h2 class="text-3xl font-bold text-[#1f2a55]">Bienvenido de nuevo</h2>
+            <p class="mt-2 text-sm text-[#6f7ba5]">
+              Ingresa tus datos para continuar con tu gestion escolar.
+            </p>
+          </header>
+          <div class="mb-8 flex items-center gap-2 rounded-full bg-[#e8ecff] p-1 text-sm font-semibold text-[#6f7ba5]">
+            <button
+              class="flex-1 rounded-full px-4 py-2 transition"
+              [ngClass]="{
+                'bg-white text-[#1f2a55] shadow-md': activeView() === 'login',
+                'hover:text-[#1f2a55]': activeView() !== 'login'
+              }"
+              type="button"
+              (click)="setActiveView('login')"
+            >
+              Iniciar sesion
+            </button>
+            <button
+              class="flex-1 rounded-full px-4 py-2 transition"
+              [ngClass]="{
+                'bg-white text-[#1f2a55] shadow-md': activeView() === 'register',
+                'hover:text-[#1f2a55]': activeView() !== 'register'
+              }"
+              type="button"
+              (click)="setActiveView('register')"
+            >
+              Crear cuenta
+            </button>
+          </div>
+          <form *ngIf="activeView() === 'login'" class="space-y-6" novalidate>
+            <div>
+              <label class="mb-2 block text-sm font-medium text-[#1f2a55]" for="login-email">Correo institucional</label>
+              <input
+                id="login-email"
+                type="email"
+                autocomplete="username"
+                required
+                placeholder="nombre.apellido@colegio.edu"
+                class="w-full rounded-xl border border-[#d7ddf2] bg-white px-4 py-3 text-sm text-[#1f2a55] shadow-sm outline-none transition focus:border-[#335ef7] focus:ring-2 focus:ring-[#335ef7]/30"
+              />
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-medium text-[#1f2a55]" for="login-password">Contrasena</label>
+              <input
+                id="login-password"
+                type="password"
+                autocomplete="current-password"
+                required
+                placeholder="Introduce tu contrasena"
+                class="w-full rounded-xl border border-[#d7ddf2] bg-white px-4 py-3 text-sm text-[#1f2a55] shadow-sm outline-none transition focus:border-[#335ef7] focus:ring-2 focus:ring-[#335ef7]/30"
+              />
+            </div>
+            <div class="flex items-center justify-between text-sm">
+              <label class="inline-flex items-center gap-2 text-[#6f7ba5]">
+                <input type="checkbox" class="h-4 w-4 rounded border-[#d7ddf2] text-[#335ef7] focus:ring-[#335ef7]" />
+                Recordarme
+              </label>
+              <a class="font-semibold text-[#335ef7] hover:text-[#2742c5]" href="#">Olvidaste tu contrasena?</a>
+            </div>
+            <button
+              type="submit"
+              class="flex w-full items-center justify-center rounded-xl bg-[#335ef7] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#335ef7]/30 transition hover:bg-[#2742c5]"
+            >
+              Acceder al panel
+            </button>
+            <div class="relative py-2 text-center text-xs font-medium uppercase text-[#a2accf]">
+              <span class="bg-white px-3">o continua con</span>
+              <span class="absolute inset-x-0 top-1/2 -z-10 h-px rounded-full bg-[#e0e5ff]"></span>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <button type="button" class="flex items-center justify-center gap-2 rounded-xl border border-[#d7ddf2] bg-white px-4 py-3 text-sm font-semibold text-[#1f2a55] transition hover:border-[#335ef7]/40">
+                <img alt="Google" src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="h-5 w-5" />
+                Google
+              </button>
+              <button type="button" class="flex items-center justify-center gap-2 rounded-xl border border-[#d7ddf2] bg-white px-4 py-3 text-sm font-semibold text-[#1f2a55] transition hover:border-[#335ef7]/40">
+                <img alt="Microsoft" src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" class="h-5 w-5" />
+                Microsoft
+              </button>
+            </div>
+            <p class="text-center text-sm text-[#6f7ba5]">
+              Aun no tienes cuenta? <button type="button" class="font-semibold text-[#335ef7] hover:text-[#2742c5]" (click)="setActiveView('register')">Registrate ahora</button>
+            </p>
+          </form>
+          <form *ngIf="activeView() === 'register'" class="space-y-6" novalidate>
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div class="sm:col-span-2">
+                <label class="mb-2 block text-sm font-medium text-[#1f2a55]" for="register-role">Rol</label>
+                <select
+                  id="register-role"
+                  class="w-full rounded-xl border border-[#d7ddf2] bg-white px-4 py-3 text-sm text-[#1f2a55] shadow-sm outline-none transition focus:border-[#335ef7] focus:ring-2 focus:ring-[#335ef7]/30"
+                >
+                  <option>Selecciona tu rol</option>
+                  <option>Estudiante</option>
+                  <option>Docente</option>
+                  <option>Padre/Madre</option>
+                  <option>Administrativo</option>
+                </select>
+              </div>
+              <div>
+                <label class="mb-2 block text-sm font-medium text-[#1f2a55]" for="register-name">Nombre completo</label>
+                <input
+                  id="register-name"
+                  type="text"
+                  autocomplete="name"
+                  placeholder="Nombre y apellidos"
+                  class="w-full rounded-xl border border-[#d7ddf2] bg-white px-4 py-3 text-sm text-[#1f2a55] shadow-sm outline-none transition focus:border-[#335ef7] focus:ring-2 focus:ring-[#335ef7]/30"
+                  required
+                />
+              </div>
+              <div>
+                <label class="mb-2 block text-sm font-medium text-[#1f2a55]" for="register-id">ID institucional</label>
+                <input
+                  id="register-id"
+                  type="text"
+                  placeholder="Ej. MAT-2045"
+                  class="w-full rounded-xl border border-[#d7ddf2] bg-white px-4 py-3 text-sm text-[#1f2a55] shadow-sm outline-none transition focus:border-[#335ef7] focus:ring-2 focus:ring-[#335ef7]/30"
+                />
+              </div>
+              <div class="sm:col-span-2">
+                <label class="mb-2 block text-sm font-medium text-[#1f2a55]" for="register-email">Correo institucional</label>
+                <input
+                  id="register-email"
+                  type="email"
+                  autocomplete="email"
+                  placeholder="nombre.apellido@colegio.edu"
+                  class="w-full rounded-xl border border-[#d7ddf2] bg-white px-4 py-3 text-sm text-[#1f2a55] shadow-sm outline-none transition focus:border-[#335ef7] focus:ring-2 focus:ring-[#335ef7]/30"
+                  required
+                />
+              </div>
+              <div>
+                <label class="mb-2 block text-sm font-medium text-[#1f2a55]" for="register-password">Contrasena</label>
+                <input
+                  id="register-password"
+                  type="password"
+                  autocomplete="new-password"
+                  placeholder="Crea una contrasena segura"
+                  class="w-full rounded-xl border border-[#d7ddf2] bg-white px-4 py-3 text-sm text-[#1f2a55] shadow-sm outline-none transition focus:border-[#335ef7] focus:ring-2 focus:ring-[#335ef7]/30"
+                  required
+                />
+              </div>
+              <div>
+                <label class="mb-2 block text-sm font-medium text-[#1f2a55]" for="register-confirm">Confirmar contrasena</label>
+                <input
+                  id="register-confirm"
+                  type="password"
+                  autocomplete="new-password"
+                  placeholder="Repite la contrasena"
+                  class="w-full rounded-xl border border-[#d7ddf2] bg-white px-4 py-3 text-sm text-[#1f2a55] shadow-sm outline-none transition focus:border-[#335ef7] focus:ring-2 focus:ring-[#335ef7]/30"
+                  required
+                />
+              </div>
+            </div>
+            <div class="space-y-3">
+              <label class="flex items-start gap-3 text-sm text-[#6f7ba5]">
+                <input type="checkbox" class="mt-1 h-4 w-4 rounded border-[#d7ddf2] text-[#335ef7] focus:ring-[#335ef7]" />
+                Acepto las politicas de privacidad y autorizo el uso de mis datos para la gestion academica.
+              </label>
+              <button
+                type="submit"
+                class="flex w-full items-center justify-center rounded-xl bg-[#335ef7] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#335ef7]/30 transition hover:bg-[#2742c5]"
+              >
+                Crear cuenta
+              </button>
+              <p class="text-center text-sm text-[#6f7ba5]">
+                Ya tienes una cuenta? <button type="button" class="font-semibold text-[#335ef7] hover:text-[#2742c5]" (click)="setActiveView('login')">Inicia sesion</button>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
