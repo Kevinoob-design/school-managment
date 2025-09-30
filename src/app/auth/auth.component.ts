@@ -1,6 +1,7 @@
 import { NgClass, NgIf } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { Auth, signInAnonymously } from '@angular/fire/auth';
+import { Router } from '@angular/router';
 
 type AuthView = 'login' | 'register';
 
@@ -13,6 +14,7 @@ type AuthView = 'login' | 'register';
 })
 export class AuthComponent {
   private readonly auth = inject(Auth);
+  private readonly router = inject(Router);
 
   protected readonly activeView = signal<AuthView>('login');
   protected readonly isBusy = signal(false);
@@ -36,7 +38,12 @@ export class AuthComponent {
       const credential = await signInAnonymously(this.auth);
       const uid = credential.user?.uid ?? '';
       const shortUid = uid ? `${uid.slice(0, 6)}...` : 'sin ID';
-      this.authMessage.set(`Acceso temporal concedido (${shortUid}).`);
+      this.authMessage.set(
+        `Acceso temporal concedido (${shortUid}). Redirigiendo al portal familiar...`,
+      );
+      setTimeout(() => {
+        void this.router.navigate(['/parent-portal']);
+      }, 900);
     } catch (err) {
       const message =
         err instanceof Error

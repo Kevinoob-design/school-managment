@@ -1,0 +1,287 @@
+<section class="min-h-screen bg-[#edf1ff] text-[#1f2a55]">
+  <div class="mx-auto w-full max-w-7xl px-6 py-10 lg:px-10">
+    <header class="rounded-3xl bg-white/80 p-6 shadow-[0_18px_60px_rgba(35,56,130,0.12)] backdrop-blur">
+      <div class="flex flex-wrap items-center gap-6">
+        <div class="flex items-center gap-3">
+          <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#335ef7]/10 text-[#335ef7]">
+            <span class="material-symbols-outlined text-2xl">diamond</span>
+          </span>
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#6f7ba5]">Parent Portal</p>
+            <h1 class="text-2xl font-bold">Familia Torres</h1>
+          </div>
+        </div>
+        <nav class="ml-auto flex flex-wrap items-center gap-2 text-sm font-semibold text-[#6f7ba5]">
+          <a
+            *ngFor="let item of navItems"
+            class="rounded-full px-4 py-2 transition hover:text-[#1f2a55]"
+            [ngClass]="{
+              'bg-[#335ef7]/10 text-[#335ef7] shadow-sm shadow-[#335ef7]/20': item.active
+            }"
+            [href]="item.route"
+          >
+            {{ item.label }}
+          </a>
+        </nav>
+        <div class="flex items-center gap-4 text-sm">
+          <button class="relative rounded-full bg-[#335ef7]/10 p-2 text-[#335ef7]">
+            <span class="material-symbols-outlined text-xl">notifications</span>
+            <span class="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-[#ff6174]"></span>
+          </button>
+          <div class="flex items-center gap-3 rounded-full bg-[#f3f5ff] px-3 py-2">
+            <img
+              class="h-9 w-9 rounded-full object-cover"
+              src="https://i.pravatar.cc/72?img=47"
+              alt="Avatar del tutor"
+            />
+            <div>
+              <p class="text-sm font-semibold text-[#1f2a55]">Laura Torres</p>
+              <p class="text-xs text-[#6f7ba5]">Tutor legal</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-6 grid gap-6 lg:grid-cols-[1.6fr_1fr]">
+        <div class="rounded-3xl bg-[#335ef7] px-8 py-9 text-white shadow-inner shadow-[#1a2f99]/50">
+          <div class="flex flex-wrap items-center justify-between gap-6">
+            <div>
+              <p class="text-sm font-medium uppercase tracking-[0.3em] opacity-70">Hola, Laura</p>
+              <h2 class="mt-2 text-3xl font-semibold">Seguimiento academico de Valentina</h2>
+              <p class="mt-3 max-w-xl text-sm text-white/80">
+                Visualiza el rendimiento, asistencia y comentarios de los docentes en tiempo real. Utiliza este panel para anticiparte a cualquier necesidad de acompanamiento.
+              </p>
+            </div>
+            <div class="rounded-3xl bg-white/15 px-6 py-4 text-sm">
+              <p class="text-xs uppercase tracking-[0.24em] text-white/60">Ultima actualizacion</p>
+              <p class="mt-1 text-lg font-semibold">27 de septiembre, 08:45 h</p>
+              <button class="mt-4 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 font-semibold text-[#335ef7] shadow-sm shadow-black/5 transition hover:bg-white/90">
+                <span class="material-symbols-outlined text-base">autorenew</span>
+                Actualizar datos
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="rounded-3xl bg-white/80 px-7 py-6 shadow-[0_12px_50px_rgba(31,42,85,0.12)]">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.25em] text-[#6f7ba5]">Progreso global</p>
+              <p class="mt-1 text-3xl font-bold text-[#1f2a55]">Valentina Torres</p>
+            </div>
+            <div class="flex flex-col items-end text-right text-sm text-[#6f7ba5]">
+              <span>Grado 7 &bull; Seccion B</span>
+              <span>Docente tutor: M. Paredes</span>
+            </div>
+          </div>
+          <dl class="mt-5 grid gap-4 text-sm">
+            <div class="flex items-center justify-between rounded-2xl bg-[#f4f6ff] px-4 py-3">
+              <dt class="flex items-center gap-3 text-[#1f2a55]">
+                <span class="material-symbols-outlined text-lg text-[#335ef7]">workspace_premium</span>
+                Reconocimientos</dt>
+              <dd class="font-semibold text-[#335ef7]">3 este trimestre</dd>
+            </div>
+            <div class="flex items-center justify-between rounded-2xl bg-[#fef4f5] px-4 py-3">
+              <dt class="flex items-center gap-3 text-[#1f2a55]">
+                <span class="material-symbols-outlined text-lg text-[#ff6174]">flag</span>
+                Alertas pendientes</dt>
+              <dd class="font-semibold text-[#ff6174]">1 seguimiento</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </header>
+
+    <div class="mt-10 grid gap-8 lg:grid-cols-[2.2fr_1fr]">
+      <div class="space-y-8">
+        <section class="rounded-3xl bg-white/90 p-8 shadow-[0_16px_55px_rgba(31,42,85,0.12)]">
+          <header class="flex flex-wrap items-center gap-4">
+            <div>
+              <h3 class="text-xl font-semibold text-[#1f2a55]">Desempeno general</h3>
+              <p class="text-sm text-[#6f7ba5]">Resumen del progreso academico y bloqueos recientes.</p>
+            </div>
+            <div class="ml-auto flex flex-wrap items-center gap-3">
+              <div class="flex items-center gap-2 rounded-full bg-[#f3f5ff] px-2 py-1 text-xs font-semibold text-[#6f7ba5]">
+                <span class="material-symbols-outlined text-base text-[#335ef7]">calendar_month</span>
+                {{ selectedYear() }}
+              </div>
+              <div class="flex gap-1">
+                <button
+                  *ngFor="let year of academicYears"
+                  type="button"
+                  class="rounded-full px-3 py-2 text-xs font-semibold text-[#6f7ba5] transition"
+                  [ngClass]="{
+                    'bg-[#335ef7] text-white shadow-lg shadow-[#335ef7]/30': selectedYear() === year,
+                    'hover:text-[#1f2a55]': selectedYear() !== year
+                  }"
+                  (click)="setAcademicYear(year)"
+                >
+                  {{ year }}
+                </button>
+              </div>
+              <button class="inline-flex items-center gap-2 rounded-full border border-[#d7ddf2] px-4 py-2 text-xs font-semibold text-[#335ef7] transition hover:border-[#335ef7] hover:bg-[#335ef7]/5">
+                <span class="material-symbols-outlined text-base">file_download</span>
+                Exportar reporte
+              </button>
+            </div>
+          </header>
+          <div class="mt-7 grid gap-4 md:grid-cols-3">
+            <article
+              *ngFor="let insight of insightCards"
+              class="rounded-2xl border border-[#eef1ff] bg-[#f6f8ff] px-5 py-5 text-sm text-[#6f7ba5] shadow-sm"
+            >
+              <p class="font-semibold text-[#1f2a55]">{{ insight.title }}</p>
+              <p class="mt-3 text-3xl font-bold text-[#335ef7]">{{ insight.value }}</p>
+              <p class="mt-4 flex items-center gap-1">
+                <span
+                  class="material-symbols-outlined text-base"
+                  [ngClass]="insight.trendPositive ? 'text-[#21b17c]' : 'text-[#ff6174]'"
+                >
+                  {{ insight.trendPositive ? 'trending_up' : 'trending_down' }}
+                </span>
+                <span
+                  [ngClass]="insight.trendPositive ? 'text-[#21b17c]' : 'text-[#ff6174]'"
+                  class="font-semibold"
+                >
+                  {{ insight.trendValue }}
+                </span>
+                <span class="text-xs uppercase tracking-[0.2em]">{{ insight.trendLabel }}</span>
+              </p>
+            </article>
+          </div>
+          <div class="mt-8 rounded-3xl border border-[#e3e8ff] bg-white shadow-inner">
+            <table class="w-full overflow-hidden text-sm">
+              <thead class="text-left text-xs uppercase tracking-[0.2em] text-[#6f7ba5]">
+                <tr>
+                  <th class="px-6 py-5 font-semibold">Asignatura</th>
+                  <th class="px-6 py-5 font-semibold">Semestre 1</th>
+                  <th class="px-6 py-5 font-semibold">Semestre 2</th>
+                  <th class="px-6 py-5 font-semibold">Calificacion final</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#eef1ff]">
+                <tr
+                  *ngFor="let grade of grades"
+                  class="transition hover:bg-[#f6f8ff]"
+                >
+                  <td class="px-6 py-5 font-semibold text-[#1f2a55]">{{ grade.subject }}</td>
+                  <td class="px-6 py-5">{{ grade.semester1 }}</td>
+                  <td class="px-6 py-5">{{ grade.semester2 }}</td>
+                  <td
+                    class="px-6 py-5 font-semibold"
+                    [ngClass]="grade.highlight ? 'text-[#335ef7]' : 'text-[#1f2a55]'"
+                  >
+                    {{ grade.finalGrade }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="rounded-3xl bg-white/90 p-8 shadow-[0_16px_55px_rgba(31,42,85,0.12)]">
+          <header class="flex flex-wrap items-center gap-4">
+            <div>
+              <h3 class="text-xl font-semibold text-[#1f2a55]">Comentarios docentes</h3>
+              <p class="text-sm text-[#6f7ba5]">Notas y recomendaciones compartidas con la familia.</p>
+            </div>
+            <button class="ml-auto inline-flex items-center gap-2 rounded-full border border-[#d7ddf2] px-4 py-2 text-xs font-semibold text-[#335ef7] transition hover:border-[#335ef7] hover:bg-[#335ef7]/5">
+              <span class="material-symbols-outlined text-base">chat_bubble</span>
+              Ver historial completo
+            </button>
+          </header>
+          <div class="mt-6 grid gap-5">
+            <article
+              *ngFor="let comment of teacherComments"
+              class="rounded-3xl border border-[#eef1ff] bg-[#f6f8ff] p-6 text-sm text-[#6f7ba5] shadow-inner"
+            >
+              <header class="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.24em] text-[#335ef7]">
+                <span class="material-symbols-outlined text-base">person</span>
+                {{ comment.teacher }} &bull; {{ comment.subject }}
+                <span class="ml-auto text-[#9aa4d4] normal-case">{{ comment.date }}</span>
+              </header>
+              <p class="mt-4 text-base text-[#1f2a55]">{{ comment.comment }}</p>
+            </article>
+          </div>
+        </section>
+      </div>
+
+      <aside class="space-y-8">
+        <section class="rounded-3xl bg-white/90 p-7 shadow-[0_16px_55px_rgba(31,42,85,0.12)]">
+          <header class="flex items-center gap-4">
+            <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#335ef7]/10 text-[#335ef7]">
+              <span class="material-symbols-outlined text-2xl">insights</span>
+            </span>
+            <div>
+              <h3 class="text-lg font-semibold text-[#1f2a55]">Indicadores rapidos</h3>
+              <p class="text-sm text-[#6f7ba5]">Seguimiento semanal del progreso.</p>
+            </div>
+          </header>
+          <dl class="mt-6 space-y-4 text-sm text-[#6f7ba5]">
+            <div class="flex items-center justify-between rounded-2xl bg-[#f5f7ff] px-4 py-3">
+              <dt class="uppercase tracking-[0.24em]">Asistencia</dt>
+              <dd class="text-lg font-semibold text-[#1f2a55]">95%</dd>
+            </div>
+            <div class="flex items-center justify-between rounded-2xl bg-[#fef4f5] px-4 py-3">
+              <dt class="uppercase tracking-[0.24em]">Puntualidad</dt>
+              <dd class="text-lg font-semibold text-[#ff6174]">2 retrasos</dd>
+            </div>
+            <div class="flex items-center justify-between rounded-2xl bg-[#f3f5ff] px-4 py-3">
+              <dt class="uppercase tracking-[0.24em]">Tareas</dt>
+              <dd class="text-lg font-semibold text-[#21b17c]">90% completadas</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="rounded-3xl bg-white/90 p-7 shadow-[0_16px_55px_rgba(31,42,85,0.12)]">
+          <header class="flex items-center gap-4">
+            <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#335ef7]/10 text-[#335ef7]">
+              <span class="material-symbols-outlined text-2xl">bolt</span>
+            </span>
+            <div>
+              <h3 class="text-lg font-semibold text-[#1f2a55]">Acciones rapidas</h3>
+              <p class="text-sm text-[#6f7ba5]">Facilita la comunicacion con la escuela.</p>
+            </div>
+          </header>
+          <div class="mt-5 grid gap-4">
+            <button
+              *ngFor="let action of quickActions"
+              type="button"
+              class="flex items-center gap-4 rounded-2xl border border-[#eef1ff] bg-[#f6f8ff] px-5 py-4 text-left text-sm text-[#1f2a55] transition hover:border-[#335ef7] hover:bg-[#335ef7]/10"
+            >
+              <span class="material-symbols-outlined text-2xl text-[#335ef7]">{{ action.icon }}</span>
+              <span>
+                <span class="block font-semibold">{{ action.label }}</span>
+                <span class="mt-1 block text-xs text-[#6f7ba5]">{{ action.description }}</span>
+              </span>
+              <span class="material-symbols-outlined ml-auto text-base text-[#9aa4d4]">arrow_forward</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="rounded-3xl bg-white/90 p-7 shadow-[0_16px_55px_rgba(31,42,85,0.12)]">
+          <header class="flex items-center gap-4">
+            <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#335ef7]/10 text-[#335ef7]">
+              <span class="material-symbols-outlined text-2xl">event</span>
+            </span>
+            <div>
+              <h3 class="text-lg font-semibold text-[#1f2a55]">Agenda escolar</h3>
+              <p class="text-sm text-[#6f7ba5]">Eventos destacados para la familia.</p>
+            </div>
+          </header>
+          <ul class="mt-5 space-y-4 text-sm text-[#1f2a55]">
+            <li
+              *ngFor="let item of announcements"
+              class="rounded-2xl border border-[#eef1ff] bg-[#f6f8ff] px-5 py-4"
+            >
+              <p class="font-semibold">{{ item.title }}</p>
+              <p class="mt-2 text-sm text-[#6f7ba5]">{{ item.description }}</p>
+              <p class="mt-2 inline-flex items-center gap-1 rounded-full bg-white/80 px-3 py-1 text-xs font-semibold text-[#335ef7]">
+                <span class="material-symbols-outlined text-base">schedule</span>
+                {{ item.timeLabel }}
+              </p>
+            </li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </div>
+</section>
