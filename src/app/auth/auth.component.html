@@ -68,6 +68,12 @@
             </button>
           </div>
           <form *ngIf="activeView() === 'login'" class="space-y-6" novalidate>
+            <div *ngIf="authMessage()" class="rounded-xl border border-[#b7f0c3] bg-[#f4fffa] px-4 py-3 text-sm text-[#2e7d32]" role="status" aria-live="polite">
+              {{ authMessage() }}
+            </div>
+            <div *ngIf="authError()" class="rounded-xl border border-[#f8c5c0] bg-[#fff5f5] px-4 py-3 text-sm text-[#c62828]" role="alert" aria-live="assertive">
+              {{ authError() }}
+            </div>
             <div>
               <label class="mb-2 block text-sm font-medium text-[#1f2a55]" for="login-email">Correo institucional</label>
               <input
@@ -98,11 +104,18 @@
               <a class="font-semibold text-[#335ef7] hover:text-[#2742c5]" href="#">Olvidaste tu contrasena?</a>
             </div>
             <button
-              type="submit"
-              class="flex w-full items-center justify-center rounded-xl bg-[#335ef7] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#335ef7]/30 transition hover:bg-[#2742c5]"
+              type="button"
+              class="flex w-full items-center justify-center rounded-xl bg-[#335ef7] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#335ef7]/30 transition hover:bg-[#2742c5] disabled:cursor-not-allowed disabled:opacity-60"
+              [disabled]="isBusy()"
+              (click)="loginAnonymously()"
             >
-              Acceder al panel
+              <ng-container *ngIf="!isBusy(); else loadingState">
+                Iniciar sesion provisional
+              </ng-container>
             </button>
+            <ng-template #loadingState>
+              <span>Conectando...</span>
+            </ng-template>
             <div class="relative py-2 text-center text-xs font-medium uppercase text-[#a2accf]">
               <span class="bg-white px-3">o continua con</span>
               <span class="absolute inset-x-0 top-1/2 -z-10 h-px rounded-full bg-[#e0e5ff]"></span>
