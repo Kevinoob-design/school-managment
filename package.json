@@ -29,7 +29,7 @@
     "@angular/compiler": "^20.3.0",
     "@angular/core": "^20.3.0",
     "@angular/fire": "20.0.1",
-    "@angular/forms": "^20.3.0",
+    "@angular/forms": "^20.3.4",
     "@angular/platform-browser": "^20.3.0",
     "@angular/router": "^20.3.0",
     "@commitlint/cli": "^19.8.1",
