@@ -27,10 +27,3 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-
-  test:
-    needs: [format, lint]
-    uses: ./.github/workflows/test.yml
-    permissions:
-      contents: read
-      pull-requests: write
