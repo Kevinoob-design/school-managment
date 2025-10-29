@@ -14,6 +14,7 @@ export class Button {
   size = input<'sm' | 'md' | 'lg'>('md');
   disabled = input(false);
   fullWidth = input(false);
+  type = input<'button' | 'submit' | 'reset'>('button');
 
   protected wrapperClasses = computed(() => {
     return this.fullWidth() ? 'w-full inline-block' : 'inline-block';

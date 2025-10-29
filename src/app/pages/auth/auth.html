@@ -6,7 +6,7 @@
     </div>
 
     <div class="bg-white border rounded-xl shadow-sm p-6">
-      <form (ngSubmit)="submit()" class="space-y-4">
+      <form class="space-y-4">
         <app-input
           type="email"
           placeholder="Email"
@@ -23,10 +23,12 @@
         <div class="text-red-600 text-sm" *ngIf="error()">{{ error() }}</div>
 
         <app-button
+          type="button"
           [disabled]="!canSubmit() || loading()"
           variant="primary"
           size="md"
           [fullWidth]="true"
+          (click)="submit()"
         >
           {{ loading() ? 'Signing in…' : 'Sign in' }}
         </app-button>

@@ -23,9 +23,10 @@ export class Header {
   protected readonly userMenuOpen = signal(false);
   protected readonly isAuthenticated = signal(false);
   protected readonly userProfile = signal<UserProfile | null>(null);
+  private readonly auth = inject(AuthService);
 
   protected readonly dashboardRoute = computed(() => {
-    const role = this.authService.currentRole();
+    const role = this.auth.currentRole();
     switch (role) {
       case 'admin':
         return '/admin';
@@ -63,10 +64,10 @@ export class Header {
 
   constructor() {
     // Mirror auth signals into header state for avatar and labels
-    const user = this.authService.currentUser();
+    const user = this.auth.currentUser();
     this.isAuthenticated.set(!!user);
     if (user) {
-      const role = this.authService.currentRole();
+      const role = this.auth.currentRole();
       const mappedRole: UserRole | null = role === 'unknown' ? null : role;
       this.userProfile.set({
         displayName: user.displayName,
@@ -89,7 +90,7 @@ export class Header {
 
   protected async handleSignOut(): Promise<void> {
     try {
-      await this.authService.signOut();
+      await this.auth.signOut();
       this.userMenuOpen.set(false);
       await this.router.navigate(['/']);
     } catch (error) {
