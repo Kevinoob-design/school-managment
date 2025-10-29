@@ -1,108 +1,89 @@
-import { Component, signal, computed, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-import { Button } from '../../ui/button/button';
-import { AuthService } from '../../services/auth.service';
-
-type UserRole = 'parent' | 'teacher' | 'admin';
-
-interface UserProfile {
-  displayName: string | null;
-  email: string | null;
-  photoURL: string | null;
-  role: UserRole | null;
-}
+import { Component, signal, computed, inject } from '@angular/core'
+import { Router, RouterLink } from '@angular/router'
+import { Button } from '../../ui/button/button'
+import { AuthService } from '../../services/auth.service'
 
 @Component({
-  selector: 'app-header',
-  imports: [Button, RouterLink],
-  templateUrl: './header.html',
-  styleUrl: './header.sass',
+	selector: 'app-header',
+	imports: [Button, RouterLink],
+	templateUrl: './header.html',
+	styleUrl: './header.sass'
 })
 export class Header {
-  protected readonly mobileMenuOpen = signal(false);
-  protected readonly userMenuOpen = signal(false);
-  protected readonly isAuthenticated = signal(false);
-  protected readonly userProfile = signal<UserProfile | null>(null);
-  private readonly auth = inject(AuthService);
+	protected readonly mobileMenuOpen = signal(false)
+	protected readonly userMenuOpen = signal(false)
+	private readonly router = inject(Router)
+	protected readonly authService = inject(AuthService)
 
-  protected readonly dashboardRoute = computed(() => {
-    const role = this.auth.currentRole();
-    switch (role) {
-      case 'admin':
-        return '/admin';
-      case 'teacher':
-        return '/teacher';
-      case 'parent':
-        return '/parent';
-      default:
-        return '/';
-    }
-  });
+	protected readonly isAuthenticated = computed(() => !!this.authService.currentUser())
 
-  protected readonly userInitials = computed(() => {
-    const profile = this.userProfile();
-    if (!profile) return '';
+	protected readonly dashboardRoute = computed(() => {
+		const role = this.authService.currentRole()
+		switch (role) {
+			case 'admin':
+				return '/admin'
+			case 'teacher':
+				return '/teacher'
+			case 'parent':
+				return '/parent'
+			default:
+				return '/'
+		}
+	})
 
-    if (profile.displayName) {
-      return profile.displayName
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2);
-    }
+	protected readonly userInitials = computed(() => {
+		const user = this.authService.currentUser()
+		if (!user) return ''
 
-    if (profile.email) {
-      return profile.email[0].toUpperCase();
-    }
+		if (user.displayName) {
+			return user.displayName
+				.split(' ')
+				.map(n => n[0])
+				.join('')
+				.toUpperCase()
+				.slice(0, 2)
+		}
 
-    return 'U';
-  });
+		if (user.email) {
+			return user.email[0].toUpperCase()
+		}
 
-  private readonly router = inject(Router);
-  private readonly authService = inject(AuthService);
+		return 'U'
+	})
 
-  constructor() {
-    // Mirror auth signals into header state for avatar and labels
-    const user = this.auth.currentUser();
-    this.isAuthenticated.set(!!user);
-    if (user) {
-      const role = this.auth.currentRole();
-      const mappedRole: UserRole | null = role === 'unknown' ? null : role;
-      this.userProfile.set({
-        displayName: user.displayName,
-        email: user.email,
-        photoURL: (user as unknown as { photoURL: string | null }).photoURL ?? null,
-        role: mappedRole,
-      });
-    } else {
-      this.userProfile.set(null);
-    }
-  }
+	protected readonly displayName = computed(() => {
+		const user = this.authService.currentUser()
+		return user?.displayName || user?.email || ''
+	})
 
-  protected toggleMobileMenu(): void {
-    this.mobileMenuOpen.update((value) => !value);
-  }
+	protected readonly photoURL = computed(() => {
+		const user = this.authService.currentUser()
+		return user?.photoURL || null
+	})
 
-  protected toggleUserMenu(): void {
-    this.userMenuOpen.update((value) => !value);
-  }
+	protected toggleMobileMenu(): void {
+		this.mobileMenuOpen.update(value => !value)
+	}
 
-  protected async handleSignOut(): Promise<void> {
-    try {
-      await this.auth.signOut();
-      this.userMenuOpen.set(false);
-      await this.router.navigate(['/']);
-    } catch (error) {
-      console.error('Sign out error:', error);
-    }
-  }
+	protected toggleUserMenu(): void {
+		this.userMenuOpen.update(value => !value)
+	}
 
-  protected async goSignIn(): Promise<void> {
-    await this.router.navigate(['/auth'], { queryParams: { mode: 'signin' } });
-  }
+	protected async handleSignOut(): Promise<void> {
+		try {
+			await this.authService.signOut()
+			this.userMenuOpen.set(false)
+			await this.router.navigate(['/'])
+		} catch (error) {
+			console.error('Sign out error:', error)
+		}
+	}
 
-  protected async goSignUp(): Promise<void> {
-    await this.router.navigate(['/signup']);
-  }
+	protected async goSignIn(): Promise<void> {
+		await this.router.navigate(['/auth'], { queryParams: { mode: 'signin' } })
+	}
+
+	protected async goSignUp(): Promise<void> {
+		await this.router.navigate(['/signup'])
+	}
 }
