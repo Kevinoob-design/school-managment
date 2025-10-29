@@ -7,6 +7,3 @@ import { Component } from '@angular/core';
   styleUrl: './admin.sass',
 })
 export class AdminDashboard {}
-
-
-

@@ -8,67 +8,109 @@
     <div class="bg-white border rounded-xl shadow-sm p-6 md:p-8">
       <!-- Role selection tabs -->
       <div class="flex items-center gap-2 mb-6">
-        <button type="button" class="px-4 py-2 rounded-md border transition"
-                [class.bg-blue-600]="role()==='admin'" [class.text-white]="role()==='admin'"
-                [class.border-blue-600]="role()==='admin'" [class.bg-gray-50]="role()!=='admin'"
-                (click)="role.set('admin')">
+        <button
+          type="button"
+          class="px-4 py-2 rounded-md border transition"
+          [class.bg-blue-600]="role() === 'admin'"
+          [class.text-white]="role() === 'admin'"
+          [class.border-blue-600]="role() === 'admin'"
+          [class.bg-gray-50]="role() !== 'admin'"
+          (click)="role.set('admin')"
+        >
           School admin
         </button>
-        <button type="button" class="px-4 py-2 rounded-md border transition"
-                [class.bg-blue-600]="role()==='parent'" [class.text-white]="role()==='parent'"
-                [class.border-blue-600]="role()==='parent'" [class.bg-gray-50]="role()!=='parent'"
-                (click)="role.set('parent')">
+        <button
+          type="button"
+          class="px-4 py-2 rounded-md border transition"
+          [class.bg-blue-600]="role() === 'parent'"
+          [class.text-white]="role() === 'parent'"
+          [class.border-blue-600]="role() === 'parent'"
+          [class.bg-gray-50]="role() !== 'parent'"
+          (click)="role.set('parent')"
+        >
           Parent
         </button>
       </div>
 
       <form class="space-y-4" (ngSubmit)="submit()">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <app-input type="text" placeholder="Full name" [value]="fullName()"
-                     [invalid]="fullName().trim().length<2" (valueChange)="fullName.set($event)"></app-input>
-          <app-input type="tel" placeholder="Phone number" [value]="phoneNumber()"
-                     [invalid]="isPhoneInvalid()"
-                     (valueChange)="onPhoneInput($event)"></app-input>
+          <app-input
+            type="text"
+            placeholder="Full name"
+            [value]="fullName()"
+            [invalid]="fullName().trim().length < 2"
+            (valueChange)="fullName.set($event)"
+          ></app-input>
+          <app-input
+            type="tel"
+            placeholder="Phone number"
+            [value]="phoneNumber()"
+            [invalid]="isPhoneInvalid()"
+            (valueChange)="onPhoneInput($event)"
+          ></app-input>
         </div>
 
         <div>
-          <app-input type="email" placeholder="Email" [value]="email()"
-                     [invalid]="isEmailInvalid()"
-                     (valueChange)="email.set($event)"></app-input>
+          <app-input
+            type="email"
+            placeholder="Email"
+            [value]="email()"
+            [invalid]="isEmailInvalid()"
+            (valueChange)="email.set($event)"
+          ></app-input>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <app-input type="password" placeholder="Password" [value]="password()"
-                     [invalid]="isPasswordInvalid()"
-                     (valueChange)="password.set($event)"></app-input>
-          <app-input type="password" placeholder="Confirm password" [value]="confirmPassword()"
-                     [invalid]="isConfirmInvalid()"
-                     (valueChange)="confirmPassword.set($event)"></app-input>
+          <app-input
+            type="password"
+            placeholder="Password"
+            [value]="password()"
+            [invalid]="isPasswordInvalid()"
+            (valueChange)="password.set($event)"
+          ></app-input>
+          <app-input
+            type="password"
+            placeholder="Confirm password"
+            [value]="confirmPassword()"
+            [invalid]="isConfirmInvalid()"
+            (valueChange)="confirmPassword.set($event)"
+          ></app-input>
         </div>
 
         <!-- Error hints -->
-        <div class="text-sm text-red-600 space-y-1" *ngIf="passwordErrors().length>0">
+        <div class="text-sm text-red-600 space-y-1" *ngIf="passwordErrors().length > 0">
           <div>Password must include:</div>
           <ul class="list-disc ml-5">
             <li *ngFor="let e of passwordErrors()">{{ e }}</li>
           </ul>
         </div>
-        <div class="text-sm text-red-600" *ngIf="confirmPassword().trim() && confirmPassword().trim()!==password().trim()">
+        <div
+          class="text-sm text-red-600"
+          *ngIf="confirmPassword().trim() && confirmPassword().trim() !== password().trim()"
+        >
           Passwords do not match
         </div>
         <div class="text-red-600 text-sm" *ngIf="error()">{{ error() }}</div>
 
-        <app-button [disabled]="!canSubmit() || loading()" variant="primary" size="md" [fullWidth]="true">
+        <app-button
+          [disabled]="!canSubmit() || loading()"
+          variant="primary"
+          size="md"
+          [fullWidth]="true"
+        >
           {{ loading() ? 'Creating account…' : 'Create account' }}
         </app-button>
       </form>
 
       <div class="text-center text-sm text-gray-600 mt-6">
         Already have an account?
-        <a [routerLink]="['/auth']" [queryParams]="{ mode: 'signin' }" class="text-blue-600 hover:underline">Sign in</a>
+        <a
+          [routerLink]="['/auth']"
+          [queryParams]="{ mode: 'signin' }"
+          class="text-blue-600 hover:underline"
+          >Sign in</a
+        >
       </div>
     </div>
   </div>
 </section>
-
-

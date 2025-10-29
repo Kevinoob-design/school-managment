@@ -13,6 +13,3 @@ export function roleGuard(allowed: UserRole[]): CanActivateFn {
     return router.parseUrl('/');
   };
 }
-
-
-

@@ -7,6 +7,3 @@ import { Component } from '@angular/core';
   styleUrl: './teacher.sass',
 })
 export class TeacherDashboard {}
-
-
-

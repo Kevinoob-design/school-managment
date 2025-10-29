@@ -7,6 +7,3 @@ import { Component } from '@angular/core';
   styleUrl: './parent.sass',
 })
 export class ParentDashboard {}
-
-
-

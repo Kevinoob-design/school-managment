@@ -43,11 +43,13 @@ export class SignupPage {
   passwordErrors = computed(() => {
     const pwd = this.password().trim();
     const errors: string[] = [];
-    if (pwd.length < this.passwordPolicy.minLength) errors.push(`At least ${this.passwordPolicy.minLength} characters`);
+    if (pwd.length < this.passwordPolicy.minLength)
+      errors.push(`At least ${this.passwordPolicy.minLength} characters`);
     if (this.passwordPolicy.requireUpper && !/[A-Z]/.test(pwd)) errors.push('One uppercase letter');
     if (this.passwordPolicy.requireLower && !/[a-z]/.test(pwd)) errors.push('One lowercase letter');
     if (this.passwordPolicy.requireDigit && !/\d/.test(pwd)) errors.push('One number');
-    if (this.passwordPolicy.requireSpecial && !/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pwd)) errors.push('One special character');
+    if (this.passwordPolicy.requireSpecial && !/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pwd))
+      errors.push('One special character');
     return errors;
   });
 
@@ -73,7 +75,9 @@ export class SignupPage {
         role: this.role(),
       });
       const role = this.auth.currentRole();
-      await this.router.navigateByUrl(role === 'admin' ? '/admin' : role === 'teacher' ? '/teacher' : '/parent');
+      await this.router.navigateByUrl(
+        role === 'admin' ? '/admin' : role === 'teacher' ? '/teacher' : '/parent',
+      );
     } catch (e) {
       console.error(e);
       this.error.set('Sign up failed. Please check your details and try again.');
@@ -127,5 +131,3 @@ export class SignupPage {
     return /\(\d{3}\) \d{3}-\d{4}/.test(value);
   }
 }
-
-

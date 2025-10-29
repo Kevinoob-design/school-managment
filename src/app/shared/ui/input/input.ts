@@ -6,7 +6,7 @@ import { Component, input, output, computed } from '@angular/core';
   templateUrl: './input.html',
   styleUrl: './input.sass',
   host: {
-    '[class]': 'classes()'
+    '[class]': 'classes()',
   },
 })
 export class Input {
@@ -33,6 +33,3 @@ export class Input {
     this.valueChange.emit(target.value);
   }
 }
-
-
-
