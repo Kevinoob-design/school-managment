@@ -1,7 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { Button } from '../../shared/ui/button/button';
 import { Card } from '../../shared/ui/card/card';
 import { Section } from '../../shared/ui/section/section';
+import { AuthService } from '../../shared/services/auth.service';
 
 interface UserType {
   id: string;
@@ -35,6 +37,8 @@ interface Feature {
   styleUrl: './landing.sass',
 })
 export class Landing {
+  private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
   protected readonly userTypes = signal<UserType[]>([
     {
       id: 'school',
@@ -153,5 +157,40 @@ export class Landing {
       info: 'bg-green-100 text-green-800',
     };
     return typeMap[type] || typeMap['info'];
+  }
+
+  // Navigation handlers
+  protected async goGetStarted(): Promise<void> {
+    const user = this.auth.currentUser();
+    if (user) {
+      await this.navigateToRoleDashboard();
+    } else {
+      await this.router.navigate(['/signup']);
+    }
+  }
+
+  protected async goSignUp(): Promise<void> {
+    await this.router.navigate(['/signup']);
+  }
+
+  protected async goSignIn(): Promise<void> {
+    await this.router.navigate(['/auth'], { queryParams: { mode: 'signin' } });
+  }
+
+  private async navigateToRoleDashboard(): Promise<void> {
+    const role = this.auth.currentRole();
+    switch (role) {
+      case 'admin':
+        await this.router.navigateByUrl('/admin');
+        return;
+      case 'teacher':
+        await this.router.navigateByUrl('/teacher');
+        return;
+      case 'parent':
+        await this.router.navigateByUrl('/parent');
+        return;
+      default:
+        await this.router.navigate(['/auth'], { queryParams: { mode: 'signin' } });
+    }
   }
 }

@@ -1,9 +1,9 @@
-import { Component, signal, computed, effect, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { Auth, user, signOut } from '@angular/fire/auth';
+import { Component, signal, computed, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { Button } from '../../ui/button/button';
+import { AuthService } from '../../services/auth.service';
 
-type UserRole = 'school' | 'parent' | 'teacher' | 'admin';
+type UserRole = 'parent' | 'teacher' | 'admin';
 
 interface UserProfile {
   displayName: string | null;
@@ -25,17 +25,17 @@ export class Header {
   protected readonly userProfile = signal<UserProfile | null>(null);
 
   protected readonly dashboardRoute = computed(() => {
-    const role = this.userProfile()?.role;
-    if (!role) return '/';
-
-    const roleRoutes: Record<UserRole, string> = {
-      school: '/school/dashboard',
-      parent: '/parent/dashboard',
-      teacher: '/teacher/dashboard',
-      admin: '/admin/dashboard',
-    };
-
-    return roleRoutes[role];
+    const role = this.authService.currentRole();
+    switch (role) {
+      case 'admin':
+        return '/admin';
+      case 'teacher':
+        return '/teacher';
+      case 'parent':
+        return '/parent';
+      default:
+        return '/';
+    }
   });
 
   protected readonly userInitials = computed(() => {
@@ -58,29 +58,25 @@ export class Header {
     return 'U';
   });
 
-  auth = inject(Auth);
+  private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
 
   constructor() {
-    effect(() => {
-      user(this.auth).subscribe((currentUser) => {
-        this.isAuthenticated.set(!!currentUser);
-
-        if (currentUser) {
-          // Get role from custom claims or user metadata
-          // For now, we'll use a placeholder - in production, fetch from Firestore or custom claims
-          const role = (currentUser as { role?: UserRole }).role || 'parent';
-
-          this.userProfile.set({
-            displayName: currentUser.displayName,
-            email: currentUser.email,
-            photoURL: currentUser.photoURL,
-            role: role as UserRole,
-          });
-        } else {
-          this.userProfile.set(null);
-        }
+    // Mirror auth signals into header state for avatar and labels
+    const user = this.authService.currentUser();
+    this.isAuthenticated.set(!!user);
+    if (user) {
+      const role = this.authService.currentRole();
+      const mappedRole: UserRole | null = role === 'unknown' ? null : role;
+      this.userProfile.set({
+        displayName: user.displayName,
+        email: user.email,
+        photoURL: (user as unknown as { photoURL: string | null }).photoURL ?? null,
+        role: mappedRole,
       });
-    });
+    } else {
+      this.userProfile.set(null);
+    }
   }
 
   protected toggleMobileMenu(): void {
@@ -93,10 +89,19 @@ export class Header {
 
   protected async handleSignOut(): Promise<void> {
     try {
-      await signOut(this.auth);
+      await this.authService.signOut();
       this.userMenuOpen.set(false);
+      await this.router.navigate(['/']);
     } catch (error) {
       console.error('Sign out error:', error);
     }
+  }
+
+  protected async goSignIn(): Promise<void> {
+    await this.router.navigate(['/auth'], { queryParams: { mode: 'signin' } });
+  }
+
+  protected async goSignUp(): Promise<void> {
+    await this.router.navigate(['/signup']);
   }
 }

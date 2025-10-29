@@ -99,8 +99,8 @@
             }
           </div>
         } @else {
-          <app-button variant="ghost" size="sm"> Sign In </app-button>
-          <app-button variant="primary" size="sm"> Sign Up </app-button>
+          <app-button variant="ghost" size="sm" (click)="goSignIn()"> Sign In </app-button>
+          <app-button variant="primary" size="sm" (click)="goSignUp()"> Sign Up </app-button>
         }
       </div>
 
@@ -144,8 +144,8 @@
             Help
           </a>
           <div class="px-4 py-2 space-y-2">
-            <app-button variant="ghost" size="sm" [fullWidth]="true"> Sign In </app-button>
-            <app-button variant="primary" size="sm" [fullWidth]="true"> Sign Up </app-button>
+            <app-button variant="ghost" size="sm" [fullWidth]="true" (click)="goSignIn()"> Sign In </app-button>
+            <app-button variant="primary" size="sm" [fullWidth]="true" (click)="goSignUp()"> Sign Up </app-button>
           </div>
         </nav>
       </div>
