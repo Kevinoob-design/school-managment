@@ -77,6 +77,111 @@
           ></app-input>
         </div>
 
+        <!-- School Information (only for admin) -->
+        @if (role() === 'admin') {
+          <div class="border-t pt-6 mt-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Información de la Escuela</h3>
+
+            <div class="mb-4">
+              <app-input
+                type="text"
+                label="Nombre de la Escuela"
+                placeholder="Ej: Colegio San José"
+                icon="school"
+                [required]="true"
+                [value]="schoolName()"
+                [invalid]="schoolName().trim().length > 0 && schoolName().trim().length < 3"
+                (valueChange)="schoolName.set($event)"
+              />
+            </div>
+
+            <div class="mb-4">
+              <app-input
+                type="text"
+                label="Número de Registro"
+                placeholder="Ej: REG-2024-001234"
+                icon="badge"
+                [required]="true"
+                helpText="Número único de registro del Ministerio de Educación"
+                [value]="registrationNumber()"
+                [invalid]="
+                  registrationNumber().trim().length > 0 && registrationNumber().trim().length < 5
+                "
+                (valueChange)="registrationNumber.set($event)"
+              />
+            </div>
+
+            <h4 class="text-md font-medium text-gray-700 mb-3">Dirección</h4>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <app-input
+                type="text"
+                label="Calle"
+                placeholder="Ej: Duarte"
+                icon="signpost"
+                [required]="true"
+                [value]="street()"
+                (valueChange)="street.set($event)"
+              />
+
+              <app-input
+                type="text"
+                label="Número"
+                placeholder="Ej: 123"
+                icon="tag"
+                [required]="true"
+                [value]="number()"
+                (valueChange)="number.set($event)"
+              />
+            </div>
+
+            <div class="mb-4">
+              <app-input
+                type="text"
+                label="Sector"
+                placeholder="Ej: Los Jardines Metropolitanos"
+                icon="location_city"
+                [required]="true"
+                [value]="sector()"
+                (valueChange)="sector.set($event)"
+              />
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <app-input
+                type="text"
+                label="Ciudad"
+                placeholder="Ej: Santiago"
+                icon="apartment"
+                [required]="true"
+                [value]="city()"
+                (valueChange)="city.set($event)"
+              />
+
+              <app-input
+                type="text"
+                label="Provincia"
+                placeholder="Ej: Santiago"
+                icon="map"
+                [required]="true"
+                [value]="province()"
+                (valueChange)="province.set($event)"
+              />
+            </div>
+
+            <div class="mb-4">
+              <app-input
+                type="text"
+                label="Código Postal"
+                placeholder="Opcional"
+                icon="markunread_mailbox"
+                [value]="postalCode()"
+                (valueChange)="postalCode.set($event)"
+              />
+            </div>
+          </div>
+        }
+
         <!-- Error hints -->
         <div class="text-sm text-red-600 space-y-1" *ngIf="passwordErrors().length > 0">
           <div>Password must include:</div>

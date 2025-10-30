@@ -80,7 +80,7 @@ export class Header {
   }
 
   protected async goSignIn(): Promise<void> {
-    await this.router.navigate(['/auth'], { queryParams: { mode: 'signin' } });
+    await this.router.navigate(['/auth']);
   }
 
   protected async goSignUp(): Promise<void> {

@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { Input } from '../../shared/ui/input/input';
 import { Button } from '../../shared/ui/button/button';
 import { AuthService } from '../../shared/services/auth.service';
+import { SchoolService, DominicanAddress } from '../../shared/services/school.service';
 
 @Component({
   selector: 'app-signup',
@@ -16,6 +17,7 @@ export class SignupPage {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly schoolService = inject(SchoolService);
 
   fullName = signal('');
   phoneNumber = signal('');
@@ -25,6 +27,16 @@ export class SignupPage {
   role = signal<'admin' | 'parent'>('parent');
   loading = signal(false);
   error = signal<string | null>(null);
+
+  // School fields (only for admin)
+  schoolName = signal('');
+  street = signal('');
+  number = signal('');
+  sector = signal('');
+  city = signal('');
+  province = signal('');
+  postalCode = signal('');
+  registrationNumber = signal('');
 
   private readonly passwordPolicy = {
     minLength: 8,
@@ -54,6 +66,33 @@ export class SignupPage {
     const confirmOk = this.password().trim() === this.confirmPassword().trim();
     const nameOk = this.fullName().trim().length >= 2;
     const phoneOk = this.isValidPhone(this.phoneNumber().trim());
+
+    // Additional validation for admin role
+    if (this.role() === 'admin') {
+      const schoolNameOk = this.schoolName().trim().length >= 3;
+      const streetOk = this.street().trim().length >= 3;
+      const numberOk = this.number().trim().length >= 1;
+      const sectorOk = this.sector().trim().length >= 3;
+      const cityOk = this.city().trim().length >= 3;
+      const provinceOk = this.province().trim().length >= 3;
+      const regNumberOk = this.registrationNumber().trim().length >= 5;
+
+      return (
+        emailOk &&
+        passOk &&
+        confirmOk &&
+        nameOk &&
+        phoneOk &&
+        schoolNameOk &&
+        streetOk &&
+        numberOk &&
+        sectorOk &&
+        cityOk &&
+        provinceOk &&
+        regNumberOk
+      );
+    }
+
     return emailOk && passOk && confirmOk && nameOk && phoneOk;
   });
 
@@ -61,20 +100,45 @@ export class SignupPage {
     this.error.set(null);
     this.loading.set(true);
     try {
-      await this.auth.signUpWithEmail({
+      // Create user account
+      const user = await this.auth.signUpWithEmail({
         fullName: this.fullName(),
         phoneNumber: this.phoneNumber(),
         email: this.email(),
         password: this.password(),
         role: this.role(),
       });
+
+      // If admin, create school record
+      if (this.role() === 'admin') {
+        const address: DominicanAddress = {
+          street: this.street().trim(),
+          number: this.number().trim(),
+          sector: this.sector().trim(),
+          city: this.city().trim(),
+          province: this.province().trim(),
+          postalCode: this.postalCode().trim() || undefined,
+        };
+
+        await this.schoolService.createSchool(user.uid, {
+          schoolName: this.schoolName().trim(),
+          address,
+          registrationNumber: this.registrationNumber().trim(),
+        });
+      }
+
       const role = this.auth.currentRole();
       await this.router.navigateByUrl(
         role === 'admin' ? '/admin' : role === 'teacher' ? '/teacher' : '/parent',
       );
     } catch (e) {
       console.error(e);
-      this.error.set('Sign up failed. Please check your details and try again.');
+      const error = e as Error;
+      if (error.message === 'Registration number is already in use') {
+        this.error.set('This school registration number is already in use');
+      } else {
+        this.error.set('Sign up failed. Please check your details and try again.');
+      }
     } finally {
       this.loading.set(false);
     }
