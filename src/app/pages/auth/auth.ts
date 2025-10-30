@@ -39,7 +39,7 @@ export class AuthPage {
       await this.redirectByRole(this.auth.currentRole());
     } catch (e) {
       console.error(e);
-      this.error.set('Authentication failed. Please check your details and try again.');
+			this.error.set('Autenticación fallida. Por favor verifica tus datos e inténtalo de nuevo.')
     } finally {
       this.loading.set(false);
     }
@@ -53,7 +53,7 @@ export class AuthPage {
       await this.redirectByRole(this.auth.currentRole());
     } catch (e) {
       console.error(e);
-      this.error.set('Google sign-in failed.');
+			this.error.set('Inicio de sesión con Google fallido.')
     } finally {
       this.loading.set(false);
     }
