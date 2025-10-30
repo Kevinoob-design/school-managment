@@ -1,19 +1,30 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardOverview } from './dashboard/dashboard';
+import { GradeLevelsTab } from './grade-levels/grade-levels';
+import { SubjectsTab } from './subjects/subjects';
 import { ClassesTab } from './classes/classes';
 import { TeachersTab } from './teachers/teachers';
 import { StudentsTab } from './students/students';
 import { ReportsTab } from './reports/reports';
 import { SidebarNav, NavItem, UserInfo } from '../../shared/ui/sidebar-nav/sidebar-nav';
 
-type TabName = 'dashboard' | 'classes' | 'teachers' | 'students' | 'reports';
+type TabName =
+  | 'dashboard'
+  | 'grade-levels'
+  | 'subjects'
+  | 'classes'
+  | 'teachers'
+  | 'students'
+  | 'reports';
 
 @Component({
   selector: 'app-admin-dashboard',
   imports: [
     CommonModule,
     DashboardOverview,
+    GradeLevelsTab,
+    SubjectsTab,
     ClassesTab,
     TeachersTab,
     StudentsTab,
@@ -28,6 +39,8 @@ export class AdminDashboard {
 
   protected readonly navItems: NavItem[] = [
     { id: 'dashboard', label: 'Panel Principal', icon: 'dashboard' },
+    { id: 'grade-levels', label: 'Niveles Académicos', icon: 'stairs' },
+    { id: 'subjects', label: 'Asignaturas', icon: 'book' },
     { id: 'classes', label: 'Clases', icon: 'school' },
     { id: 'teachers', label: 'Profesores', icon: 'person' },
     { id: 'students', label: 'Estudiantes', icon: 'groups' },
