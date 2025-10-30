@@ -1,0 +1,186 @@
+<header class="bg-white shadow-sm sticky top-0 z-50">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <div class="flex items-center">
+        <a routerLink="/" class="flex items-center space-x-2">
+          <span class="material-symbols-outlined text-3xl text-blue-600">school</span>
+          <span class="text-xl font-bold text-gray-900">School Portal</span>
+        </a>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center space-x-8">
+        <a routerLink="/features" class="text-gray-700 hover:text-blue-600 transition-colors">
+          Features
+        </a>
+        <a routerLink="/about" class="text-gray-700 hover:text-blue-600 transition-colors">
+          About
+        </a>
+        <a routerLink="/contact" class="text-gray-700 hover:text-blue-600 transition-colors">
+          Contact
+        </a>
+        <a routerLink="/help" class="text-gray-700 hover:text-blue-600 transition-colors"> Help </a>
+      </nav>
+
+      <!-- Desktop Actions -->
+      <div class="hidden md:flex items-center space-x-4">
+        @if (isAuthenticated()) {
+          <div class="relative">
+            <button
+              (click)="toggleUserMenu()"
+              class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+            >
+              @if (photoURL()) {
+                <img [src]="photoURL()!" alt="User avatar" class="w-8 h-8 rounded-full" />
+              } @else {
+                <div
+                  class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold"
+                >
+                  {{ userInitials() }}
+                </div>
+              }
+              <span class="text-gray-700 font-medium">{{ displayName() }}</span>
+              <span class="material-symbols-outlined text-gray-500">
+                {{ userMenuOpen() ? 'expand_less' : 'expand_more' }}
+              </span>
+            </button>
+
+            <!-- User Dropdown Menu -->
+            @if (userMenuOpen()) {
+              <div
+                class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+              >
+                <div class="px-4 py-3 border-b border-gray-200">
+                  <p class="text-sm font-semibold text-gray-900">{{ displayName() }}</p>
+                  <p class="text-xs text-gray-500 truncate">
+                    {{ authService.currentUser()?.email }}
+                  </p>
+                </div>
+                <a
+                  [routerLink]="dashboardRoute()"
+                  (click)="userMenuOpen.set(false)"
+                  class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  <span class="material-symbols-outlined text-lg mr-3">dashboard</span>
+                  Dashboard
+                </a>
+                <a
+                  routerLink="/profile"
+                  (click)="userMenuOpen.set(false)"
+                  class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  <span class="material-symbols-outlined text-lg mr-3">person</span>
+                  Profile
+                </a>
+                <a
+                  routerLink="/settings"
+                  (click)="userMenuOpen.set(false)"
+                  class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  <span class="material-symbols-outlined text-lg mr-3">settings</span>
+                  Settings
+                </a>
+                <hr class="my-2 border-gray-200" />
+                <button
+                  (click)="handleSignOut()"
+                  class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                >
+                  <span class="material-symbols-outlined text-lg mr-3">logout</span>
+                  Sign Out
+                </button>
+              </div>
+            }
+          </div>
+        } @else {
+          <app-button variant="ghost" size="sm" (click)="goSignIn()"> Sign In </app-button>
+          <app-button variant="primary" size="sm" (click)="goSignUp()"> Sign Up </app-button>
+        }
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button
+        (click)="toggleMobileMenu()"
+        class="md:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+        <span class="material-symbols-outlined">
+          {{ mobileMenuOpen() ? 'close' : 'menu' }}
+        </span>
+      </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    @if (mobileMenuOpen()) {
+      <div class="md:hidden border-t border-gray-200">
+        <nav class="py-4 space-y-2">
+          <a
+            routerLink="/features"
+            class="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
+          >
+            Features
+          </a>
+          <a
+            routerLink="/about"
+            class="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
+          >
+            About
+          </a>
+          <a
+            routerLink="/contact"
+            class="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
+          >
+            Contact
+          </a>
+          <a
+            routerLink="/help"
+            class="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
+          >
+            Help
+          </a>
+          @if (isAuthenticated()) {
+            <div class="px-4 py-2 border-t border-gray-200">
+              <div class="flex items-center space-x-3 px-4 py-3">
+                @if (photoURL()) {
+                  <img [src]="photoURL()!" alt="User avatar" class="w-10 h-10 rounded-full" />
+                } @else {
+                  <div
+                    class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold"
+                  >
+                    {{ userInitials() }}
+                  </div>
+                }
+                <div class="flex-1">
+                  <p class="text-sm font-semibold text-gray-900">{{ displayName() }}</p>
+                  <p class="text-xs text-gray-500">{{ authService.currentUser()?.email }}</p>
+                </div>
+              </div>
+              <a
+                [routerLink]="dashboardRoute()"
+                class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50"
+              >
+                <span class="material-symbols-outlined text-lg mr-3">dashboard</span>
+                Dashboard
+              </a>
+              <button
+                (click)="handleSignOut()"
+                class="w-full flex items-center px-4 py-2 text-red-600 hover:bg-red-50"
+              >
+                <span class="material-symbols-outlined text-lg mr-3">logout</span>
+                Sign Out
+              </button>
+            </div>
+          } @else {
+            <div class="px-4 py-2 space-y-2">
+              <app-button variant="ghost" size="sm" [fullWidth]="true" (click)="goSignIn()">
+                Sign In
+              </app-button>
+              <app-button variant="primary" size="sm" [fullWidth]="true" (click)="goSignUp()">
+                Sign Up
+              </app-button>
+            </div>
+          }
+        </nav>
+      </div>
+    }
+  </div>
+</header>
