@@ -40,118 +40,117 @@ export class Landing {
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
   protected readonly userTypes = signal<UserType[]>([
-		{
-			id: 'school',
-			title: 'Escuelas',
-			description: 'Gestiona las operaciones, personal y estudiantes de tu escuela eficientemente',
-			icon: 'school',
-			features: [
-				'Gestión de matrícula estudiantil',
-				'Coordinación de personal y docentes',
-				'Planificación del calendario académico',
-				'Análisis de rendimiento'
-			],
-			link: '/school/login'
-		},
-		{
-			id: 'parent',
-			title: 'Padres',
-			description: 'Mantente conectado con el progreso educativo de tu hijo',
-			icon: 'family_restroom',
-			features: [
-				'Seguimiento de calificaciones en tiempo real',
-				'Monitoreo de asistencia',
-				'Comunicación directa con maestros',
-				'Notificaciones de eventos'
-			],
-			link: '/parent/login'
-		},
+    {
+      id: 'school',
+      title: 'Escuelas',
+      description: 'Gestiona las operaciones, personal y estudiantes de tu escuela eficientemente',
+      icon: 'school',
+      features: [
+        'Gestión de matrícula estudiantil',
+        'Coordinación de personal y docentes',
+        'Planificación del calendario académico',
+        'Análisis de rendimiento',
+      ],
+      link: '/school/login',
+    },
+    {
+      id: 'parent',
+      title: 'Padres',
+      description: 'Mantente conectado con el progreso educativo de tu hijo',
+      icon: 'family_restroom',
+      features: [
+        'Seguimiento de calificaciones en tiempo real',
+        'Monitoreo de asistencia',
+        'Comunicación directa con maestros',
+        'Notificaciones de eventos',
+      ],
+      link: '/parent/login',
+    },
 
-		{
-			id: 'teacher',
-			title: 'Maestros',
-			description: 'Optimiza tus tareas docentes y administrativas',
-			icon: 'co_present',
-			features: [
-				'Gestión de calificaciones y asignaciones',
-				'Registro de asistencia',
-				'Comunicación padres-maestros',
-				'Planificación curricular'
-			],
-			link: '/teacher/login'
-		},
-		{
-			id: 'admin',
-			title: 'Administradores',
-			description: 'Herramientas completas de supervisión y gestión',
-			icon: 'admin_panel_settings',
-			features: [
-				'Reportes del sistema',
-				'Gestión de usuarios',
-				'Configuración escolar',
-				'Panel de análisis de datos'
-			],
-			link: '/admin/login'
-		}
+    {
+      id: 'teacher',
+      title: 'Maestros',
+      description: 'Optimiza tus tareas docentes y administrativas',
+      icon: 'co_present',
+      features: [
+        'Gestión de calificaciones y asignaciones',
+        'Registro de asistencia',
+        'Comunicación padres-maestros',
+        'Planificación curricular',
+      ],
+      link: '/teacher/login',
+    },
+    {
+      id: 'admin',
+      title: 'Administradores',
+      description: 'Herramientas completas de supervisión y gestión',
+      icon: 'admin_panel_settings',
+      features: [
+        'Reportes del sistema',
+        'Gestión de usuarios',
+        'Configuración escolar',
+        'Panel de análisis de datos',
+      ],
+      link: '/admin/login',
+    },
   ]);
 
-	protected readonly announcements = signal<Announcement[]>([
-		{
-			id: '1',
-			title: 'Actualización del Horario de Vacaciones',
-			date: '2025-10-28',
-			school: 'Colegio Lincoln',
-			excerpt:
-				'Cambios importantes en el calendario de vacaciones de primavera. Por favor revisa el horario actualizado.',
-			type: 'urgent'
-		},
-		{
-			id: '2',
-			title: 'Registro Abierto para Conferencias Padres-Maestros',
-			date: '2025-10-26',
-			school: 'Escuela Roosevelt',
-			excerpt:
-				'Reserva tu horario para las próximas conferencias padres-maestros programadas para noviembre.',
-			type: 'event'
-		},
-		{
-			id: '3',
-			title: 'Nuevos Recursos de Aprendizaje en Línea Disponibles',
-			date: '2025-10-25',
-			school: 'Todas las Escuelas',
-			excerpt:
-				'Accede a una amplia gama de nuevos materiales educativos y herramientas de aprendizaje interactivas.',
-			type: 'info'
-		}
-	])
-	protected readonly features = signal<Feature[]>([
-		{
-			id: '1',
-			title: 'Actualizaciones en Tiempo Real',
-			description:
-				'Mantente informado con notificaciones instantáneas sobre calificaciones, asistencia y eventos',
-			icon: 'notifications_active'
-		},
-		{
-			id: '2',
-			title: 'Plataforma Segura',
-			description:
-				'Seguridad de nivel empresarial protegiendo tus datos educativos y privacidad',
-			icon: 'security'
-		},
-		{
-			id: '3',
-			title: 'Comunicación Fácil',
-			description: 'Mensajería fluida entre maestros, padres y administradores',
-			icon: 'forum'
-		},
-		{
-			id: '4',
-			title: 'Panel de Análisis',
-			description: 'Informes completos y análisis sobre el rendimiento académico',
-			icon: 'analytics'
-		}
-	])
+  protected readonly announcements = signal<Announcement[]>([
+    {
+      id: '1',
+      title: 'Actualización del Horario de Vacaciones',
+      date: '2025-10-28',
+      school: 'Colegio Lincoln',
+      excerpt:
+        'Cambios importantes en el calendario de vacaciones de primavera. Por favor revisa el horario actualizado.',
+      type: 'urgent',
+    },
+    {
+      id: '2',
+      title: 'Registro Abierto para Conferencias Padres-Maestros',
+      date: '2025-10-26',
+      school: 'Escuela Roosevelt',
+      excerpt:
+        'Reserva tu horario para las próximas conferencias padres-maestros programadas para noviembre.',
+      type: 'event',
+    },
+    {
+      id: '3',
+      title: 'Nuevos Recursos de Aprendizaje en Línea Disponibles',
+      date: '2025-10-25',
+      school: 'Todas las Escuelas',
+      excerpt:
+        'Accede a una amplia gama de nuevos materiales educativos y herramientas de aprendizaje interactivas.',
+      type: 'info',
+    },
+  ]);
+  protected readonly features = signal<Feature[]>([
+    {
+      id: '1',
+      title: 'Actualizaciones en Tiempo Real',
+      description:
+        'Mantente informado con notificaciones instantáneas sobre calificaciones, asistencia y eventos',
+      icon: 'notifications_active',
+    },
+    {
+      id: '2',
+      title: 'Plataforma Segura',
+      description: 'Seguridad de nivel empresarial protegiendo tus datos educativos y privacidad',
+      icon: 'security',
+    },
+    {
+      id: '3',
+      title: 'Comunicación Fácil',
+      description: 'Mensajería fluida entre maestros, padres y administradores',
+      icon: 'forum',
+    },
+    {
+      id: '4',
+      title: 'Panel de Análisis',
+      description: 'Informes completos y análisis sobre el rendimiento académico',
+      icon: 'analytics',
+    },
+  ]);
 
   protected getAnnouncementTypeClasses(type: string): string {
     const typeMap: Record<string, string> = {

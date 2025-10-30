@@ -48,15 +48,15 @@ export class SignupPage {
 
   passwordErrors = computed(() => {
     const pwd = this.password().trim();
-		const errors: string[] = []
-		if (pwd.length < this.passwordPolicy.minLength)
-			errors.push(`Al menos ${this.passwordPolicy.minLength} caracteres`)
-		if (this.passwordPolicy.requireUpper && !/[A-Z]/.test(pwd)) errors.push('Una letra mayúscula')
-		if (this.passwordPolicy.requireLower && !/[a-z]/.test(pwd)) errors.push('Una letra minúscula')
-		if (this.passwordPolicy.requireDigit && !/\d/.test(pwd)) errors.push('Un número')
-		if (this.passwordPolicy.requireSpecial && !/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pwd))
-			errors.push('Un carácter especial')
-		return errors
+    const errors: string[] = [];
+    if (pwd.length < this.passwordPolicy.minLength)
+      errors.push(`Al menos ${this.passwordPolicy.minLength} caracteres`);
+    if (this.passwordPolicy.requireUpper && !/[A-Z]/.test(pwd)) errors.push('Una letra mayúscula');
+    if (this.passwordPolicy.requireLower && !/[a-z]/.test(pwd)) errors.push('Una letra minúscula');
+    if (this.passwordPolicy.requireDigit && !/\d/.test(pwd)) errors.push('Un número');
+    if (this.passwordPolicy.requireSpecial && !/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pwd))
+      errors.push('Un carácter especial');
+    return errors;
   });
 
   canSubmit = computed(() => {
@@ -133,12 +133,12 @@ export class SignupPage {
       );
     } catch (e) {
       console.error(e);
-			const error = e as Error
-			if (error.message === 'Registration number is already in use') {
-				this.error.set('Este número de registro escolar ya está en uso')
-			} else {
-				this.error.set('Registro fallido. Por favor verifica tus datos e inténtalo de nuevo.')
-			}
+      const error = e as Error;
+      if (error.message === 'Registration number is already in use') {
+        this.error.set('Este número de registro escolar ya está en uso');
+      } else {
+        this.error.set('Registro fallido. Por favor verifica tus datos e inténtalo de nuevo.');
+      }
     } finally {
       this.loading.set(false);
     }
