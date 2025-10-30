@@ -5,22 +5,24 @@
       <div class="flex items-center">
         <a routerLink="/" class="flex items-center space-x-2">
           <span class="material-symbols-outlined text-3xl text-blue-600">school</span>
-          <span class="text-xl font-bold text-gray-900">School Portal</span>
+          <span class="text-xl font-bold text-gray-900">Portal Escolar</span>
         </a>
       </div>
 
       <!-- Desktop Navigation -->
       <nav class="hidden md:flex items-center space-x-8">
         <a routerLink="/features" class="text-gray-700 hover:text-blue-600 transition-colors">
-          Features
+          Características
         </a>
         <a routerLink="/about" class="text-gray-700 hover:text-blue-600 transition-colors">
-          About
+          Nosotros
         </a>
         <a routerLink="/contact" class="text-gray-700 hover:text-blue-600 transition-colors">
-          Contact
+          Contacto
         </a>
-        <a routerLink="/help" class="text-gray-700 hover:text-blue-600 transition-colors"> Help </a>
+        <a routerLink="/help" class="text-gray-700 hover:text-blue-600 transition-colors">
+          Ayuda
+        </a>
       </nav>
 
       <!-- Desktop Actions -->
@@ -63,7 +65,7 @@
                   class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                 >
                   <span class="material-symbols-outlined text-lg mr-3">dashboard</span>
-                  Dashboard
+                  Panel
                 </a>
                 <a
                   routerLink="/profile"
@@ -71,7 +73,7 @@
                   class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                 >
                   <span class="material-symbols-outlined text-lg mr-3">person</span>
-                  Profile
+                  Perfil
                 </a>
                 <a
                   routerLink="/settings"
@@ -79,7 +81,7 @@
                   class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                 >
                   <span class="material-symbols-outlined text-lg mr-3">settings</span>
-                  Settings
+                  Configuración
                 </a>
                 <hr class="my-2 border-gray-200" />
                 <button
@@ -87,14 +89,14 @@
                   class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                 >
                   <span class="material-symbols-outlined text-lg mr-3">logout</span>
-                  Sign Out
+                  Cerrar Sesión
                 </button>
               </div>
             }
           </div>
         } @else {
-          <app-button variant="ghost" size="sm" (click)="goSignIn()"> Sign In </app-button>
-          <app-button variant="primary" size="sm" (click)="goSignUp()"> Sign Up </app-button>
+          <app-button variant="ghost" size="sm" (click)="goSignIn()"> Iniciar Sesión </app-button>
+          <app-button variant="primary" size="sm" (click)="goSignUp()"> Registrarse </app-button>
         }
       </div>
 
@@ -117,25 +119,25 @@
             routerLink="/features"
             class="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
           >
-            Features
+            Características
           </a>
           <a
             routerLink="/about"
             class="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
           >
-            About
+            Nosotros
           </a>
           <a
             routerLink="/contact"
             class="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
           >
-            Contact
+            Contacto
           </a>
           <a
             routerLink="/help"
             class="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
           >
-            Help
+            Ayuda
           </a>
           @if (isAuthenticated()) {
             <div class="px-4 py-2 border-t border-gray-200">
@@ -159,23 +161,23 @@
                 class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50"
               >
                 <span class="material-symbols-outlined text-lg mr-3">dashboard</span>
-                Dashboard
+                Panel
               </a>
               <button
                 (click)="handleSignOut()"
                 class="w-full flex items-center px-4 py-2 text-red-600 hover:bg-red-50"
               >
                 <span class="material-symbols-outlined text-lg mr-3">logout</span>
-                Sign Out
+                Cerrar Sesión
               </button>
             </div>
           } @else {
             <div class="px-4 py-2 space-y-2">
               <app-button variant="ghost" size="sm" [fullWidth]="true" (click)="goSignIn()">
-                Sign In
+                Iniciar Sesión
               </app-button>
               <app-button variant="primary" size="sm" [fullWidth]="true" (click)="goSignUp()">
-                Sign Up
+                Registrarse
               </app-button>
             </div>
           }

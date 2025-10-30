@@ -2,21 +2,21 @@
 <app-section spacing="xl" background="blue">
   <div class="text-center max-w-4xl mx-auto">
     <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-      Welcome to School Management Portal
+      Bienvenido al Portal de Gestión Escolar
     </h1>
     <p class="text-xl text-gray-700 mb-8">
-      Connecting schools, parents, teachers, and administrators in one unified platform. Manage
-      education with efficiency and transparency.
+      Conectando escuelas, padres, maestros y administradores en una plataforma unificada. Gestiona
+      la educación con eficiencia y transparencia.
     </p>
-    <app-button variant="primary" size="lg" (click)="goGetStarted()"> Get Started </app-button>
+    <app-button variant="primary" size="lg" (click)="goGetStarted()"> Comenzar </app-button>
   </div>
 </app-section>
 
 <!-- User Types Section -->
 <app-section spacing="xl" background="white">
   <div class="text-center mb-16">
-    <h2 class="text-4xl font-bold text-gray-900 mb-6">Find Your Portal</h2>
-    <p class="text-lg text-gray-600">Select your role to access your personalized dashboard</p>
+    <h2 class="text-4xl font-bold text-gray-900 mb-6">Encuentra tu Portal</h2>
+    <p class="text-lg text-gray-600">Selecciona tu rol para acceder a tu panel personalizado</p>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -51,8 +51,8 @@
 <!-- Announcements Section -->
 <app-section spacing="xl" background="gray">
   <div class="text-center mb-16">
-    <h2 class="text-4xl font-bold text-gray-900 mb-6">Latest Announcements</h2>
-    <p class="text-lg text-gray-600">Stay updated with important news and events</p>
+    <h2 class="text-4xl font-bold text-gray-900 mb-6">Últimos Anuncios</h2>
+    <p class="text-lg text-gray-600">Mantente actualizado con noticias y eventos importantes</p>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -76,22 +76,24 @@
             {{ announcement.school }}
           </p>
           <p class="text-gray-700 mb-4 flex-grow">{{ announcement.excerpt }}</p>
-          <app-button variant="outline" size="sm" [fullWidth]="true"> Read More </app-button>
+          <app-button variant="outline" size="sm" [fullWidth]="true"> Leer Más </app-button>
         </div>
       </app-card>
     }
   </div>
 
   <div class="text-center mt-12">
-    <app-button variant="primary" size="md"> View All Announcements </app-button>
+    <app-button variant="primary" size="md"> Ver Todos los Anuncios </app-button>
   </div>
 </app-section>
 
 <!-- Features Section -->
 <app-section spacing="xl" background="white">
   <div class="text-center mb-16">
-    <h2 class="text-4xl font-bold text-gray-900 mb-6">Platform Features</h2>
-    <p class="text-lg text-gray-600">Everything you need to manage education effectively</p>
+    <h2 class="text-4xl font-bold text-gray-900 mb-6">Características de la Plataforma</h2>
+    <p class="text-lg text-gray-600">
+      Todo lo que necesitas para gestionar la educación de manera efectiva
+    </p>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -114,13 +116,13 @@
 <!-- CTA Section -->
 <app-section spacing="xl" background="blue">
   <div class="text-center max-w-3xl mx-auto">
-    <h2 class="text-4xl font-bold text-gray-900 mb-4">Ready to Get Started?</h2>
+    <h2 class="text-4xl font-bold text-gray-900 mb-4">¿Listo para Comenzar?</h2>
     <p class="text-xl text-gray-700 mb-8">
-      Join thousands of schools, parents, and teachers already using our platform to enhance
-      education management.
+      Únete a miles de escuelas, padres y maestros que ya usan nuestra plataforma para mejorar la
+      gestión educativa.
     </p>
     <div class="flex gap-4 justify-center flex-wrap">
-      <app-button variant="primary" size="lg" (click)="goSignUp()"> Sign Up Now </app-button>
+      <app-button variant="primary" size="lg" (click)="goSignUp()"> Registrarse Ahora </app-button>
     </div>
   </div>
 </app-section>

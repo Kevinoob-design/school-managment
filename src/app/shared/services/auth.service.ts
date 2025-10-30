@@ -57,8 +57,27 @@ export class AuthService {
     const provider = new GoogleAuthProvider();
     const cred = await signInWithPopup(this.auth, provider);
 
-    // Wait for role to be fetched and set
-    const role = await this.fetchUserRole(cred.user.uid);
+    // Check if user profile exists
+    const ref = doc(this.firestore, 'users', cred.user.uid);
+    const snap = await getDoc(ref);
+
+    let role: UserRole;
+
+    if (!snap.exists()) {
+      // New user - create profile with parent role by default
+      await setDoc(ref, {
+        fullName: cred.user.displayName || '',
+        phoneNumber: cred.user.phoneNumber || '',
+        email: cred.user.email || '',
+        role: 'parent',
+        createdAt: Date.now(),
+      });
+      role = 'parent';
+    } else {
+      // Existing user - fetch their role
+      role = await this.fetchUserRole(cred.user.uid);
+    }
+
     this.currentRole.set(role);
 
     return cred.user;
