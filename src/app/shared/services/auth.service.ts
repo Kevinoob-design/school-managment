@@ -45,12 +45,22 @@ export class AuthService {
     const sanitizedEmail = email.trim().toLowerCase();
     const sanitizedPassword = password.trim();
     const cred = await signInWithEmailAndPassword(this.auth, sanitizedEmail, sanitizedPassword);
+
+    // Wait for role to be fetched and set
+    const role = await this.fetchUserRole(cred.user.uid);
+    this.currentRole.set(role);
+
     return cred.user;
   }
 
   async signInWithGoogle(): Promise<User> {
     const provider = new GoogleAuthProvider();
     const cred = await signInWithPopup(this.auth, provider);
+
+    // Wait for role to be fetched and set
+    const role = await this.fetchUserRole(cred.user.uid);
+    this.currentRole.set(role);
+
     return cred.user;
   }
 
@@ -67,6 +77,10 @@ export class AuthService {
       email,
       role: profile.role,
     });
+
+    // Set the role immediately after signup
+    this.currentRole.set(profile.role);
+
     return cred.user;
   }
 

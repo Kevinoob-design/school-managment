@@ -26,12 +26,6 @@ export class SignupPage {
   loading = signal(false);
   error = signal<string | null>(null);
 
-  constructor() {
-    const qp = this.route.snapshot.queryParamMap;
-    const role = qp.get('role');
-    if (role === 'admin' || role === 'parent') this.role.set(role);
-  }
-
   private readonly passwordPolicy = {
     minLength: 8,
     requireUpper: true,

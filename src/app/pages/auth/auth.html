@@ -6,35 +6,51 @@
     </div>
 
     <div class="bg-white border rounded-xl shadow-sm p-6">
-      <form class="space-y-4">
-        <app-input
-          type="email"
-          placeholder="Email"
-          [value]="email()"
-          (valueChange)="email.set($event)"
-        ></app-input>
-        <app-input
-          type="password"
-          placeholder="Password"
-          [value]="password()"
-          (valueChange)="password.set($event)"
-        ></app-input>
+      <form>
+        <div class="mb-4">
+          <app-input
+            type="email"
+            label="Email"
+            placeholder="Enter your email"
+            icon="email"
+            [value]="email()"
+            (valueChange)="email.set($event)"
+          />
+        </div>
 
-        <div class="text-red-600 text-sm" *ngIf="error()">{{ error() }}</div>
+        <div class="mb-4">
+          <app-input
+            type="password"
+            label="Password"
+            placeholder="Enter your password"
+            icon="lock"
+            [value]="password()"
+            (valueChange)="password.set($event)"
+          />
+        </div>
 
-        <app-button
-          type="button"
-          [disabled]="!canSubmit() || loading()"
-          variant="primary"
-          size="md"
-          [fullWidth]="true"
-          (click)="submit()"
-        >
-          {{ loading() ? 'Signing in…' : 'Sign in' }}
-        </app-button>
+        @if (error()) {
+          <div class="mb-4 text-red-600 text-sm flex items-center">
+            <span class="material-symbols-outlined text-base mr-1">error</span>
+            {{ error() }}
+          </div>
+        }
+
+        <div class="mb-6">
+          <app-button
+            type="button"
+            [disabled]="!canSubmit() || loading()"
+            variant="primary"
+            size="md"
+            [fullWidth]="true"
+            (click)="submit()"
+          >
+            {{ loading() ? 'Signing in…' : 'Sign in' }}
+          </app-button>
+        </div>
       </form>
 
-      <div class="my-4 text-center text-sm text-gray-500">or</div>
+      <div class="my-6 text-center text-sm text-gray-500">or</div>
 
       <app-button variant="outline" size="md" [fullWidth]="true" (click)="signInWithGoogle()">
         <span class="inline-flex items-center justify-center gap-2">
@@ -67,8 +83,8 @@
       </app-button>
 
       <div class="text-center text-sm text-gray-600 mt-6">
-        Don’t have an account?
-        <a [routerLink]="['/signup']" class="text-blue-600 hover:underline">Create an account</a>
+        Don't have an account?
+        <a [routerLink]="['/signup']" class="text-blue-600 hover:underline"> Create an account </a>
       </div>
     </div>
   </div>

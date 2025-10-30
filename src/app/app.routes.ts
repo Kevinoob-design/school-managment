@@ -6,6 +6,7 @@ import { AdminDashboard } from './pages/admin/admin';
 import { TeacherDashboard } from './pages/teacher/teacher';
 import { ParentDashboard } from './pages/parent/parent';
 import { roleGuard } from './shared/guards/role.guard';
+import { redirectAuthenticatedGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
   {
@@ -16,10 +17,12 @@ export const routes: Routes = [
   {
     path: 'auth',
     component: AuthPage,
+    canActivate: [redirectAuthenticatedGuard],
   },
   {
     path: 'signup',
     component: SignupPage,
+    canActivate: [redirectAuthenticatedGuard],
   },
   {
     path: 'admin',
