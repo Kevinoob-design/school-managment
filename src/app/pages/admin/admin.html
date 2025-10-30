@@ -1,1 +1,75 @@
-<div class="p-6">Admin dashboard</div>
+<div class="flex h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white/80 backdrop-blur-xl shadow-xl flex flex-col border-r border-white/20">
+    <!-- Logo/Brand -->
+    <div class="p-6 bg-gradient-to-r from-blue-600 to-indigo-600">
+      <h1 class="text-xl font-bold text-white">School Management</h1>
+      <p class="text-sm text-blue-100 mt-1">Panel de Administración</p>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 p-4 space-y-2">
+      @for (tab of tabs; track tab.id) {
+        <button
+          type="button"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-left relative overflow-hidden group"
+          [class.bg-gradient-to-r]="activeTab() === tab.id"
+          [class.from-blue-500]="activeTab() === tab.id"
+          [class.to-indigo-600]="activeTab() === tab.id"
+          [class.text-white]="activeTab() === tab.id"
+          [class.shadow-sm]="activeTab() === tab.id"
+          [class.shadow-blue-500]="activeTab() === tab.id"
+          [class.font-semibold]="activeTab() === tab.id"
+          [class.text-gray-700]="activeTab() !== tab.id"
+          [class.hover:bg-gray-100]="activeTab() !== tab.id"
+          [class.hover:shadow-sm]="activeTab() !== tab.id"
+          [class.hover:scale-105]="activeTab() !== tab.id"
+          (click)="setActiveTab(tab.id)"
+        >
+          <span class="material-symbols-outlined transition-transform group-hover:scale-110">{{
+            tab.icon
+          }}</span>
+          <span>{{ tab.label }}</span>
+        </button>
+      }
+    </nav>
+
+    <!-- User section -->
+    <div class="p-4 border-t border-gray-200/50">
+      <div
+        class="flex items-center gap-3 px-2 py-2 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 hover:shadow-md transition-all cursor-pointer"
+      >
+        <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full p-2 shadow-lg">
+          <span class="material-symbols-outlined text-white">account_circle</span>
+        </div>
+        <div class="flex-1">
+          <p class="text-sm font-semibold text-gray-900">Administrador</p>
+          <p class="text-xs text-blue-600 font-medium">Ver perfil</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main content area -->
+  <main class="flex-1 overflow-y-auto">
+    <div class="max-w-7xl mx-auto p-8">
+      @switch (activeTab()) {
+        @case ('dashboard') {
+          <app-dashboard-overview />
+        }
+        @case ('classes') {
+          <app-classes-tab />
+        }
+        @case ('teachers') {
+          <app-teachers-tab />
+        }
+        @case ('students') {
+          <app-students-tab />
+        }
+        @case ('reports') {
+          <app-reports-tab />
+        }
+      }
+    </div>
+  </main>
+</div>
