@@ -8,6 +8,8 @@ import {
   addDoc,
   doc,
   updateDoc,
+  deleteDoc,
+  orderBy,
 } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 
@@ -40,7 +42,11 @@ export class TeacherService {
 
     try {
       const teachersRef = collection(this.firestore, 'teachers');
-      const teachersQuery = query(teachersRef, where('tenantId', '==', tenantId));
+      const teachersQuery = query(
+        teachersRef,
+        where('tenantId', '==', tenantId),
+        orderBy('fullName', 'asc'),
+      );
       const snapshot = await getDocs(teachersQuery);
 
       const teachers: Teacher[] = [];
@@ -82,16 +88,47 @@ export class TeacherService {
   }
 
   /**
+   * Update a teacher
+   */
+  async updateTeacher(teacherId: string, updates: Partial<Teacher>): Promise<boolean> {
+    try {
+      const teacherRef = doc(this.firestore, 'teachers', teacherId);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { id, tenantId, createdAt, ...updateData } = updates;
+      await updateDoc(teacherRef, updateData);
+      return true;
+    } catch (error) {
+      console.error('Error updating teacher:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Delete a teacher
+   */
+  async deleteTeacher(teacherId: string): Promise<boolean> {
+    try {
+      const teacherRef = doc(this.firestore, 'teachers', teacherId);
+      await deleteDoc(teacherRef);
+      return true;
+    } catch (error) {
+      console.error('Error deleting teacher:', error);
+      return false;
+    }
+  }
+
+  /**
    * Update teacher status
    */
   async updateTeacherStatus(teacherId: string, status: 'active' | 'inactive'): Promise<boolean> {
-    try {
-      const teacherRef = doc(this.firestore, 'teachers', teacherId);
-      await updateDoc(teacherRef, { status });
-      return true;
-    } catch (error) {
-      console.error('Error updating teacher status:', error);
-      return false;
-    }
+    return this.updateTeacher(teacherId, { status });
+  }
+
+  /**
+   * Get active teachers only
+   */
+  async getActiveTeachers(): Promise<Teacher[]> {
+    const teachers = await this.getTeachers();
+    return teachers.filter((t) => t.status === 'active');
   }
 }
