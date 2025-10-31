@@ -1,0 +1,41 @@
+<div class="flex h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+  <!-- Sidebar -->
+  <app-sidebar-nav
+    title="School Management"
+    subtitle="Panel de Administración"
+    [navItems]="navItems"
+    [activeItemId]="activeTab()"
+    [showUser]="false"
+    (navItemClick)="onNavItemClick($event)"
+    (userClick)="onUserClick()"
+  />
+
+  <!-- Main content area -->
+  <main class="flex-1 overflow-y-auto">
+    <div class="max-w-7xl mx-auto p-8">
+      @switch (activeTab()) {
+        @case ('dashboard') {
+          <app-dashboard-overview />
+        }
+        @case ('grade-levels') {
+          <app-grade-levels-tab />
+        }
+        @case ('subjects') {
+          <app-subjects-tab />
+        }
+        @case ('classes') {
+          <app-classes-tab />
+        }
+        @case ('teachers') {
+          <app-teachers-tab />
+        }
+        @case ('students') {
+          <app-students-tab />
+        }
+        @case ('reports') {
+          <app-reports-tab />
+        }
+      }
+    </div>
+  </main>
+</div>

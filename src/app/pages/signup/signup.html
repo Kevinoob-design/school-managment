@@ -1,0 +1,243 @@
+<section class="py-16 bg-white">
+  <div class="max-w-3xl mx-auto px-4">
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-gray-900 mb-2">Crea tu cuenta</h1>
+      <p class="text-gray-600">Elige tu rol y completa tus datos para comenzar.</p>
+    </div>
+
+    <div class="bg-white border rounded-xl shadow-sm p-6 md:p-8">
+      <!-- Role selection tabs -->
+      <div class="flex items-center gap-2 mb-6">
+        <button
+          type="button"
+          class="px-4 py-2 rounded-md border transition"
+          [class.bg-blue-600]="role() === 'admin'"
+          [class.text-white]="role() === 'admin'"
+          [class.border-blue-600]="role() === 'admin'"
+          [class.bg-gray-50]="role() !== 'admin'"
+          (click)="role.set('admin')"
+        >
+          Administrador escolar
+        </button>
+        <button
+          type="button"
+          class="px-4 py-2 rounded-md border transition"
+          [class.bg-blue-600]="role() === 'parent'"
+          [class.text-white]="role() === 'parent'"
+          [class.border-blue-600]="role() === 'parent'"
+          [class.bg-gray-50]="role() !== 'parent'"
+          (click)="role.set('parent')"
+        >
+          Padre/Madre
+        </button>
+      </div>
+
+      <form>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <app-input
+            type="text"
+            label="Nombre Completo"
+            placeholder="Ingresa tu nombre completo"
+            icon="person"
+            [required]="true"
+            [value]="fullName()"
+            [invalid]="fullName().trim().length > 0 && fullName().trim().length < 2"
+            (valueChange)="fullName.set($event)"
+          />
+          <app-input
+            type="tel"
+            label="Número de Teléfono"
+            placeholder="(555) 555-5555"
+            icon="phone"
+            [required]="true"
+            [value]="phoneNumber()"
+            [invalid]="phoneNumber().trim().length > 0 && isPhoneInvalid()"
+            (valueChange)="onPhoneInput($event)"
+          />
+        </div>
+
+        <div class="mb-4">
+          <app-input
+            type="email"
+            label="Correo Electrónico"
+            placeholder="Ingresa tu correo"
+            icon="email"
+            [required]="true"
+            [value]="email()"
+            [invalid]="email().trim().length > 0 && isEmailInvalid()"
+            (valueChange)="email.set($event)"
+          />
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <app-input
+            type="password"
+            label="Contraseña"
+            placeholder="Crea una contraseña"
+            icon="lock"
+            [required]="true"
+            [value]="password()"
+            [invalid]="password().trim().length > 0 && isPasswordInvalid()"
+            (valueChange)="password.set($event)"
+          />
+          <app-input
+            type="password"
+            label="Confirmar Contraseña"
+            placeholder="Confirma tu contraseña"
+            icon="lock"
+            [required]="true"
+            [value]="confirmPassword()"
+            [invalid]="confirmPassword().trim().length > 0 && isConfirmInvalid()"
+            (valueChange)="confirmPassword.set($event)"
+          />
+        </div>
+
+        <!-- School Information (only for admin) -->
+        @if (role() === 'admin') {
+          <div class="border-t pt-6 mt-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Información de la Escuela</h3>
+
+            <div class="mb-4">
+              <app-input
+                type="text"
+                label="Nombre de la Escuela"
+                placeholder="Ej: Colegio San José"
+                icon="school"
+                [required]="true"
+                [value]="schoolName()"
+                [invalid]="schoolName().trim().length > 0 && schoolName().trim().length < 3"
+                (valueChange)="schoolName.set($event)"
+              />
+            </div>
+
+            <div class="mb-4">
+              <app-input
+                type="text"
+                label="Número de Registro"
+                placeholder="Ej: REG-2024-001234"
+                icon="badge"
+                [required]="true"
+                helpText="Número único de registro del Ministerio de Educación"
+                [value]="registrationNumber()"
+                [invalid]="
+                  registrationNumber().trim().length > 0 && registrationNumber().trim().length < 5
+                "
+                (valueChange)="registrationNumber.set($event)"
+              />
+            </div>
+
+            <h4 class="text-md font-medium text-gray-700 mb-3">Dirección</h4>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <app-input
+                type="text"
+                label="Calle"
+                placeholder="Ej: Duarte"
+                icon="signpost"
+                [required]="true"
+                [value]="street()"
+                (valueChange)="street.set($event)"
+              />
+
+              <app-input
+                type="text"
+                label="Número"
+                placeholder="Ej: 123"
+                icon="tag"
+                [required]="true"
+                [value]="number()"
+                (valueChange)="number.set($event)"
+              />
+            </div>
+
+            <div class="mb-4">
+              <app-input
+                type="text"
+                label="Sector"
+                placeholder="Ej: Los Jardines Metropolitanos"
+                icon="location_city"
+                [required]="true"
+                [value]="sector()"
+                (valueChange)="sector.set($event)"
+              />
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <app-input
+                type="text"
+                label="Ciudad"
+                placeholder="Ej: Santiago"
+                icon="apartment"
+                [required]="true"
+                [value]="city()"
+                (valueChange)="city.set($event)"
+              />
+
+              <app-input
+                type="text"
+                label="Provincia"
+                placeholder="Ej: Santiago"
+                icon="map"
+                [required]="true"
+                [value]="province()"
+                (valueChange)="province.set($event)"
+              />
+            </div>
+
+            <div class="mb-4">
+              <app-input
+                type="text"
+                label="Código Postal"
+                placeholder="Opcional"
+                icon="markunread_mailbox"
+                [value]="postalCode()"
+                (valueChange)="postalCode.set($event)"
+              />
+            </div>
+          </div>
+        }
+
+        <!-- Error hints -->
+        @if (passwordErrors().length > 0) {
+          <div class="text-sm text-red-600 space-y-1 mb-4">
+            <div>La contraseña debe incluir:</div>
+            <ul class="list-disc ml-5">
+              @for (e of passwordErrors(); track e) {
+                <li>{{ e }}</li>
+              }
+            </ul>
+          </div>
+        }
+
+        @if (confirmPassword().trim() && confirmPassword().trim() !== password().trim()) {
+          <div class="text-sm text-red-600 mb-4">Las contraseñas no coinciden</div>
+        }
+
+        @if (error()) {
+          <div class="text-red-600 text-sm mb-4 flex items-center">
+            <span class="material-symbols-outlined text-base mr-1">error</span>
+            {{ error() }}
+          </div>
+        }
+
+        <div class="mb-6">
+          <app-button
+            type="button"
+            [disabled]="!canSubmit() || loading()"
+            variant="primary"
+            size="md"
+            [fullWidth]="true"
+            (click)="submit()"
+          >
+            {{ loading() ? 'Creando cuenta…' : 'Crear cuenta' }}
+          </app-button>
+        </div>
+      </form>
+
+      <div class="text-center text-sm text-gray-600 mt-6">
+        ¿Ya tienes una cuenta?
+        <a [routerLink]="['/auth']" class="text-blue-600 hover:underline"> Iniciar sesión </a>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,311 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1
+        class="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent"
+      >
+        Clases
+      </h1>
+      <p class="text-gray-600 mt-1 font-medium">Gestiona las clases y horarios de tu escuela</p>
+    </div>
+    <app-button variant="primary" size="md" (click)="openAddModal()">
+      <span class="material-symbols-outlined mr-2">add</span>
+      Agregar Clase
+    </app-button>
+  </div>
+
+  <!-- Classes List -->
+  <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-100 p-6">
+    @if (loading()) {
+      <div class="text-center py-12">
+        <p class="text-gray-500">Cargando clases...</p>
+      </div>
+    } @else if (classes().length === 0) {
+      <div class="text-center py-12">
+        <div
+          class="bg-gradient-to-br from-indigo-500 to-purple-600 p-6 rounded-2xl shadow-lg inline-block mb-4"
+        >
+          <span class="material-symbols-outlined text-white text-5xl">school</span>
+        </div>
+        <p class="text-xl text-gray-600 font-medium">No hay clases creadas</p>
+        <p class="text-sm text-gray-500 mt-2">Crea tu primera clase para comenzar</p>
+      </div>
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b-2 border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+              <th class="text-left py-4 px-4 text-sm font-bold text-gray-800">Clase</th>
+              <th class="text-left py-4 px-4 text-sm font-bold text-gray-800">Nivel</th>
+              <th class="text-left py-4 px-4 text-sm font-bold text-gray-800">Asignatura</th>
+              <th class="text-left py-4 px-4 text-sm font-bold text-gray-800">Profesor</th>
+              <th class="text-left py-4 px-4 text-sm font-bold text-gray-800">Horario</th>
+              <th class="text-left py-4 px-4 text-sm font-bold text-gray-800">Estado</th>
+              <th class="text-left py-4 px-4 text-sm font-bold text-gray-800">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (class of classes(); track class.id) {
+              <tr class="border-b border-gray-100 hover:bg-indigo-50/50 transition-colors">
+                <td class="py-4 px-4 text-sm font-medium text-gray-900">
+                  {{ class.className }}
+                  <span class="text-xs text-gray-500 ml-2">Sección {{ class.section }}</span>
+                </td>
+                <td class="py-4 px-4 text-sm text-gray-700">
+                  {{ getGradeLevelName(class.gradeLevelId) }}
+                </td>
+                <td class="py-4 px-4">
+                  <div class="flex items-center gap-2">
+                    <div
+                      class="w-3 h-3 rounded-full shadow-sm"
+                      [style.background-color]="getSubjectColor(class.subjectId)"
+                    ></div>
+                    <span class="text-sm text-gray-700">{{ getSubjectName(class.subjectId) }}</span>
+                  </div>
+                </td>
+                <td class="py-4 px-4 text-sm text-gray-700">
+                  {{ getTeacherName(class.teacherId) }}
+                </td>
+                <td class="py-4 px-4 text-xs text-gray-600">
+                  {{ formatSchedule(class.schedule) }}
+                </td>
+                <td class="py-4 px-4">
+                  <button
+                    type="button"
+                    class="inline-block px-3 py-1 text-xs font-semibold rounded-full shadow-sm transition-colors"
+                    [ngClass]="getStatusClass(class.status)"
+                    (click)="toggleStatus(class)"
+                  >
+                    {{ getStatusLabel(class.status) }}
+                  </button>
+                </td>
+                <td class="py-4 px-4">
+                  <div class="flex items-center gap-2">
+                    <button
+                      type="button"
+                      class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      (click)="openEditModal(class)"
+                    >
+                      <span class="material-symbols-outlined text-sm">edit</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      (click)="deleteClass(class)"
+                    >
+                      <span class="material-symbols-outlined text-sm">delete</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+  <!-- Modal -->
+  @if (showModal()) {
+    <div
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+      role="dialog"
+      aria-modal="true"
+      (click)="closeModal()"
+      (keydown.escape)="closeModal()"
+    >
+      <div
+        class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl mx-4 overflow-hidden max-h-[90vh] overflow-y-auto"
+        role="document"
+        (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()"
+      >
+        <!-- Modal Header -->
+        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-6">
+          <h2 class="text-2xl font-bold text-white">
+            {{ editingClass() ? 'Editar Clase' : 'Agregar Clase' }}
+          </h2>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-6 space-y-6">
+          <!-- Basic Info Section -->
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Información Básica</h3>
+            <div class="grid grid-cols-2 gap-4">
+              <app-input
+                label="Nombre de la Clase"
+                placeholder="Ej: Matemáticas Avanzadas"
+                [value]="className()"
+                [required]="true"
+                (valueChange)="className.set($event)"
+              />
+
+              <div>
+                <label for="section" class="block text-sm font-medium text-gray-700 mb-2">
+                  Sección
+                  <span class="text-red-500">*</span>
+                </label>
+                <select
+                  id="section"
+                  class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  [value]="section()"
+                  (change)="section.set($any($event.target).value)"
+                >
+                  <option value="">Selecciona una sección</option>
+                  @for (sec of sectionOptions; track sec) {
+                    <option [value]="sec">Sección {{ sec }}</option>
+                  }
+                </select>
+              </div>
+
+              <div>
+                <label for="gradeLevel" class="block text-sm font-medium text-gray-700 mb-2">
+                  Nivel Académico
+                  <span class="text-red-500">*</span>
+                </label>
+                <select
+                  id="gradeLevel"
+                  class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  [value]="selectedGradeLevelId()"
+                  (change)="
+                    selectedGradeLevelId.set($any($event.target).value); selectedSubjectId.set('')
+                  "
+                >
+                  <option value="">Selecciona un nivel</option>
+                  @for (level of gradeLevels(); track level.id) {
+                    <option [value]="level.id">{{ level.name }}</option>
+                  }
+                </select>
+              </div>
+
+              <div>
+                <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">
+                  Asignatura
+                  <span class="text-red-500">*</span>
+                </label>
+                <select
+                  id="subject"
+                  class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  [value]="selectedSubjectId()"
+                  [disabled]="!selectedGradeLevelId()"
+                  (change)="selectedSubjectId.set($any($event.target).value)"
+                >
+                  <option value="">Selecciona una asignatura</option>
+                  @for (subject of getFilteredSubjects(); track subject.id) {
+                    <option [value]="subject.id">{{ subject.name }}</option>
+                  }
+                </select>
+              </div>
+
+              <div>
+                <label for="teacher" class="block text-sm font-medium text-gray-700 mb-2"
+                  >Profesor</label
+                >
+                <select
+                  id="teacher"
+                  class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  [value]="selectedTeacherId()"
+                  (change)="selectedTeacherId.set($any($event.target).value)"
+                >
+                  <option value="">Sin asignar</option>
+                  @for (teacher of teachers(); track teacher.id) {
+                    <option [value]="teacher.id">{{ teacher.fullName }}</option>
+                  }
+                </select>
+              </div>
+
+              <app-input
+                label="Capacidad Máxima"
+                type="number"
+                placeholder="30"
+                [value]="maxStudents()"
+                [required]="true"
+                (valueChange)="maxStudents.set($event)"
+              />
+            </div>
+          </div>
+
+          <!-- Schedule Section -->
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-gray-900">Horarios</h3>
+              <app-button variant="secondary" size="sm" (click)="addScheduleSlot()">
+                <span class="material-symbols-outlined text-sm mr-1">add</span>
+                Agregar Horario
+              </app-button>
+            </div>
+
+            @if (schedule().length === 0) {
+              <p class="text-sm text-gray-500 text-center py-4">No hay horarios agregados</p>
+            } @else {
+              <div class="space-y-3">
+                @for (slot of schedule(); track $index) {
+                  <div
+                    class="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200"
+                  >
+                    <select
+                      class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      [value]="slot.day"
+                      (change)="updateScheduleSlot($index, 'day', $any($event.target).value)"
+                    >
+                      @for (day of dayOptions; track day.value) {
+                        <option [value]="day.value">{{ day.label }}</option>
+                      }
+                    </select>
+
+                    <input
+                      type="time"
+                      class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      [value]="slot.startTime"
+                      (change)="updateScheduleSlot($index, 'startTime', $any($event.target).value)"
+                    />
+
+                    <span class="text-gray-500">-</span>
+
+                    <input
+                      type="time"
+                      class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      [value]="slot.endTime"
+                      (change)="updateScheduleSlot($index, 'endTime', $any($event.target).value)"
+                    />
+
+                    <input
+                      type="text"
+                      placeholder="Aula (opcional)"
+                      class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-1"
+                      [value]="slot.room || ''"
+                      (input)="updateScheduleSlot($index, 'room', $any($event.target).value)"
+                    />
+
+                    <button
+                      type="button"
+                      class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      (click)="removeScheduleSlot($index)"
+                    >
+                      <span class="material-symbols-outlined text-sm">delete</span>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          @if (formError()) {
+            <div class="text-red-600 text-sm flex items-center gap-2">
+              <span class="material-symbols-outlined text-base">error</span>
+              {{ formError() }}
+            </div>
+          }
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="p-6 bg-gray-50 flex items-center justify-end gap-3">
+          <app-button variant="ghost" size="md" (click)="closeModal()"> Cancelar </app-button>
+          <app-button variant="primary" size="md" (click)="saveClass()"> Guardar </app-button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
