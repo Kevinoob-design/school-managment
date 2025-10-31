@@ -8,25 +8,32 @@ import {
   addDoc,
   doc,
   updateDoc,
+  deleteDoc,
+  orderBy,
 } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
+
+export interface ClassSchedule {
+  day: 'lunes' | 'martes' | 'miércoles' | 'jueves' | 'viernes' | 'sábado';
+  startTime: string;
+  endTime: string;
+  room?: string;
+}
 
 export interface Class {
   id?: string;
   tenantId: string;
   className: string;
-  grade: string;
-  subject: string;
+  subjectId: string;
+  gradeLevelId: string;
+  section: string;
   teacherId?: string;
-  schedule: {
-    day: string;
-    startTime: string;
-    endTime: string;
-  }[];
+  schedule: ClassSchedule[];
   maxStudents: number;
-  currentStudents: number;
+  academicYear: string;
+  semester: number;
+  status: 'active' | 'completed' | 'cancelled';
   createdAt: number;
-  status: 'active' | 'inactive';
 }
 
 @Injectable({
@@ -47,7 +54,11 @@ export class ClassService {
 
     try {
       const classesRef = collection(this.firestore, 'classes');
-      const classesQuery = query(classesRef, where('tenantId', '==', tenantId));
+      const classesQuery = query(
+        classesRef,
+        where('tenantId', '==', tenantId),
+        orderBy('className', 'asc'),
+      );
       const snapshot = await getDocs(classesQuery);
 
       const classes: Class[] = [];
@@ -63,11 +74,41 @@ export class ClassService {
   }
 
   /**
+   * Get active classes only
+   */
+  async getActiveClasses(): Promise<Class[]> {
+    const classes = await this.getClasses();
+    return classes.filter((c) => c.status === 'active');
+  }
+
+  /**
+   * Get classes by grade level
+   */
+  async getClassesByGradeLevel(gradeLevelId: string): Promise<Class[]> {
+    const classes = await this.getClasses();
+    return classes.filter((c) => c.gradeLevelId === gradeLevelId);
+  }
+
+  /**
+   * Get classes by subject
+   */
+  async getClassesBySubject(subjectId: string): Promise<Class[]> {
+    const classes = await this.getClasses();
+    return classes.filter((c) => c.subjectId === subjectId);
+  }
+
+  /**
+   * Get classes by teacher
+   */
+  async getClassesByTeacher(teacherId: string): Promise<Class[]> {
+    const classes = await this.getClasses();
+    return classes.filter((c) => c.teacherId === teacherId);
+  }
+
+  /**
    * Add a new class
    */
-  async addClass(
-    classData: Omit<Class, 'id' | 'tenantId' | 'createdAt' | 'currentStudents'>,
-  ): Promise<string | null> {
+  async addClass(classData: Omit<Class, 'id' | 'tenantId' | 'createdAt'>): Promise<string | null> {
     const user = this.auth.currentUser();
     if (!user) return null;
 
@@ -78,7 +119,6 @@ export class ClassService {
       const docRef = await addDoc(classesRef, {
         ...classData,
         tenantId,
-        currentStudents: 0,
         createdAt: Date.now(),
       });
 
@@ -90,30 +130,64 @@ export class ClassService {
   }
 
   /**
-   * Update class status
+   * Update a class
    */
-  async updateClassStatus(classId: string, status: 'active' | 'inactive'): Promise<boolean> {
+  async updateClass(classId: string, updates: Partial<Class>): Promise<boolean> {
     try {
       const classRef = doc(this.firestore, 'classes', classId);
-      await updateDoc(classRef, { status });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { id, tenantId, createdAt, ...updateData } = updates;
+      await updateDoc(classRef, updateData);
       return true;
     } catch (error) {
-      console.error('Error updating class status:', error);
+      console.error('Error updating class:', error);
       return false;
     }
+  }
+
+  /**
+   * Delete a class
+   */
+  async deleteClass(classId: string): Promise<boolean> {
+    try {
+      const classRef = doc(this.firestore, 'classes', classId);
+      await deleteDoc(classRef);
+      return true;
+    } catch (error) {
+      console.error('Error deleting class:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Update class status
+   */
+  async updateClassStatus(
+    classId: string,
+    status: 'active' | 'completed' | 'cancelled',
+  ): Promise<boolean> {
+    return this.updateClass(classId, { status });
   }
 
   /**
    * Assign teacher to a class
    */
   async assignTeacher(classId: string, teacherId: string): Promise<boolean> {
-    try {
-      const classRef = doc(this.firestore, 'classes', classId);
-      await updateDoc(classRef, { teacherId });
-      return true;
-    } catch (error) {
-      console.error('Error assigning teacher:', error);
-      return false;
+    return this.updateClass(classId, { teacherId });
+  }
+
+  /**
+   * Get current academic year
+   */
+  getCurrentAcademicYear(): string {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    // Academic year starts in August (month 8)
+    if (month >= 8) {
+      return `${year}-${year + 1}`;
+    } else {
+      return `${year - 1}-${year}`;
     }
   }
 }

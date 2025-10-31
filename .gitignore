@@ -46,6 +46,8 @@ Thumbs.db
 *-debug.log
 .runtimeconfig.json
 
+#Dumb stich data
+/stitch_secure_login_portal
 # AI Tools
 WARP.md
 

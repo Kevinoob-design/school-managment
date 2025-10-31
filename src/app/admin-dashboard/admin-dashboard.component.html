@@ -1,0 +1,289 @@
+<section class="min-h-screen bg-[#edf1ff] text-[#1f2a55]">
+  <div class="mx-auto w-full max-w-7xl px-6 py-10 lg:px-10">
+    <div class="grid gap-8 lg:grid-cols-[260px_1fr]">
+      <aside class="rounded-3xl bg-white/90 p-6 shadow-[0_20px_60px_rgba(31,42,85,0.12)]">
+        <div class="flex items-center gap-4">
+          <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#335ef7]/10 text-[#335ef7]">
+            <span class="material-symbols-outlined text-2xl">shield_person</span>
+          </span>
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#6f7ba5]">School Admin</p>
+            <h2 class="text-lg font-bold">Personal administrativo</h2>
+          </div>
+        </div>
+        <nav class="mt-10 space-y-2 text-sm font-semibold text-[#6f7ba5]">
+          <a
+            *ngFor="let item of navItems"
+            class="flex items-center gap-3 rounded-2xl px-4 py-3 transition hover:text-[#1f2a55]"
+            [ngClass]="{
+              'bg-[#335ef7]/10 text-[#335ef7] shadow-sm shadow-[#335ef7]/20': item.active
+            }"
+            href="#"
+          >
+            <span class="material-symbols-outlined text-base">{{ item.icon }}</span>
+            {{ item.label }}
+          </a>
+        </nav>
+        <div class="mt-12 space-y-4 rounded-3xl bg-[#f4f6ff] px-5 py-6 text-sm text-[#6f7ba5]">
+          <h3 class="text-xs font-semibold uppercase tracking-[0.24em] text-[#8b96c4]">Estado general</h3>
+          <div class="flex items-start gap-3">
+            <span class="material-symbols-outlined rounded-2xl bg-white/80 p-2 text-lg text-[#335ef7]">insights</span>
+            <div>
+              <p class="text-[#1f2a55]">Cierre trimestral en progreso</p>
+              <p class="mt-1 text-xs text-[#8b96c4]">El reporte consolidado estara disponible el 22 de marzo.</p>
+            </div>
+          </div>
+          <button class="inline-flex items-center gap-2 rounded-full bg-[#335ef7] px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-[#335ef7]/30 transition hover:bg-[#2742c5]">
+            <span class="material-symbols-outlined text-sm">download</span>
+            Descargar informe
+          </button>
+        </div>
+        <div class="mt-8 space-y-4 rounded-3xl bg-[#fef4f5] px-5 py-6 text-sm text-[#6f7ba5]">
+          <h3 class="text-xs font-semibold uppercase tracking-[0.24em] text-[#ff6174]">Recordatorios</h3>
+          <div class="space-y-3">
+            <div
+              *ngFor="let alert of staffAlerts"
+              class="rounded-2xl border border-white/60 bg-white/70 px-4 py-3"
+              [ngClass]="{
+                'border-[#dbe2ff] text-[#3051c8]': alert.severity === 'info',
+                'border-[#ffd7dd] text-[#c44552]': alert.severity === 'warning'
+              }"
+            >
+              <p class="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em]">
+                <span class="material-symbols-outlined text-base">{{ alert.icon }}</span>
+                {{ alert.title }}
+              </p>
+              <p class="mt-2 text-sm text-[#46507a]">{{ alert.description }}</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="space-y-8">
+        <header class="rounded-3xl bg-white/90 px-8 py-7 shadow-[0_20px_60px_rgba(31,42,85,0.12)]">
+          <div class="flex flex-wrap items-center gap-6">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.24em] text-[#6f7ba5]">Dashboard</p>
+              <h1 class="mt-2 text-3xl font-bold">Resumen administrativo</h1>
+              <p class="mt-3 max-w-xl text-sm text-[#6f7ba5]">
+                Supervisa clases, docentes y estudiantes desde un panel unificado. Aprovecha las acciones rapidas para mantener la operacion sin interrupciones.
+              </p>
+            </div>
+            <div class="ml-auto flex items-center gap-4 rounded-full bg-[#f3f5ff] px-4 py-3 text-sm text-[#6f7ba5]">
+              <span class="material-symbols-outlined text-xl text-[#335ef7]">notifications</span>
+              <div>
+                <p class="text-xs uppercase tracking-[0.18em]">Usuario</p>
+                <p class="text-sm font-semibold text-[#1f2a55]">Admin User</p>
+              </div>
+              <img class="h-10 w-10 rounded-full object-cover" src="https://i.pravatar.cc/72?img=49" alt="Perfil administrativo" />
+            </div>
+          </div>
+          <div class="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            <div
+              *ngFor="let card of metricCards"
+              class="rounded-3xl px-6 py-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]"
+              [ngClass]="{
+                'bg-[#335ef7] text-white shadow-[#1b2f98]/40': card.accent === 'blue',
+                'bg-[#21b17c] text-white shadow-[#117352]/35': card.accent === 'green',
+                'bg-[#7367f0] text-white shadow-[#4c3dca]/35': card.accent === 'purple'
+              }"
+            >
+              <div class="flex items-center justify-between">
+                <span class="material-symbols-outlined text-2xl">{{ card.icon }}</span>
+                <span class="rounded-full bg-white/25 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em]">
+                  {{ card.caption }}
+                </span>
+              </div>
+              <p class="mt-6 text-sm uppercase tracking-[0.3em] opacity-80">{{ card.label }}</p>
+              <p class="mt-3 text-4xl font-semibold leading-none">{{ card.value }}</p>
+            </div>
+          </div>
+        </header>
+
+        <section class="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
+          <div class="rounded-3xl bg-white/90 p-7 shadow-[0_18px_55px_rgba(31,42,85,0.12)]">
+            <header class="flex flex-wrap items-center gap-3">
+              <div>
+                <h2 class="text-lg font-semibold text-[#1f2a55]">Acciones rapidas</h2>
+                <p class="text-sm text-[#6f7ba5]">Gestiona tareas recurrentes en segundos.</p>
+              </div>
+              <button class="ml-auto inline-flex items-center gap-2 rounded-full bg-[#335ef7]/10 px-4 py-2 text-xs font-semibold text-[#335ef7] transition hover:bg-[#335ef7]/15">
+                <span class="material-symbols-outlined text-sm">bolt</span>
+                Automatizar flujo
+              </button>
+            </header>
+            <div class="mt-5 grid gap-4 md:grid-cols-3">
+              <button
+                *ngFor="let action of quickActions"
+                type="button"
+                class="flex h-full flex-col justify-between rounded-3xl border px-5 py-5 text-left transition"
+                [ngClass]="{
+                  'border-[#335ef7] bg-[#335ef7] text-white shadow-lg shadow-[#335ef7]/25 hover:bg-[#2742c5]': action.tone === 'primary',
+                  'border-[#eef1ff] bg-[#f6f8ff] text-[#1f2a55] hover:border-[#335ef7]/60 hover:bg-[#335ef7]/10': action.tone === 'light'
+                }"
+              >
+                <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 text-2xl" [ngClass]="{'text-[#335ef7] bg-white': action.tone === 'light'}">
+                  <span class="material-symbols-outlined text-[26px]">{{ action.icon }}</span>
+                </span>
+                <div class="mt-6">
+                  <p class="text-base font-semibold">{{ action.label }}</p>
+                  <p class="mt-2 text-sm" [ngClass]="{'text-white/80': action.tone === 'primary', 'text-[#6f7ba5]': action.tone === 'light'}">
+                    {{ action.description }}
+                  </p>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <div class="rounded-3xl bg-white/90 p-7 shadow-[0_18px_55px_rgba(31,42,85,0.12)]">
+            <header class="flex items-center gap-3">
+              <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#335ef7]/10 text-[#335ef7]">
+                <span class="material-symbols-outlined text-2xl">support_agent</span>
+              </span>
+              <div>
+                <h2 class="text-lg font-semibold text-[#1f2a55]">Contactos internos</h2>
+                <p class="text-sm text-[#6f7ba5]">Equipo listo para ayudarte.</p>
+              </div>
+            </header>
+            <ul class="mt-6 space-y-4">
+              <li
+                *ngFor="let member of supportContacts"
+                class="flex items-center gap-4 rounded-2xl border border-[#eef1ff] bg-[#f6f8ff] px-4 py-4 text-sm text-[#6f7ba5]"
+              >
+                <img class="h-12 w-12 rounded-2xl object-cover" [src]="member.avatar" [alt]="member.name" />
+                <div>
+                  <p class="text-sm font-semibold text-[#1f2a55]">{{ member.name }}</p>
+                  <p>{{ member.role }}</p>
+                </div>
+                <span class="ml-auto inline-flex items-center gap-1 rounded-full bg-white px-3 py-1 text-xs font-semibold text-[#335ef7]">
+                  <span class="material-symbols-outlined text-sm">radio_button_checked</span>
+                  {{ member.status }}
+                </span>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="rounded-3xl bg-white/90 p-7 shadow-[0_18px_55px_rgba(31,42,85,0.12)]">
+          <header class="flex flex-wrap items-center gap-3">
+            <div>
+              <h2 class="text-lg font-semibold text-[#1f2a55]">Actividad reciente</h2>
+              <p class="text-sm text-[#6f7ba5]">Ultimos movimientos en la plataforma.</p>
+            </div>
+            <div class="ml-auto flex items-center gap-3">
+              <button class="inline-flex items-center gap-2 rounded-full bg-[#f3f5ff] px-4 py-2 text-xs font-semibold text-[#335ef7] hover:bg-[#e6ebff]">
+                <span class="material-symbols-outlined text-sm">download</span>
+                Exportar CSV
+              </button>
+              <button class="inline-flex items-center gap-2 rounded-full bg-[#335ef7] px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-[#335ef7]/30 hover:bg-[#2742c5]">
+                <span class="material-symbols-outlined text-sm">playlist_add_check</span>
+                Marcar como revisado
+              </button>
+            </div>
+          </header>
+          <div class="mt-6 overflow-hidden rounded-3xl border border-[#eef1ff]">
+            <table class="w-full table-fixed text-sm text-left text-[#1f2a55]">
+              <thead class="bg-[#f4f6ff] uppercase tracking-[0.24em] text-xs text-[#6f7ba5]">
+                <tr>
+                  <th class="px-6 py-4">Actividad</th>
+                  <th class="px-6 py-4">Usuario</th>
+                  <th class="px-6 py-4">Fecha</th>
+                  <th class="px-6 py-4">Estado</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#eef1ff]/80 bg-white/80">
+                <tr *ngFor="let row of recentActivity" class="transition hover:bg-[#f6f8ff]">
+                  <td class="px-6 py-4 font-semibold">{{ row.activity }}</td>
+                  <td class="px-6 py-4 text-[#6f7ba5]">{{ row.owner }}</td>
+                  <td class="px-6 py-4 text-[#6f7ba5]">{{ row.date }}</td>
+                  <td class="px-6 py-4">
+                    <span
+                      class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold"
+                      [ngClass]="statusChips()[row.status].class"
+                    >
+                      <span class="material-symbols-outlined text-sm">fiber_manual_record</span>
+                      {{ statusChips()[row.status].label }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="grid gap-6 lg:grid-cols-2">
+          <div class="rounded-3xl bg-white/90 p-7 shadow-[0_18px_55px_rgba(31,42,85,0.12)]">
+            <header class="flex items-center gap-3">
+              <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#335ef7]/10 text-[#335ef7]">
+                <span class="material-symbols-outlined text-2xl">analytics</span>
+              </span>
+              <div>
+                <h2 class="text-lg font-semibold text-[#1f2a55]">Recursos y solicitudes</h2>
+                <p class="text-sm text-[#6f7ba5]">Monitorea el estado de la demanda interna.</p>
+              </div>
+            </header>
+            <div class="mt-5 grid gap-4">
+              <article
+                *ngFor="let card of resourceCards"
+                class="rounded-3xl border border-[#eef1ff] bg-[#f6f8ff] px-5 py-5 text-sm text-[#6f7ba5] shadow-inner"
+              >
+                <p class="text-xs font-semibold uppercase tracking-[0.24em]">{{ card.title }}</p>
+                <p class="mt-3 text-3xl font-semibold text-[#1f2a55]">{{ card.value }}</p>
+                <p
+                  class="mt-2 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold"
+                  [ngClass]="{
+                    'bg-[#def6ec] text-[#1e8a5b] border border-[#b7e9d4]': card.positive,
+                    'bg-[#fff0e1] text-[#bf5b1a] border border-[#ffd3b0]': !card.positive
+                  }"
+                >
+                  <span class="material-symbols-outlined text-sm" [ngClass]="{'text-[#1e8a5b]': card.positive, 'text-[#bf5b1a]': !card.positive}">
+                    {{ card.positive ? 'trending_up' : 'warning' }}
+                  </span>
+                  {{ card.deltaLabel }}: {{ card.deltaValue }}
+                </p>
+              </article>
+            </div>
+          </div>
+
+          <div class="rounded-3xl bg-white/90 p-7 shadow-[0_18px_55px_rgba(31,42,85,0.12)]">
+            <header class="flex items-center gap-3">
+              <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#335ef7]/10 text-[#335ef7]">
+                <span class="material-symbols-outlined text-2xl">event_upcoming</span>
+              </span>
+              <div>
+                <h2 class="text-lg font-semibold text-[#1f2a55]">Proximos hitos</h2>
+                <p class="text-sm text-[#6f7ba5]">Planifica tus entregables clave.</p>
+              </div>
+            </header>
+            <ul class="mt-6 space-y-4">
+              <li class="rounded-2xl border border-[#eef1ff] bg-[#f6f8ff] px-5 py-4 text-sm text-[#1f2a55]">
+                <p class="font-semibold">Entrega de reportes Q1</p>
+                <p class="mt-2 text-sm text-[#6f7ba5]">Verifica los datos de asistencia antes de publicar.</p>
+                <p class="mt-2 inline-flex items-center gap-1 rounded-full bg-white/80 px-3 py-1 text-xs font-semibold text-[#335ef7]">
+                  <span class="material-symbols-outlined text-sm">schedule</span>
+                  22 de marzo
+                </p>
+              </li>
+              <li class="rounded-2xl border border-[#eef1ff] bg-[#f6f8ff] px-5 py-4 text-sm text-[#1f2a55]">
+                <p class="font-semibold">Capacitacion de nuevos docentes</p>
+                <p class="mt-2 text-sm text-[#6f7ba5]">Coordina material y accesos para los tutoriales virtuales.</p>
+                <p class="mt-2 inline-flex items-center gap-1 rounded-full bg-white/80 px-3 py-1 text-xs font-semibold text-[#335ef7]">
+                  <span class="material-symbols-outlined text-sm">schedule</span>
+                  26 de marzo
+                </p>
+              </li>
+              <li class="rounded-2xl border border-[#eef1ff] bg-[#f6f8ff] px-5 py-4 text-sm text-[#1f2a55]">
+                <p class="font-semibold">Envio de boletas a tutores</p>
+                <p class="mt-2 text-sm text-[#6f7ba5]">Personaliza el mensaje antes del envio masivo.</p>
+                <p class="mt-2 inline-flex items-center gap-1 rounded-full bg-white/80 px-3 py-1 text-xs font-semibold text-[#335ef7]">
+                  <span class="material-symbols-outlined text-sm">schedule</span>
+                  30 de marzo
+                </p>
+              </li>
+            </ul>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+</section>

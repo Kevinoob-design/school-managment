@@ -1,0 +1,59 @@
+<aside
+  class="w-64 h-full bg-white/80 backdrop-blur-xl shadow-xl flex flex-col border-r border-white/20"
+>
+  <!-- Logo/Brand -->
+  <div class="p-6 bg-gradient-to-r from-blue-600 to-indigo-600">
+    <h1 class="text-xl font-bold text-white">{{ title() }}</h1>
+    <p class="text-sm text-blue-100 mt-1">{{ subtitle() }}</p>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="flex-1 p-4 space-y-2">
+    @for (item of navItems(); track item.id) {
+      <button
+        type="button"
+        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-left relative overflow-hidden group"
+        [class.bg-gradient-to-r]="isActive()(item.id)"
+        [class.from-blue-500]="isActive()(item.id)"
+        [class.to-indigo-600]="isActive()(item.id)"
+        [class.text-white]="isActive()(item.id)"
+        [class.shadow-lg]="isActive()(item.id)"
+        [class.shadow-blue-500]="isActive()(item.id)"
+        [class.font-semibold]="isActive()(item.id)"
+        [class.text-gray-700]="!isActive()(item.id)"
+        [class.hover:bg-gray-100]="!isActive()(item.id)"
+        [class.hover:shadow-md]="!isActive()(item.id)"
+        [class.hover:scale-105]="!isActive()(item.id)"
+        (click)="onNavItemClick(item.id)"
+      >
+        <span class="material-symbols-outlined transition-transform group-hover:scale-110">{{
+          item.icon
+        }}</span>
+        <span>{{ item.label }}</span>
+      </button>
+    }
+  </nav>
+
+  <!-- User section -->
+  @if (showUser()) {
+    <div class="p-4 border-t border-gray-200/50">
+      <button
+        type="button"
+        class="w-full flex items-center gap-3 px-2 py-2 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 hover:shadow-md transition-all cursor-pointer"
+        (click)="onUserSectionClick()"
+      >
+        <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full p-2 shadow-lg">
+          <span class="material-symbols-outlined text-white">account_circle</span>
+        </div>
+        <div class="flex-1 text-left">
+          <p class="text-sm font-semibold text-gray-900">
+            {{ userInfo()?.name || 'Usuario' }}
+          </p>
+          <p class="text-xs text-blue-600 font-medium">
+            {{ userInfo()?.subtitle || 'Ver perfil' }}
+          </p>
+        </div>
+      </button>
+    </div>
+  }
+</aside>
