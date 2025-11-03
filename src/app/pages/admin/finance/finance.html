@@ -1,0 +1,841 @@
+<div class="space-y-8">
+  <!-- Header -->
+  <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div>
+      <h1
+        class="text-3xl font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent"
+      >
+        Gestion financiera
+      </h1>
+      <p class="text-gray-600 mt-1 font-medium">
+        Administra tarifas, fechas limite, pagos y reportes de morosidad.
+      </p>
+    </div>
+    <div class="flex flex-wrap gap-3">
+      <app-button variant="ghost" size="sm" (click)="openAddFeeModal()">
+        <span class="material-symbols-outlined text-sm mr-1">add_card</span>
+        Nueva tarifa
+      </app-button>
+      <app-button variant="ghost" size="sm" (click)="openAddDueModal()">
+        <span class="material-symbols-outlined text-sm mr-1">calendar_add_on</span>
+        Nueva fecha limite
+      </app-button>
+      <app-button variant="primary" size="sm" (click)="openAddPaymentModal()">
+        <span class="material-symbols-outlined text-sm mr-1">payments</span>
+        Registrar pago
+      </app-button>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="grid gap-4 md:grid-cols-3">
+    <div class="stat-card">
+      <div class="stat-icon bg-indigo-100 text-indigo-600">
+        <span class="material-symbols-outlined">account_balance</span>
+      </div>
+      <div>
+        <p class="stat-label">Monto programado</p>
+        <p class="stat-value">
+          {{ formatCurrency(totalScheduledAmount(), 'MXN') }}
+        </p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon bg-emerald-100 text-emerald-600">
+        <span class="material-symbols-outlined">verified</span>
+      </div>
+      <div>
+        <p class="stat-label">Pagos conciliados</p>
+        <p class="stat-value">
+          {{ formatCurrency(totalCollectedAmount(), 'MXN') }}
+        </p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon bg-amber-100 text-amber-600">
+        <span class="material-symbols-outlined">warning</span>
+      </div>
+      <div>
+        <p class="stat-label">Saldo en morosidad</p>
+        <p class="stat-value">
+          {{ formatCurrency(totalPendingAmount(), 'MXN') }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow border border-indigo-100 p-12 text-center">
+      <p class="text-gray-500 text-lg">Cargando informacion financiera...</p>
+    </div>
+  } @else {
+    <!-- Fees -->
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Catalogo de tarifas</h2>
+          <p class="panel-subtitle">
+            Define los conceptos de cobro para tu institucion (colegiatura, inscripciones, talleres, eventos).
+          </p>
+        </div>
+        <app-button variant="secondary" size="sm" (click)="openAddFeeModal()">
+          <span class="material-symbols-outlined text-sm mr-1">add</span>
+          Agregar tarifa
+        </app-button>
+      </div>
+
+      @if (feeCatalog().length === 0) {
+        <div class="empty-state">
+          <span class="material-symbols-outlined empty-icon">credit_card</span>
+          <h3 class="empty-title">Aun no has configurado tarifas</h3>
+          <p class="empty-message">
+            Crea tu primera tarifa para comenzar a controlar tus ingresos recurrentes.
+          </p>
+        </div>
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Monto</th>
+                <th>Periodicidad</th>
+                <th>Estado</th>
+                <th class="w-32 text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (fee of feeCatalog(); track fee.id) {
+                <tr>
+                  <td>
+                    <p class="font-semibold text-gray-900">{{ fee.name }}</p>
+                    <p class="text-sm text-gray-500">{{ fee.description || 'Sin descripcion' }}</p>
+                  </td>
+                  <td>
+                    <span class="badge badge-neutral">{{ getCategoryLabel(fee.category) }}</span>
+                  </td>
+                  <td>
+                    <span class="font-medium text-gray-900">
+                      {{ formatCurrency(fee.amount, fee.currency) }}
+                    </span>
+                  </td>
+                  <td>{{ getBillingCycleLabel(fee.billingCycle) }}</td>
+                  <td>
+                    <button
+                      type="button"
+                      class="badge"
+                      [ngClass]="fee.isActive ? 'badge-success' : 'badge-muted'"
+                      (click)="toggleFeeStatus(fee)"
+                    >
+                      {{ fee.isActive ? 'Activo' : 'Inactivo' }}
+                    </button>
+                  </td>
+                  <td class="text-right">
+                    <div class="action-group">
+                      <button type="button" class="action-button" (click)="openEditFeeModal(fee)">
+                        <span class="material-symbols-outlined text-sm">edit</span>
+                      </button>
+                      <button type="button" class="action-button danger" (click)="deleteFee(fee)">
+                        <span class="material-symbols-outlined text-sm">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+
+    <!-- Due dates -->
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Fechas limite y recargos</h2>
+          <p class="panel-subtitle">
+            Configura vencimientos, periodos de gracia y recargos automaticos por mora.
+          </p>
+        </div>
+        <app-button variant="secondary" size="sm" (click)="openAddDueModal()">
+          <span class="material-symbols-outlined text-sm mr-1">calendar_month</span>
+          Nueva configuracion
+        </app-button>
+      </div>
+
+      @if (dueDateConfigs().length === 0) {
+        <div class="empty-state">
+          <span class="material-symbols-outlined empty-icon">event_busy</span>
+          <h3 class="empty-title">Sin fechas limite definidas</h3>
+          <p class="empty-message">
+            Vincula tus tarifas con fechas limite para controlar los recargos por morosidad.
+          </p>
+        </div>
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Tarifa</th>
+                <th>Fecha limite</th>
+                <th>Gracia</th>
+                <th>Recargo</th>
+                <th>Notas</th>
+                <th class="w-32 text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (config of dueDateConfigs(); track config.id) {
+                <tr>
+                  <td>
+                    <p class="font-semibold text-gray-900">{{ config.feeName }}</p>
+                    <p class="text-xs text-gray-500">ID tarifa: {{ config.feeId }}</p>
+                  </td>
+                  <td>
+                    {{ config.dueDate | date: 'mediumDate' : 'es-MX' }}
+                  </td>
+                  <td>{{ config.gracePeriodDays }} dia(s)</td>
+                  <td>
+                    <span class="badge badge-neutral">{{ getPenaltyLabel(config) }}</span>
+                  </td>
+                  <td>
+                    {{ config.notes || '-' }}
+                  </td>
+                  <td class="text-right">
+                    <div class="action-group">
+                      <button type="button" class="action-button" (click)="openEditDueModal(config)">
+                        <span class="material-symbols-outlined text-sm">edit_calendar</span>
+                      </button>
+                      <button type="button" class="action-button danger" (click)="deleteDueConfig(config)">
+                        <span class="material-symbols-outlined text-sm">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+
+    <!-- Payments -->
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Pagos y conciliacion Google Pay</h2>
+          <p class="panel-subtitle">
+            Lleva el control de los pagos recibidos via Google Pay y concilia tus transacciones.
+          </p>
+        </div>
+        <app-button variant="secondary" size="sm" (click)="openAddPaymentModal()">
+          <span class="material-symbols-outlined text-sm mr-1">payments</span>
+          Registrar pago
+        </app-button>
+      </div>
+
+      @if (paymentRecords().length === 0) {
+        <div class="empty-state">
+          <span class="material-symbols-outlined empty-icon">payments</span>
+          <h3 class="empty-title">Sin pagos registrados</h3>
+          <p class="empty-message">
+            Registra un pago para comenzar a conciliar tus transacciones de Google Pay.
+          </p>
+        </div>
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Responsable</th>
+                <th>Tarifa</th>
+                <th>Periodo</th>
+                <th>Monto</th>
+                <th>Fecha limite</th>
+                <th>Estado</th>
+                <th>Transaccion</th>
+                <th class="w-40 text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (payment of paymentRecords(); track payment.id) {
+                <tr>
+                  <td>
+                    <p class="font-semibold text-gray-900">{{ payment.payerName }}</p>
+                    <p class="text-xs text-gray-500">{{ payment.payerEmail }}</p>
+                  </td>
+                  <td>{{ payment.feeName }}</td>
+                  <td>
+                    <p class="font-medium text-gray-900">{{ payment.billingPeriod }}</p>
+                    <p class="text-xs text-gray-500">{{ getPaymentDate(payment) }}</p>
+                  </td>
+                  <td>
+                    <div class="flex flex-col items-start">
+                      <span class="font-semibold text-gray-900">
+                        {{ formatCurrency(payment.amountPaid, payment.currency) }}
+                      </span>
+                      <span class="text-xs text-gray-500">
+                        Esperado: {{ formatCurrency(payment.amountExpected, payment.currency) }}
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    <p>{{ payment.dueDate | date: 'mediumDate' : 'es-MX' }}</p>
+                    @if (payment.status !== 'conciliado') {
+                      <p class="text-xs text-amber-600">
+                        {{ getOverdueStatus(payment) }}
+                      </p>
+                    }
+                  </td>
+                  <td>
+                    <span class="badge" [ngClass]="getPaymentStatusClass(payment.status)">
+                      {{ getPaymentStatusLabel(payment.status) }}
+                    </span>
+                    @if (payment.receiptNumber) {
+                      <p class="text-xs text-gray-500">
+                        Comprobante: {{ payment.receiptNumber }}
+                      </p>
+                    }
+                  </td>
+                  <td>
+                    <span class="font-mono text-xs text-gray-600">
+                      {{ payment.googlePayTransactionId }}
+                    </span>
+                  </td>
+                  <td class="text-right">
+                    <div class="flex flex-wrap gap-2 justify-end">
+                      <button
+                        type="button"
+                        class="action-button"
+                        (click)="openEditPaymentModal(payment)"
+                      >
+                        <span class="material-symbols-outlined text-sm">edit</span>
+                      </button>
+                      @if (payment.status === 'pendiente') {
+                        <button
+                          type="button"
+                          class="action-button"
+                          (click)="updatePaymentStatus(payment, 'pagado')"
+                        >
+                          <span class="material-symbols-outlined text-sm">task_alt</span>
+                        </button>
+                      }
+                      @if (payment.status === 'pagado') {
+                        <button
+                          type="button"
+                          class="action-button"
+                          (click)="updatePaymentStatus(payment, 'conciliado')"
+                        >
+                          <span class="material-symbols-outlined text-sm">assignment_turned_in</span>
+                        </button>
+                      }
+                      @if (payment.status === 'pagado' || payment.status === 'conciliado') {
+                        <button
+                          type="button"
+                          class="action-button"
+                          (click)="generateReceipt(payment)"
+                        >
+                          <span class="material-symbols-outlined text-sm">picture_as_pdf</span>
+                        </button>
+                      }
+                      <button
+                        type="button"
+                        class="action-button danger"
+                        (click)="deletePayment(payment)"
+                      >
+                        <span class="material-symbols-outlined text-sm">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+
+    <!-- Delinquency -->
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Reporte de morosidad</h2>
+          <p class="panel-subtitle">
+            Identifica rapidamente los pagos atrasados y aplica recargos configurados.
+          </p>
+        </div>
+      </div>
+
+      @if (overduePayments().length === 0) {
+        <div class="empty-state">
+          <span class="material-symbols-outlined empty-icon">sentiment_satisfied</span>
+          <h3 class="empty-title">Excelente!</h3>
+          <p class="empty-message">No tienes pagos en mora en este momento.</p>
+        </div>
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Responsable</th>
+                <th>Tarifa</th>
+                <th>Fecha limite</th>
+                <th>Dias en mora</th>
+                <th>Saldo pendiente</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (payment of overduePayments(); track payment.id) {
+                <tr>
+                  <td>
+                    <p class="font-semibold text-gray-900">{{ payment.payerName }}</p>
+                    <p class="text-xs text-gray-500">{{ payment.payerEmail }}</p>
+                  </td>
+                  <td>{{ payment.feeName }}</td>
+                  <td>{{ payment.dueDate | date: 'mediumDate' : 'es-MX' }}</td>
+                  <td>{{ getOverdueStatus(payment) }}</td>
+                  <td>
+                    {{ formatCurrency(getPendingAmount(payment), payment.currency) }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  }
+
+  <!-- Fee Modal -->
+  @if (showFeeModal()) {
+    <div
+      class="modal-backdrop"
+      role="button"
+      tabindex="0"
+      aria-label="Cerrar modal de tarifas"
+      (click)="handleBackdropClick($event, 'fee')"
+      (keydown.enter)="closeModalWithKeyboard($event, 'fee')"
+      (keydown.space)="closeModalWithKeyboard($event, 'fee')"
+    >
+      <div class="modal" role="dialog" aria-modal="true">
+        <div class="modal-header">
+          <h3>{{ editingFee() ? 'Editar tarifa' : 'Nueva tarifa' }}</h3>
+          <button type="button" class="close-button" (click)="closeFeeModal()">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div class="modal-body space-y-4">
+          <app-input
+            label="Nombre de la tarifa"
+            placeholder="Colegiatura mensual"
+            [value]="feeName()"
+            [required]="true"
+            (valueChange)="feeName.set($event)"
+          />
+
+          <div>
+            <label for="fee-description" class="input-label">Descripcion</label>
+            <textarea
+              id="fee-description"
+              class="textarea"
+              rows="3"
+              placeholder="Detalle y alcance del concepto a cobrar"
+              [value]="feeDescription()"
+              (input)="feeDescription.set($any($event.target).value)"
+            ></textarea>
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2">
+            <div>
+              <label for="fee-category" class="input-label">Tipo de tarifa</label>
+              <select
+                id="fee-category"
+                class="select"
+                [value]="feeCategory()"
+                (change)="feeCategory.set($any($event.target).value)"
+              >
+                @for (option of categoryOptions; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+            </div>
+
+            <div>
+              <label for="fee-cycle" class="input-label">Periodicidad</label>
+              <select
+                id="fee-cycle"
+                class="select"
+                [value]="feeBillingCycle()"
+                (change)="feeBillingCycle.set($any($event.target).value)"
+              >
+                @for (option of billingCycleOptions; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2">
+            <app-input
+              label="Monto"
+              type="number"
+              step="0.01"
+              placeholder="2500.00"
+              [value]="feeAmount()"
+              [required]="true"
+              (valueChange)="feeAmount.set($event)"
+            />
+
+            <div>
+              <label for="fee-currency" class="input-label">Moneda</label>
+              <select
+                id="fee-currency"
+                class="select"
+                [value]="feeCurrency()"
+                (change)="feeCurrency.set($any($event.target).value)"
+              >
+                @for (code of currencyOptions; track code) {
+                  <option [value]="code">{{ code }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <label class="checkbox">
+            <input type="checkbox" [checked]="feeIsActive()" (change)="feeIsActive.set($any($event.target).checked)" />
+            <span>Tarifa activa</span>
+          </label>
+
+          @if (feeFormError()) {
+            <div class="form-error">
+              <span class="material-symbols-outlined text-base">error</span>
+              {{ feeFormError() }}
+            </div>
+          }
+        </div>
+
+        <div class="modal-footer">
+          <app-button variant="ghost" size="md" (click)="closeFeeModal()">Cancelar</app-button>
+          <app-button variant="primary" size="md" (click)="saveFee()">Guardar</app-button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Due Modal -->
+  @if (showDueModal()) {
+    <div
+      class="modal-backdrop"
+      role="button"
+      tabindex="0"
+      aria-label="Cerrar modal de recargos"
+      (click)="handleBackdropClick($event, 'due')"
+      (keydown.enter)="closeModalWithKeyboard($event, 'due')"
+      (keydown.space)="closeModalWithKeyboard($event, 'due')"
+    >
+      <div class="modal" role="dialog" aria-modal="true">
+        <div class="modal-header">
+          <h3>
+            {{ editingDueConfig() ? 'Editar configuracion de recargo' : 'Nueva configuracion de recargo' }}
+          </h3>
+          <button type="button" class="close-button" (click)="closeDueModal()">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div class="modal-body space-y-4">
+          <div>
+            <label for="due-fee" class="input-label">Tarifa relacionada</label>
+            <select
+              id="due-fee"
+              class="select"
+              [value]="dueConfigFeeId()"
+              (change)="dueConfigFeeId.set($any($event.target).value)"
+            >
+              <option value="">Selecciona una tarifa</option>
+              @for (fee of feeCatalog(); track fee.id) {
+                <option [value]="fee.id">{{ fee.name }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2">
+            <app-input
+              label="Fecha limite"
+              type="date"
+              [value]="dueDate()"
+              [required]="true"
+              (valueChange)="dueDate.set($event)"
+            />
+            <app-input
+              label="Periodo de gracia (dias)"
+              type="number"
+              [value]="dueGracePeriodDays()"
+              (valueChange)="dueGracePeriodDays.set($event)"
+            />
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2">
+            <div>
+              <label for="penalty-type" class="input-label">Tipo de recargo</label>
+              <select
+                id="penalty-type"
+                class="select"
+                [value]="duePenaltyType()"
+                (change)="duePenaltyType.set($any($event.target).value)"
+              >
+                @for (option of penaltyTypeOptions; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+            </div>
+
+            <app-input
+              label="Valor del recargo"
+              type="number"
+              step="0.01"
+              placeholder="Ej. 10"
+              [value]="duePenaltyValue()"
+              (valueChange)="duePenaltyValue.set($event)"
+            />
+          </div>
+
+          <label class="checkbox">
+            <input
+              type="checkbox"
+              [checked]="dueApplyDailyPenalty()"
+              (change)="dueApplyDailyPenalty.set($any($event.target).checked)"
+            />
+            <span>Aplicar recargo diariamente despues del periodo de gracia</span>
+          </label>
+
+          <app-input
+            label="Limite maximo de recargo (opcional)"
+            type="number"
+            step="0.01"
+            placeholder="Ej. 500.00"
+            [value]="dueMaxPenaltyAmount()"
+            (valueChange)="dueMaxPenaltyAmount.set($event)"
+          />
+
+          <div>
+            <label for="due-notes" class="input-label">Notas internas</label>
+            <textarea
+              id="due-notes"
+              class="textarea"
+              rows="3"
+              placeholder="Agregar consideraciones particulares"
+              [value]="dueNotes()"
+              (input)="dueNotes.set($any($event.target).value)"
+            ></textarea>
+          </div>
+
+          @if (dueFormError()) {
+            <div class="form-error">
+              <span class="material-symbols-outlined text-base">error</span>
+              {{ dueFormError() }}
+            </div>
+          }
+        </div>
+
+        <div class="modal-footer">
+          <app-button variant="ghost" size="md" (click)="closeDueModal()">Cancelar</app-button>
+          <app-button variant="primary" size="md" (click)="saveDueConfig()">Guardar</app-button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Payment Modal -->
+  @if (showPaymentModal()) {
+    <div
+      class="modal-backdrop"
+      role="button"
+      tabindex="0"
+      aria-label="Cerrar modal de pagos"
+      (click)="handleBackdropClick($event, 'payment')"
+      (keydown.enter)="closeModalWithKeyboard($event, 'payment')"
+      (keydown.space)="closeModalWithKeyboard($event, 'payment')"
+    >
+      <div class="modal large" role="dialog" aria-modal="true">
+        <div class="modal-header">
+          <h3>{{ editingPayment() ? 'Editar pago' : 'Registrar pago Google Pay' }}</h3>
+          <button type="button" class="close-button" (click)="closePaymentModal()">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div class="modal-body space-y-4">
+          <div class="grid gap-4 md:grid-cols-2">
+            <div>
+              <label for="payment-fee" class="input-label">Tarifa asociada</label>
+              <select
+                id="payment-fee"
+                class="select"
+                [value]="paymentFeeId()"
+                (change)="paymentFeeId.set($any($event.target).value)"
+              >
+                <option value="">Selecciona una tarifa</option>
+                @for (fee of feeCatalog(); track fee.id) {
+                  <option [value]="fee.id">{{ fee.name }}</option>
+                }
+              </select>
+            </div>
+            <app-input
+              label="Periodo facturado"
+              placeholder="Ej. 2024-09"
+              [value]="paymentBillingPeriod()"
+              (valueChange)="paymentBillingPeriod.set($event)"
+            />
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2">
+            <app-input
+              label="Responsable de pago"
+              placeholder="Nombre del tutor"
+              [value]="paymentPayerName()"
+              (valueChange)="paymentPayerName.set($event)"
+            />
+            <app-input
+              label="Correo electronico"
+              type="email"
+              placeholder="correo@dominio.com"
+              [value]="paymentPayerEmail()"
+              (valueChange)="paymentPayerEmail.set($event)"
+            />
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2">
+            <app-input
+              label="Fecha limite"
+              type="date"
+              [value]="paymentDueDate()"
+              (valueChange)="paymentDueDate.set($event)"
+            />
+            <app-input
+              label="Fecha de pago (opcional)"
+              type="date"
+              [value]="paymentDate()"
+              (valueChange)="paymentDate.set($event)"
+            />
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-3">
+            <app-input
+              label="Monto esperado"
+              type="number"
+              step="0.01"
+              placeholder="2500.00"
+              [value]="paymentAmountExpected()"
+              (valueChange)="paymentAmountExpected.set($event)"
+            />
+            <app-input
+              label="Monto pagado"
+              type="number"
+              step="0.01"
+              placeholder="2500.00"
+              [value]="paymentAmountPaid()"
+              (valueChange)="paymentAmountPaid.set($event)"
+            />
+            <div>
+              <label for="payment-currency" class="input-label">Moneda</label>
+              <select
+                id="payment-currency"
+                class="select"
+                [value]="paymentCurrency()"
+                (change)="paymentCurrency.set($any($event.target).value)"
+              >
+                @for (code of currencyOptions; track code) {
+                  <option [value]="code">{{ code }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <p class="input-label">Pago con Google Pay</p>
+            @if (googlePayPaymentRequest()) {
+              <google-pay-button
+                environment="TEST"
+                buttonColor="default"
+                buttonType="pay"
+                buttonRadius="10"
+                buttonBorderType="default_border"
+                buttonLocale="es"
+                buttonSizeMode="fill"
+                style="width: 198px; height: 58px;"
+                [paymentRequest]="googlePayPaymentRequest()"
+                [attr.disabled]="!googlePayReady() ? '' : null"
+                (loadpaymentdata)="handleGooglePaySuccess($event)"
+                (cancel)="handleGooglePayCancel()"
+                (error)="handleGooglePayError($event)"
+              ></google-pay-button>
+            } @else {
+              <p class="text-sm text-gray-500">
+                Ingresa el monto esperado y la moneda para habilitar Google Pay.
+              </p>
+            }
+            @if (googlePayInitialized() && !googlePayReady()) {
+              <p class="text-xs text-amber-600">
+                Google Pay no esta disponible en este navegador o cuenta.
+              </p>
+            }
+            @if (googlePayFeedback()) {
+              <p class="text-xs text-emerald-600">{{ googlePayFeedback() }}</p>
+            }
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2">
+            <app-input
+              label="ID de transaccion Google Pay"
+              placeholder="Ej. GPA.1234-5678-9012-34567"
+              [value]="paymentGoogleTransactionId()"
+              (valueChange)="paymentGoogleTransactionId.set($event)"
+            />
+            <div>
+              <label for="payment-status" class="input-label">Estado</label>
+              <select
+                id="payment-status"
+                class="select"
+                [value]="paymentStatus()"
+                (change)="paymentStatus.set($any($event.target).value)"
+              >
+                @for (status of paymentStatusOptions; track status.value) {
+                  <option [value]="status.value">{{ status.label }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label for="payment-notes" class="input-label">Notas</label>
+            <textarea
+              id="payment-notes"
+              class="textarea"
+              rows="3"
+              placeholder="Observaciones del pago, diferencias detectadas en conciliacion, etc."
+              [value]="paymentNotes()"
+              (input)="paymentNotes.set($any($event.target).value)"
+            ></textarea>
+          </div>
+
+          @if (paymentFormError()) {
+            <div class="form-error">
+              <span class="material-symbols-outlined text-base">error</span>
+              {{ paymentFormError() }}
+            </div>
+          }
+        </div>
+
+        <div class="modal-footer">
+          <app-button variant="ghost" size="md" (click)="closePaymentModal()">Cancelar</app-button>
+          <app-button variant="primary" size="md" (click)="savePayment()">Guardar</app-button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
