@@ -6364,10 +6364,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jasmine-core@npm:~5.9.0":
-  version: 5.9.0
-  resolution: "jasmine-core@npm:5.9.0"
-  checksum: 10c0/124bd0d063b20eb4a5a1ec67ff8657ee68c78dd9e93cf834b0d1221aa1e0e5d03ca1421c43bf3fe69721a1e03cc401cf4883bf7e7557daed40c652d304a00951
+"jasmine-core@npm:~5.12.1":
+  version: 5.12.1
+  resolution: "jasmine-core@npm:5.12.1"
+  checksum: 10c0/35d83a91176e68960b4aa62d9a18bbeabed09cec42a138a70125a1952c0df6849d721d7e032101a3bd2ef17f1244fac166aaca8353cac7aa221831e005b84760
   languageName: node
   linkType: hard
 
@@ -8340,7 +8340,7 @@ __metadata:
     angular-eslint: "npm:20.3.0"
     eslint: "npm:^9.35.0"
     husky: "npm:^9.1.7"
-    jasmine-core: "npm:~5.9.0"
+    jasmine-core: "npm:~5.12.1"
     karma: "npm:~6.4.0"
     karma-chrome-launcher: "npm:~3.2.0"
     karma-coverage: "npm:~2.2.0"
