@@ -510,17 +510,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@angular/forms@npm:^20.3.0":
-  version: 20.3.1
-  resolution: "@angular/forms@npm:20.3.1"
+"@angular/forms@npm:^20.3.10":
+  version: 20.3.10
+  resolution: "@angular/forms@npm:20.3.10"
   dependencies:
     tslib: "npm:^2.3.0"
   peerDependencies:
-    "@angular/common": 20.3.1
-    "@angular/core": 20.3.1
-    "@angular/platform-browser": 20.3.1
+    "@angular/common": 20.3.10
+    "@angular/core": 20.3.10
+    "@angular/platform-browser": 20.3.10
     rxjs: ^6.5.3 || ^7.4.0
-  checksum: 10c0/f11fcb28cb33e8a87f12ddc6642bd372166d61de5ec08bda277532b3cebe58d10291df3b9e64950953704f5aa84071ecfb3c90a3645552d73867e03a6f77f12a
+  checksum: 10c0/2e08f969362f280936ff75aca5f926c2b1aabdd43d83e107439b46a31c3fcf3825fdec0c99886df2ccec9af273ce0524490c9e2c4971fe1d68a3ec0158ad7e2a
   languageName: node
   linkType: hard
 
@@ -8329,7 +8329,7 @@ __metadata:
     "@angular/compiler-cli": "npm:^20.3.0"
     "@angular/core": "npm:^20.3.0"
     "@angular/fire": "npm:20.0.1"
-    "@angular/forms": "npm:^20.3.0"
+    "@angular/forms": "npm:^20.3.10"
     "@angular/platform-browser": "npm:^20.3.0"
     "@angular/router": "npm:^20.3.0"
     "@commitlint/cli": "npm:^19.8.1"
