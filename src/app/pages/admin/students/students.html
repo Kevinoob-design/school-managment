@@ -1,21 +1,424 @@
 <div class="space-y-6">
-  <div>
-    <h1
-      class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
-    >
-      Estudiantes
-    </h1>
-    <p class="text-gray-600 mt-1 font-medium">Gestiona los estudiantes de tu escuela</p>
-  </div>
-  <div
-    class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 p-12 text-center"
-  >
-    <div
-      class="bg-gradient-to-br from-purple-500 to-pink-600 p-6 rounded-2xl shadow-lg inline-block mb-4"
-    >
-      <span class="material-symbols-outlined text-white text-5xl">groups</span>
+  <!-- Header -->
+  <div class="flex justify-between items-center">
+    <div>
+      <h1
+        class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
+      >
+        Estudiantes
+      </h1>
+      <p class="text-gray-600 mt-1 font-medium">Gestiona los estudiantes de tu escuela</p>
     </div>
-    <p class="text-xl text-gray-600 font-medium">Contenido próximamente...</p>
-    <p class="text-sm text-gray-500 mt-2">Esta sección estará disponible pronto</p>
+    <app-button (click)="openAddModal()" [variant]="'primary'">
+      <span class="material-symbols-outlined mr-2 text-lg">add</span>
+      Agregar Estudiante
+    </app-button>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 p-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- Search -->
+      <div>
+        <app-input
+          [label]="'Buscar'"
+          [placeholder]="'Buscar por nombre, email...'"
+          [icon]="'search'"
+          [value]="searchQuery()"
+          (valueChange)="searchQuery.set($event)"
+        />
+      </div>
+
+      <!-- Filter by Status -->
+      <div>
+        <label for="filterStatus" class="block text-sm font-medium text-gray-700 mb-1.5">
+          Estado
+        </label>
+        <select
+          id="filterStatus"
+          [value]="filterStatus()"
+          (change)="filterStatus.set($any($event.target).value)"
+          class="block w-full rounded-lg border border-gray-300 bg-white text-gray-900 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="all">Todos</option>
+          <option value="active">Activos</option>
+          <option value="inactive">Inactivos</option>
+        </select>
+      </div>
+
+      <!-- Filter by Grade Level -->
+      <div>
+        <label for="filterGradeLevel" class="block text-sm font-medium text-gray-700 mb-1.5">
+          Nivel Académico
+        </label>
+        <select
+          id="filterGradeLevel"
+          [value]="filterGradeLevel()"
+          (change)="filterGradeLevel.set($any($event.target).value)"
+          class="block w-full rounded-lg border border-gray-300 bg-white text-gray-900 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="all">Todos los niveles</option>
+          @for (level of gradeLevels(); track level.id) {
+            <option [value]="level.id">{{ level.name }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Students List -->
+  <div
+    class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 overflow-hidden"
+  >
+    @if (loading()) {
+      <div class="p-12 text-center">
+        <div
+          class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-purple-600 border-r-transparent"
+        ></div>
+        <p class="mt-4 text-gray-600">Cargando estudiantes...</p>
+      </div>
+    } @else if (filteredStudents().length === 0) {
+      <div class="p-12 text-center">
+        <div
+          class="bg-gradient-to-br from-purple-500 to-pink-600 p-6 rounded-2xl shadow-lg inline-block mb-4"
+        >
+          <span class="material-symbols-outlined text-white text-5xl">groups</span>
+        </div>
+        <p class="text-xl text-gray-600 font-medium">No hay estudiantes</p>
+        <p class="text-sm text-gray-500 mt-2">Comienza agregando tu primer estudiante</p>
+      </div>
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Estudiante
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Nivel
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Padre/Tutor
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Estado
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Fecha de Inscripción
+              </th>
+              <th
+                class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Acciones
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            @for (student of filteredStudents(); track student.id) {
+              <tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div
+                      class="h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center"
+                    >
+                      <span class="material-symbols-outlined text-white text-lg"> person </span>
+                    </div>
+                    <div class="ml-4">
+                      <div class="text-sm font-medium text-gray-900">
+                        {{ student.fullName }}
+                      </div>
+                      <div class="text-sm text-gray-500">{{ student.email }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                  >
+                    {{ getGradeLevelName(student.gradeLevel) }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">{{ student.parentName }}</div>
+                  <div class="text-sm text-gray-500">{{ student.parentEmail }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                    [ngClass]="getStatusColor(student.status)"
+                  >
+                    {{ getStatusLabel(student.status) }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ formatDate(student.enrollmentDate) }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <button
+                    (click)="openEditModal(student)"
+                    class="text-blue-600 hover:text-blue-900 mr-3"
+                    title="Editar"
+                  >
+                    <span class="material-symbols-outlined text-lg">edit</span>
+                  </button>
+                  <button
+                    (click)="toggleStatus(student)"
+                    class="text-gray-600 hover:text-gray-900 mr-3"
+                    [title]="student.status === 'active' ? 'Desactivar' : 'Activar'"
+                  >
+                    <span class="material-symbols-outlined text-lg">
+                      {{ student.status === 'active' ? 'toggle_on' : 'toggle_off' }}
+                    </span>
+                  </button>
+                  <button
+                    (click)="deleteStudent(student)"
+                    class="text-red-600 hover:text-red-900"
+                    title="Eliminar"
+                  >
+                    <span class="material-symbols-outlined text-lg">delete</span>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
   </div>
 </div>
+
+<!-- Modal for Add/Edit Student -->
+@if (showModal()) {
+  <div
+    class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+    role="dialog"
+    aria-modal="true"
+    (click)="closeModal()"
+    (keydown.escape)="closeModal()"
+  >
+    <div
+      class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl mx-4 overflow-hidden max-h-[90vh] overflow-y-auto"
+      role="document"
+      (click)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
+    >
+      <!-- Modal Header -->
+      <div class="bg-gradient-to-r from-purple-600 to-pink-600 p-6">
+        <h2 class="text-2xl font-bold text-white">
+          {{ editingStudent() ? 'Editar Estudiante' : 'Agregar Estudiante' }}
+        </h2>
+      </div>
+
+      <!-- Modal Body -->
+      <form (submit)="$event.preventDefault(); saveStudent()" class="p-6 space-y-6">
+        <!-- Error Message -->
+        @if (formError()) {
+          <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            {{ formError() }}
+          </div>
+        }
+
+        <!-- Student Information -->
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Información del Estudiante</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <app-input
+              [label]="'Nombre Completo'"
+              [placeholder]="'Juan Pérez García'"
+              [icon]="'person'"
+              [value]="fullName()"
+              (valueChange)="fullName.set($event)"
+              [required]="true"
+              [invalid]="fullName().trim().length > 0 && fullName().trim().length < 2"
+            />
+            <app-input
+              [label]="'Fecha de Nacimiento'"
+              [type]="'text'"
+              [placeholder]="'YYYY-MM-DD'"
+              [icon]="'calendar_today'"
+              [value]="dateOfBirth()"
+              (valueChange)="dateOfBirth.set($event)"
+              [required]="true"
+              [invalid]="dateOfBirth().length > 0 && !isDateValid(dateOfBirth())"
+              [errorMessage]="'Formato: YYYY-MM-DD'"
+            />
+            <app-input
+              [label]="'Email'"
+              [type]="'email'"
+              [placeholder]="'estudiante@ejemplo.com'"
+              [icon]="'email'"
+              [value]="email()"
+              (valueChange)="email.set($event)"
+              [required]="true"
+              [invalid]="email().trim().length > 0 && !isEmailValid(email().trim())"
+            />
+            <app-input
+              [label]="'Teléfono'"
+              [type]="'tel'"
+              [placeholder]="'5512345678'"
+              [icon]="'phone'"
+              [value]="phone()"
+              (valueChange)="phone.set($event)"
+              [required]="true"
+              [invalid]="phone().trim().length > 0 && !isPhoneValid(phone().trim())"
+            />
+            <div class="md:col-span-2">
+              <app-input
+                [label]="'Dirección'"
+                [placeholder]="'Calle Principal #123, Colonia Centro'"
+                [icon]="'home'"
+                [value]="address()"
+                (valueChange)="address.set($event)"
+                [required]="true"
+                [invalid]="address().trim().length > 0 && address().trim().length < 5"
+              />
+            </div>
+            <div>
+              <label for="gradeLevel" class="block text-sm font-medium text-gray-700 mb-1.5">
+                Nivel Académico *
+              </label>
+              <select
+                id="gradeLevel"
+                [value]="gradeLevel()"
+                (change)="gradeLevel.set($any($event.target).value)"
+                class="block w-full rounded-lg border border-gray-300 bg-white text-gray-900 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                required
+              >
+                <option value="">Seleccionar nivel</option>
+                @for (level of gradeLevels(); track level.id) {
+                  <option [value]="level.id">{{ level.name }}</option>
+                }
+              </select>
+            </div>
+            <div>
+              <label for="status" class="block text-sm font-medium text-gray-700 mb-1.5">
+                Estado *
+              </label>
+              <select
+                id="status"
+                [value]="status()"
+                (change)="status.set($any($event.target).value)"
+                class="block w-full rounded-lg border border-gray-300 bg-white text-gray-900 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                required
+              >
+                <option value="active">Activo</option>
+                <option value="inactive">Inactivo</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Parent/Guardian Information -->
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Información del Padre/Tutor</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <app-input
+              [label]="'Nombre Completo'"
+              [placeholder]="'María García López'"
+              [icon]="'person'"
+              [value]="parentName()"
+              (valueChange)="parentName.set($event)"
+              [required]="true"
+              [invalid]="parentName().trim().length > 0 && parentName().trim().length < 2"
+            />
+            <app-input
+              [label]="'Email'"
+              [type]="'email'"
+              [placeholder]="'padre@ejemplo.com'"
+              [icon]="'email'"
+              [value]="parentEmail()"
+              (valueChange)="parentEmail.set($event)"
+              [required]="true"
+              [invalid]="parentEmail().trim().length > 0 && !isEmailValid(parentEmail().trim())"
+            />
+            <app-input
+              [label]="'Teléfono'"
+              [type]="'tel'"
+              [placeholder]="'5587654321'"
+              [icon]="'phone'"
+              [value]="parentPhone()"
+              (valueChange)="parentPhone.set($event)"
+              [required]="true"
+              [invalid]="parentPhone().trim().length > 0 && !isPhoneValid(parentPhone().trim())"
+            />
+          </div>
+        </div>
+
+        <!-- Emergency Contact -->
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Contacto de Emergencia</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <app-input
+              [label]="'Nombre Completo'"
+              [placeholder]="'Contacto de emergencia'"
+              [icon]="'person'"
+              [value]="emergencyContact()"
+              (valueChange)="emergencyContact.set($event)"
+              [required]="true"
+              [invalid]="
+                emergencyContact().trim().length > 0 && emergencyContact().trim().length < 2
+              "
+            />
+            <app-input
+              [label]="'Teléfono'"
+              [type]="'tel'"
+              [placeholder]="'5511223344'"
+              [icon]="'phone'"
+              [value]="emergencyPhone()"
+              (valueChange)="emergencyPhone.set($event)"
+              [required]="true"
+              [invalid]="
+                emergencyPhone().trim().length > 0 && !isPhoneValid(emergencyPhone().trim())
+              "
+            />
+          </div>
+        </div>
+
+        <!-- Medical Notes -->
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Información Médica (Opcional)</h3>
+          <div>
+            <label for="medicalNotes" class="block text-sm font-medium text-gray-700 mb-1.5">
+              Notas Médicas o Alergias
+            </label>
+            <textarea
+              id="medicalNotes"
+              [value]="medicalNotes()"
+              (input)="medicalNotes.set($any($event.target).value)"
+              rows="3"
+              class="block w-full rounded-lg border border-gray-300 bg-white text-gray-900 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Alergias, condiciones médicas, medicamentos, etc."
+            ></textarea>
+          </div>
+        </div>
+      </form>
+
+      <!-- Modal Footer -->
+      <div class="p-6 bg-gray-50 flex items-center justify-end gap-3">
+        <app-button [variant]="'ghost'" [size]="'md'" [type]="'button'" (click)="closeModal()">
+          Cancelar
+        </app-button>
+        <app-button
+          [variant]="'primary'"
+          [size]="'md'"
+          [type]="'submit'"
+          [disabled]="!canSubmit() || loading()"
+          (click)="saveStudent()"
+        >
+          {{ loading() ? 'Guardando…' : editingStudent() ? 'Actualizar' : 'Guardar' }}
+        </app-button>
+      </div>
+    </div>
+  </div>
+}

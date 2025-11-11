@@ -8,6 +8,8 @@ import {
   addDoc,
   doc,
   updateDoc,
+  deleteDoc,
+  orderBy,
 } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 
@@ -15,12 +17,19 @@ export interface Student {
   id?: string;
   tenantId: string;
   fullName: string;
-  grade: string;
+  dateOfBirth: string;
+  email: string;
+  phone: string;
+  address: string;
+  gradeLevel: string; // Grade level name or ID
   parentName: string;
   parentEmail: string;
   parentPhone: string;
   enrollmentDate: number;
   status: 'active' | 'inactive';
+  emergencyContact: string;
+  emergencyPhone: string;
+  medicalNotes?: string;
 }
 
 @Injectable({
@@ -41,7 +50,11 @@ export class StudentService {
 
     try {
       const studentsRef = collection(this.firestore, 'students');
-      const studentsQuery = query(studentsRef, where('tenantId', '==', tenantId));
+      const studentsQuery = query(
+        studentsRef,
+        where('tenantId', '==', tenantId),
+        orderBy('enrollmentDate', 'desc'),
+      );
       const snapshot = await getDocs(studentsQuery);
 
       const students: Student[] = [];
@@ -83,16 +96,55 @@ export class StudentService {
   }
 
   /**
+   * Update a student
+   */
+  async updateStudent(studentId: string, updates: Partial<Student>): Promise<boolean> {
+    try {
+      const studentRef = doc(this.firestore, 'students', studentId);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { id, tenantId, enrollmentDate, ...updateData } = updates;
+      await updateDoc(studentRef, updateData);
+      return true;
+    } catch (error) {
+      console.error('Error updating student:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Delete a student
+   */
+  async deleteStudent(studentId: string): Promise<boolean> {
+    try {
+      const studentRef = doc(this.firestore, 'students', studentId);
+      await deleteDoc(studentRef);
+      return true;
+    } catch (error) {
+      console.error('Error deleting student:', error);
+      return false;
+    }
+  }
+
+  /**
    * Update student status
    */
   async updateStudentStatus(studentId: string, status: 'active' | 'inactive'): Promise<boolean> {
-    try {
-      const studentRef = doc(this.firestore, 'students', studentId);
-      await updateDoc(studentRef, { status });
-      return true;
-    } catch (error) {
-      console.error('Error updating student status:', error);
-      return false;
-    }
+    return this.updateStudent(studentId, { status });
+  }
+
+  /**
+   * Get students by status
+   */
+  async getStudentsByStatus(status: 'active' | 'inactive'): Promise<Student[]> {
+    const students = await this.getStudents();
+    return students.filter((student) => student.status === status);
+  }
+
+  /**
+   * Get students by grade level
+   */
+  async getStudentsByGradeLevel(gradeLevel: string): Promise<Student[]> {
+    const students = await this.getStudents();
+    return students.filter((student) => student.gradeLevel === gradeLevel);
   }
 }
