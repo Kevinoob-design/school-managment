@@ -135,6 +135,11 @@ export class AuthService {
     }
   }
 
+  getCurrentTenantId(): string | null {
+    const user = this.currentUser();
+    return user?.uid || null;
+  }
+
   private async createProfile(
     uid: string,
     data: { fullName: string; phoneNumber: string; email: string; role: 'admin' | 'parent' },
