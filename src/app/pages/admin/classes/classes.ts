@@ -70,7 +70,7 @@ export class ClassesTab implements OnInit {
     this.loading.set(false);
   }
 
-  protected openAddModal(): void {
+  public openAddModal(): void {
     this.resetForm();
     this.editingClass.set(null);
     this.showModal.set(true);

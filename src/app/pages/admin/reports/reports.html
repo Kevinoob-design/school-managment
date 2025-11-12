@@ -1,21 +1,431 @@
 <div class="space-y-6">
-  <div>
-    <h1
-      class="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent"
-    >
-      Reportes
-    </h1>
-    <p class="text-gray-600 mt-1 font-medium">Visualiza reportes y estadísticas</p>
-  </div>
-  <div
-    class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-orange-100 p-12 text-center"
-  >
-    <div
-      class="bg-gradient-to-br from-orange-500 to-red-600 p-6 rounded-2xl shadow-lg inline-block mb-4"
-    >
-      <span class="material-symbols-outlined text-white text-5xl">assessment</span>
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1
+        class="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent"
+      >
+        Reportes y Analíticas
+      </h1>
+      <p class="text-gray-600 mt-1 font-medium">Estadísticas y métricas del sistema escolar</p>
     </div>
-    <p class="text-xl text-gray-600 font-medium">Contenido próximamente...</p>
-    <p class="text-sm text-gray-500 mt-2">Esta sección estará disponible pronto</p>
+    <app-button [variant]="'secondary'" [size]="'md'" (click)="refreshReports()">
+      <span class="material-symbols-outlined mr-2">refresh</span>
+      Actualizar
+    </app-button>
   </div>
+
+  @if (loading()) {
+    <div class="p-12 text-center">
+      <div
+        class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-orange-600 border-r-transparent"
+      ></div>
+      <p class="mt-4 text-gray-600">Cargando reportes...</p>
+    </div>
+  } @else {
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Total Students -->
+      <div
+        class="bg-gradient-to-br from-purple-500 to-pink-600 p-6 rounded-2xl shadow-xl text-white"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <span class="material-symbols-outlined text-4xl">groups</span>
+          <span class="text-3xl font-bold">{{ summary()?.totalStudents || 0 }}</span>
+        </div>
+        <p class="text-sm font-medium opacity-90">Total Estudiantes</p>
+        <div class="mt-3 text-xs opacity-75">
+          Activos: {{ summary()?.activeStudents || 0 }} ({{ studentStatusPercentage().active }}%)
+        </div>
+      </div>
+
+      <!-- Total Teachers -->
+      <div class="bg-gradient-to-br from-blue-500 to-cyan-600 p-6 rounded-2xl shadow-xl text-white">
+        <div class="flex items-center justify-between mb-2">
+          <span class="material-symbols-outlined text-4xl">person</span>
+          <span class="text-3xl font-bold">{{ summary()?.totalTeachers || 0 }}</span>
+        </div>
+        <p class="text-sm font-medium opacity-90">Total Profesores</p>
+        <div class="mt-3 text-xs opacity-75">
+          Activos: {{ summary()?.activeTeachers || 0 }} ({{ teacherStatusPercentage().active }}%)
+        </div>
+      </div>
+
+      <!-- Total Classes -->
+      <div
+        class="bg-gradient-to-br from-green-500 to-emerald-600 p-6 rounded-2xl shadow-xl text-white"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <span class="material-symbols-outlined text-4xl">school</span>
+          <span class="text-3xl font-bold">{{ summary()?.totalClasses || 0 }}</span>
+        </div>
+        <p class="text-sm font-medium opacity-90">Total Clases</p>
+        <div class="mt-3 text-xs opacity-75">
+          Promedio: {{ (enrollmentMetrics()?.averageClassSize || 0).toFixed(1) }}
+          estudiantes/clase
+        </div>
+      </div>
+
+      <!-- Total Activities -->
+      <div
+        class="bg-gradient-to-br from-orange-500 to-red-600 p-6 rounded-2xl shadow-xl text-white"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <span class="material-symbols-outlined text-4xl">history</span>
+          <span class="text-3xl font-bold">{{ activityMetrics()?.totalActivities || 0 }}</span>
+        </div>
+        <p class="text-sm font-medium opacity-90">Total Actividades</p>
+        <div class="mt-3 text-xs opacity-75">
+          Últimos 7 días: {{ activityMetrics()?.activitiesLast7Days || 0 }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Two Column Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Student & Teacher Status Distribution -->
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-100 p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+          <span class="material-symbols-outlined mr-2 text-purple-600">pie_chart</span>
+          Distribución de Estado
+        </h2>
+
+        <!-- Students Status -->
+        <div class="mb-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-medium text-gray-700">Estudiantes</span>
+            <span class="text-sm text-gray-500">{{ summary()?.totalStudents || 0 }} total</span>
+          </div>
+          <div class="h-8 bg-gray-200 rounded-full overflow-hidden flex">
+            <div
+              class="bg-gradient-to-r from-green-400 to-green-600 flex items-center justify-center text-white text-xs font-medium"
+              [style.width.%]="studentStatusPercentage().active"
+            >
+              @if (studentStatusPercentage().active > 15) {
+                <span>{{ studentStatusPercentage().active }}%</span>
+              }
+            </div>
+            <div
+              class="bg-gradient-to-r from-gray-400 to-gray-600 flex items-center justify-center text-white text-xs font-medium"
+              [style.width.%]="studentStatusPercentage().inactive"
+            >
+              @if (studentStatusPercentage().inactive > 15) {
+                <span>{{ studentStatusPercentage().inactive }}%</span>
+              }
+            </div>
+          </div>
+          <div class="flex justify-between mt-2 text-xs text-gray-600">
+            <span
+              ><span class="inline-block w-3 h-3 bg-green-500 rounded-full mr-1"></span>Activos:
+              {{ summary()?.activeStudents || 0 }}</span
+            >
+            <span
+              ><span class="inline-block w-3 h-3 bg-gray-500 rounded-full mr-1"></span>Inactivos:
+              {{ summary()?.inactiveStudents || 0 }}</span
+            >
+          </div>
+        </div>
+
+        <!-- Teachers Status -->
+        <div class="mb-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-medium text-gray-700">Profesores</span>
+            <span class="text-sm text-gray-500">{{ summary()?.totalTeachers || 0 }} total</span>
+          </div>
+          <div class="h-8 bg-gray-200 rounded-full overflow-hidden flex">
+            <div
+              class="bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center text-white text-xs font-medium"
+              [style.width.%]="teacherStatusPercentage().active"
+            >
+              @if (teacherStatusPercentage().active > 15) {
+                <span>{{ teacherStatusPercentage().active }}%</span>
+              }
+            </div>
+            <div
+              class="bg-gradient-to-r from-gray-400 to-gray-600 flex items-center justify-center text-white text-xs font-medium"
+              [style.width.%]="teacherStatusPercentage().inactive"
+            >
+              @if (teacherStatusPercentage().inactive > 15) {
+                <span>{{ teacherStatusPercentage().inactive }}%</span>
+              }
+            </div>
+          </div>
+          <div class="flex justify-between mt-2 text-xs text-gray-600">
+            <span
+              ><span class="inline-block w-3 h-3 bg-blue-500 rounded-full mr-1"></span>Activos:
+              {{ summary()?.activeTeachers || 0 }}</span
+            >
+            <span
+              ><span class="inline-block w-3 h-3 bg-gray-500 rounded-full mr-1"></span>Inactivos:
+              {{ summary()?.inactiveTeachers || 0 }}</span
+            >
+          </div>
+        </div>
+
+        <!-- Teachers Distribution -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-medium text-gray-700">Asignación de Profesores</span>
+            <span class="text-sm text-gray-500">{{ summary()?.totalTeachers || 0 }} total</span>
+          </div>
+          <div class="h-8 bg-gray-200 rounded-full overflow-hidden flex">
+            <div
+              class="bg-gradient-to-r from-indigo-400 to-indigo-600 flex items-center justify-center text-white text-xs font-medium"
+              [style.width.%]="teacherDistribution().withClasses"
+            >
+              @if (teacherDistribution().withClasses > 15) {
+                <span>{{ teacherDistribution().withClasses }}%</span>
+              }
+            </div>
+            <div
+              class="bg-gradient-to-r from-amber-400 to-amber-600 flex items-center justify-center text-white text-xs font-medium"
+              [style.width.%]="teacherDistribution().withoutClasses"
+            >
+              @if (teacherDistribution().withoutClasses > 15) {
+                <span>{{ teacherDistribution().withoutClasses }}%</span>
+              }
+            </div>
+          </div>
+          <div class="flex justify-between mt-2 text-xs text-gray-600">
+            <span
+              ><span class="inline-block w-3 h-3 bg-indigo-500 rounded-full mr-1"></span>Con clases:
+              {{ teacherMetrics()?.teachersWithClasses || 0 }}</span
+            >
+            <span
+              ><span class="inline-block w-3 h-3 bg-amber-500 rounded-full mr-1"></span>Sin clases:
+              {{ teacherMetrics()?.teachersWithoutClasses || 0 }}</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Metrics -->
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-100 p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+          <span class="material-symbols-outlined mr-2 text-orange-600">analytics</span>
+          Métricas de Actividad
+        </h2>
+
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl">
+            <div class="text-2xl font-bold text-green-700">
+              {{ activityMetrics()?.activitiesLast7Days || 0 }}
+            </div>
+            <div class="text-xs text-green-600 mt-1">Últimos 7 días</div>
+          </div>
+          <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl">
+            <div class="text-2xl font-bold text-blue-700">
+              {{ activityMetrics()?.activitiesLast30Days || 0 }}
+            </div>
+            <div class="text-xs text-blue-600 mt-1">Últimos 30 días</div>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <h3 class="text-sm font-semibold text-gray-700">Por Tipo de Acción</h3>
+          @for (item of getActivityTypeEntries().slice(0, 5); track item.type) {
+            <div>
+              <div class="flex items-center justify-between text-xs mb-1">
+                <span class="text-gray-700">{{ getActivityTypeLabel(item.type) }}</span>
+                <span class="text-gray-500 font-medium">{{ item.count }}</span>
+              </div>
+              <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  class="h-full bg-gradient-to-r from-orange-400 to-red-500 rounded-full transition-all"
+                  [style.width.%]="getBarWidth(item.count, getActivityTypeEntries()[0]?.count || 1)"
+                ></div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Full Width Sections -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Enrollment by Grade -->
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-100 p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+          <span class="material-symbols-outlined mr-2 text-purple-600">stairs</span>
+          Inscripciones por Nivel
+        </h2>
+
+        @if ((enrollmentMetrics()?.enrollmentsByGrade || []).length === 0) {
+          <p class="text-gray-500 text-center py-8">No hay datos de inscripciones</p>
+        } @else {
+          <div class="space-y-3">
+            @for (
+              item of (enrollmentMetrics()?.enrollmentsByGrade || []).slice(0, 8);
+              track item.gradeName
+            ) {
+              <div>
+                <div class="flex items-center justify-between text-sm mb-1">
+                  <span class="text-gray-700 font-medium">{{ item.gradeName }}</span>
+                  <span class="text-gray-500 font-medium">{{ item.count }} estudiantes</span>
+                </div>
+                <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    class="h-full bg-gradient-to-r from-purple-400 to-pink-500 rounded-full transition-all"
+                    [style.width.%]="
+                      getBarWidth(
+                        item.count,
+                        (enrollmentMetrics()?.enrollmentsByGrade || [])[0]?.count || 1
+                      )
+                    "
+                  ></div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Activity by Entity -->
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-100 p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+          <span class="material-symbols-outlined mr-2 text-blue-600">category</span>
+          Actividad por Entidad
+        </h2>
+
+        <div class="space-y-3">
+          @for (item of getEntityEntries(); track item.entity) {
+            <div>
+              <div class="flex items-center justify-between text-sm mb-1">
+                <span class="text-gray-700 font-medium">{{ getEntityLabel(item.entity) }}</span>
+                <span class="text-gray-500 font-medium">{{ item.count }} acciones</span>
+              </div>
+              <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  class="h-full bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full transition-all"
+                  [style.width.%]="getBarWidth(item.count, getEntityEntries()[0]?.count || 1)"
+                ></div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Performers -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Top Classes by Enrollment -->
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-100 p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+          <span class="material-symbols-outlined mr-2 text-green-600">trending_up</span>
+          Clases por Capacidad
+        </h2>
+
+        @if ((enrollmentMetrics()?.enrollmentsByClass || []).length === 0) {
+          <p class="text-gray-500 text-center py-8">No hay clases registradas</p>
+        } @else {
+          <div class="space-y-4">
+            @for (
+              item of (enrollmentMetrics()?.enrollmentsByClass || []).slice(0, 5);
+              track item.className
+            ) {
+              <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div class="flex-1">
+                  <div class="text-sm font-medium text-gray-900">
+                    {{ item.className }}
+                  </div>
+                  <div class="text-xs text-gray-500 mt-1">
+                    Capacidad: {{ item.count }} estudiantes
+                  </div>
+                </div>
+                <div
+                  class="bg-gradient-to-br from-green-500 to-emerald-600 text-white px-4 py-2 rounded-lg font-bold"
+                >
+                  {{ item.count }}
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Most Active Users -->
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-100 p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+          <span class="material-symbols-outlined mr-2 text-indigo-600">leaderboard</span>
+          Usuarios Más Activos
+        </h2>
+
+        @if ((activityMetrics()?.mostActiveUsers || []).length === 0) {
+          <p class="text-gray-500 text-center py-8">No hay actividad registrada</p>
+        } @else {
+          <div class="space-y-4">
+            @for (user of activityMetrics()?.mostActiveUsers; track user.email; let idx = $index) {
+              <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm"
+                  >
+                    {{ idx + 1 }}
+                  </div>
+                  <div class="flex-1">
+                    <div class="text-sm font-medium text-gray-900">{{ user.name }}</div>
+                    <div class="text-xs text-gray-500">{{ user.email }}</div>
+                  </div>
+                </div>
+                <div
+                  class="bg-gradient-to-br from-indigo-500 to-purple-600 text-white px-4 py-2 rounded-lg font-bold"
+                >
+                  {{ user.count }}
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Teachers Workload -->
+    @if ((teacherMetrics()?.classesByTeacher || []).length > 0) {
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-100 p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+          <span class="material-symbols-outlined mr-2 text-cyan-600">workspaces</span>
+          Carga de Trabajo por Profesor
+        </h2>
+
+        <div class="mb-4 p-4 bg-gradient-to-r from-cyan-50 to-blue-50 rounded-xl">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-gray-600">Promedio de clases por profesor</div>
+              <div class="text-2xl font-bold text-cyan-700">
+                {{ (teacherMetrics()?.averageClassesPerTeacher || 0).toFixed(1) }}
+              </div>
+            </div>
+            <span class="material-symbols-outlined text-cyan-600 text-5xl">calculate</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          @for (
+            teacher of (teacherMetrics()?.classesByTeacher || []).slice(0, 9);
+            track teacher.teacherName
+          ) {
+            <div
+              class="p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex-1 min-w-0">
+                  <div class="text-sm font-medium text-gray-900 truncate">
+                    {{ teacher.teacherName }}
+                  </div>
+                  <div class="text-xs text-gray-500 mt-1">
+                    {{ teacher.count }} {{ teacher.count === 1 ? 'clase' : 'clases' }}
+                  </div>
+                </div>
+                <div
+                  class="ml-3 bg-gradient-to-br from-cyan-500 to-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold"
+                >
+                  {{ teacher.count }}
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
 </div>

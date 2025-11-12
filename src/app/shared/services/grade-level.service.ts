@@ -12,6 +12,7 @@ import {
   orderBy,
 } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
+import { ActivityLoggerService } from './activity-logger.service';
 
 export type GradeStage = 'primaria' | 'secundaria' | 'bachillerato';
 
@@ -32,6 +33,7 @@ export interface GradeLevel {
 export class GradeLevelService {
   private readonly firestore = inject(Firestore);
   private readonly auth = inject(AuthService);
+  private readonly activityLogger = inject(ActivityLoggerService);
 
   /**
    * Get all grade levels for the current school
@@ -98,6 +100,9 @@ export class GradeLevelService {
         createdAt: Date.now(),
       });
 
+      // Log activity
+      await this.activityLogger.logCreate('grade_level', docRef.id, gradeLevelData.name);
+
       return docRef.id;
     } catch (error) {
       console.error('Error adding grade level:', error);
@@ -114,6 +119,14 @@ export class GradeLevelService {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { id, tenantId, createdAt, ...updateData } = updates;
       await updateDoc(gradeLevelRef, updateData);
+
+      // Log activity
+      await this.activityLogger.logUpdate(
+        'grade_level',
+        gradeLevelId,
+        updates.name || 'Nivel Académico',
+      );
+
       return true;
     } catch (error) {
       console.error('Error updating grade level:', error);
@@ -124,10 +137,18 @@ export class GradeLevelService {
   /**
    * Delete a grade level
    */
-  async deleteGradeLevel(gradeLevelId: string): Promise<boolean> {
+  async deleteGradeLevel(gradeLevelId: string, gradeLevelName?: string): Promise<boolean> {
     try {
       const gradeLevelRef = doc(this.firestore, 'gradeLevels', gradeLevelId);
       await deleteDoc(gradeLevelRef);
+
+      // Log activity
+      await this.activityLogger.logDelete(
+        'grade_level',
+        gradeLevelId,
+        gradeLevelName || 'Nivel Académico',
+      );
+
       return true;
     } catch (error) {
       console.error('Error deleting grade level:', error);
@@ -138,7 +159,24 @@ export class GradeLevelService {
   /**
    * Toggle grade level active status
    */
-  async toggleGradeLevelStatus(gradeLevelId: string, isActive: boolean): Promise<boolean> {
-    return this.updateGradeLevel(gradeLevelId, { isActive });
+  async toggleGradeLevelStatus(
+    gradeLevelId: string,
+    isActive: boolean,
+    gradeLevelName?: string,
+  ): Promise<boolean> {
+    const result = await this.updateGradeLevel(gradeLevelId, { isActive });
+
+    // Log activity
+    if (result) {
+      const status = isActive ? 'active' : 'inactive';
+      await this.activityLogger.logStatusChange(
+        'grade_level',
+        gradeLevelId,
+        gradeLevelName || 'Nivel Académico',
+        status,
+      );
+    }
+
+    return result;
   }
 }

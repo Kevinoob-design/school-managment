@@ -84,7 +84,7 @@ export class StudentsTab implements OnInit {
     return filtered;
   };
 
-  protected openAddModal(): void {
+  public openAddModal(): void {
     this.resetForm();
     this.editingStudent.set(null);
     this.showModal.set(true);
@@ -215,7 +215,7 @@ export class StudentsTab implements OnInit {
     if (!student.id) return;
 
     if (confirm(`¿Estás seguro de eliminar a "${student.fullName}"?`)) {
-      await this.studentService.deleteStudent(student.id);
+      await this.studentService.deleteStudent(student.id, student.fullName);
       await this.loadStudents();
     }
   }
@@ -223,7 +223,7 @@ export class StudentsTab implements OnInit {
   protected async toggleStatus(student: Student): Promise<void> {
     if (!student.id) return;
     const newStatus = student.status === 'active' ? 'inactive' : 'active';
-    await this.studentService.updateStudentStatus(student.id, newStatus);
+    await this.studentService.updateStudentStatus(student.id, newStatus, student.fullName);
     await this.loadStudents();
   }
 

@@ -12,6 +12,7 @@ import {
   orderBy,
 } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
+import { ActivityLoggerService } from './activity-logger.service';
 
 export interface Subject {
   id?: string;
@@ -31,6 +32,7 @@ export interface Subject {
 export class SubjectService {
   private readonly firestore = inject(Firestore);
   private readonly auth = inject(AuthService);
+  private readonly activityLogger = inject(ActivityLoggerService);
 
   /**
    * Get all subjects for the current school
@@ -97,6 +99,9 @@ export class SubjectService {
         createdAt: Date.now(),
       });
 
+      // Log activity
+      await this.activityLogger.logCreate('subject', docRef.id, subjectData.name);
+
       return docRef.id;
     } catch (error) {
       console.error('Error adding subject:', error);
@@ -113,6 +118,10 @@ export class SubjectService {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { id, tenantId, createdAt, ...updateData } = updates;
       await updateDoc(subjectRef, updateData);
+
+      // Log activity
+      await this.activityLogger.logUpdate('subject', subjectId, updates.name || 'Asignatura');
+
       return true;
     } catch (error) {
       console.error('Error updating subject:', error);
@@ -123,10 +132,14 @@ export class SubjectService {
   /**
    * Delete a subject
    */
-  async deleteSubject(subjectId: string): Promise<boolean> {
+  async deleteSubject(subjectId: string, subjectName?: string): Promise<boolean> {
     try {
       const subjectRef = doc(this.firestore, 'subjects', subjectId);
       await deleteDoc(subjectRef);
+
+      // Log activity
+      await this.activityLogger.logDelete('subject', subjectId, subjectName || 'Asignatura');
+
       return true;
     } catch (error) {
       console.error('Error deleting subject:', error);
@@ -137,8 +150,25 @@ export class SubjectService {
   /**
    * Toggle subject active status
    */
-  async toggleSubjectStatus(subjectId: string, isActive: boolean): Promise<boolean> {
-    return this.updateSubject(subjectId, { isActive });
+  async toggleSubjectStatus(
+    subjectId: string,
+    isActive: boolean,
+    subjectName?: string,
+  ): Promise<boolean> {
+    const result = await this.updateSubject(subjectId, { isActive });
+
+    // Log activity
+    if (result) {
+      const status = isActive ? 'active' : 'inactive';
+      await this.activityLogger.logStatusChange(
+        'subject',
+        subjectId,
+        subjectName || 'Asignatura',
+        status,
+      );
+    }
+
+    return result;
   }
 
   /**

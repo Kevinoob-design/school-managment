@@ -15,7 +15,15 @@
     <div class="max-w-7xl mx-auto p-8">
       @switch (activeTab()) {
         @case ('dashboard') {
-          <app-dashboard-overview />
+          <app-dashboard-overview
+            (addClassAction)="handleAddClass()"
+            (enrollStudentAction)="handleEnrollStudent()"
+            (addTeacherAction)="handleAddTeacher()"
+            (navigateToClasses)="navigateToTab('classes')"
+            (navigateToTeachers)="navigateToTab('teachers')"
+            (navigateToStudents)="navigateToTab('students')"
+            (navigateToActivities)="navigateToActivities()"
+          />
         }
         @case ('grade-levels') {
           <app-grade-levels-tab />
@@ -31,6 +39,9 @@
         }
         @case ('students') {
           <app-students-tab />
+        }
+        @case ('activities') {
+          <app-activities-tab />
         }
         @case ('reports') {
           <app-reports-tab />
