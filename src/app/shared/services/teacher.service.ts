@@ -12,6 +12,7 @@ import {
   orderBy,
 } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
+import { ActivityLoggerService } from './activity-logger.service';
 
 export interface Teacher {
   id?: string;
@@ -30,6 +31,7 @@ export interface Teacher {
 export class TeacherService {
   private readonly firestore = inject(Firestore);
   private readonly auth = inject(AuthService);
+  private readonly activityLogger = inject(ActivityLoggerService);
 
   /**
    * Get all teachers for the current school
@@ -80,6 +82,9 @@ export class TeacherService {
         createdAt: Date.now(),
       });
 
+      // Log activity
+      await this.activityLogger.logCreate('teacher', docRef.id, teacherData.fullName);
+
       return docRef.id;
     } catch (error) {
       console.error('Error adding teacher:', error);
@@ -96,6 +101,10 @@ export class TeacherService {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { id, tenantId, createdAt, ...updateData } = updates;
       await updateDoc(teacherRef, updateData);
+
+      // Log activity
+      await this.activityLogger.logUpdate('teacher', teacherId, updates.fullName || 'Profesor');
+
       return true;
     } catch (error) {
       console.error('Error updating teacher:', error);
@@ -106,10 +115,14 @@ export class TeacherService {
   /**
    * Delete a teacher
    */
-  async deleteTeacher(teacherId: string): Promise<boolean> {
+  async deleteTeacher(teacherId: string, teacherName?: string): Promise<boolean> {
     try {
       const teacherRef = doc(this.firestore, 'teachers', teacherId);
       await deleteDoc(teacherRef);
+
+      // Log activity
+      await this.activityLogger.logDelete('teacher', teacherId, teacherName || 'Profesor');
+
       return true;
     } catch (error) {
       console.error('Error deleting teacher:', error);
@@ -120,8 +133,24 @@ export class TeacherService {
   /**
    * Update teacher status
    */
-  async updateTeacherStatus(teacherId: string, status: 'active' | 'inactive'): Promise<boolean> {
-    return this.updateTeacher(teacherId, { status });
+  async updateTeacherStatus(
+    teacherId: string,
+    status: 'active' | 'inactive',
+    teacherName?: string,
+  ): Promise<boolean> {
+    const result = await this.updateTeacher(teacherId, { status });
+
+    // Log activity
+    if (result) {
+      await this.activityLogger.logStatusChange(
+        'teacher',
+        teacherId,
+        teacherName || 'Profesor',
+        status,
+      );
+    }
+
+    return result;
   }
 
   /**

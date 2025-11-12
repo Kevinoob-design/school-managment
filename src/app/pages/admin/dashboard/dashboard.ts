@@ -1,10 +1,11 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   DashboardService,
   DashboardStats,
   RecentActivity,
 } from '../../../shared/services/dashboard.service';
+import { ActivityType } from '../../../shared/services/activity-logger.service';
 import { Button } from '../../../shared/ui/button/button';
 
 @Component({
@@ -15,6 +16,17 @@ import { Button } from '../../../shared/ui/button/button';
 })
 export class DashboardOverview implements OnInit {
   private readonly dashboardService = inject(DashboardService);
+
+  // Output events for quick actions
+  addClassAction = output<void>();
+  enrollStudentAction = output<void>();
+  addTeacherAction = output<void>();
+
+  // Output events for navigation
+  navigateToClasses = output<void>();
+  navigateToTeachers = output<void>();
+  navigateToStudents = output<void>();
+  navigateToActivities = output<void>();
 
   protected stats = signal<DashboardStats>({
     totalClasses: 0,
@@ -46,32 +58,66 @@ export class DashboardOverview implements OnInit {
   }
 
   protected onAddClass(): void {
-    // TODO: Navigate to add class form or open modal
-    console.log('Add new class');
+    this.addClassAction.emit();
   }
 
   protected onEnrollStudent(): void {
-    // TODO: Navigate to enroll student form or open modal
-    console.log('Enroll student');
+    this.enrollStudentAction.emit();
   }
 
   protected onAddTeacher(): void {
-    // TODO: Navigate to add teacher form or open modal
-    console.log('Add teacher');
+    this.addTeacherAction.emit();
   }
 
-  protected getStatusClass(status: string): string {
-    switch (status) {
-      case 'completado':
-      case 'activo':
+  protected onNavigateToClasses(): void {
+    this.navigateToClasses.emit();
+  }
+
+  protected onNavigateToTeachers(): void {
+    this.navigateToTeachers.emit();
+  }
+
+  protected onNavigateToStudents(): void {
+    this.navigateToStudents.emit();
+  }
+
+  protected onViewAllActivities(): void {
+    this.navigateToActivities.emit();
+  }
+
+  protected getTypeClass(type: ActivityType): string {
+    switch (type) {
+      case 'create':
+      case 'enrollment':
         return 'bg-green-100 text-green-800';
-      case 'pendiente':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'cancelado':
-      case 'inactivo':
+      case 'update':
+      case 'status_change':
+        return 'bg-blue-100 text-blue-800';
+      case 'delete':
         return 'bg-red-100 text-red-800';
+      case 'assignment':
+        return 'bg-purple-100 text-purple-800';
       default:
         return 'bg-gray-100 text-gray-800';
+    }
+  }
+
+  protected getTypeLabel(type: ActivityType): string {
+    switch (type) {
+      case 'create':
+        return 'Creación';
+      case 'update':
+        return 'Actualización';
+      case 'delete':
+        return 'Eliminación';
+      case 'status_change':
+        return 'Cambio de Estado';
+      case 'enrollment':
+        return 'Inscripción';
+      case 'assignment':
+        return 'Asignación';
+      default:
+        return 'Desconocido';
     }
   }
 

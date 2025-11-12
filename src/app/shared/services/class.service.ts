@@ -12,6 +12,7 @@ import {
   orderBy,
 } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
+import { ActivityLoggerService } from './activity-logger.service';
 
 export interface ClassSchedule {
   day: 'lunes' | 'martes' | 'miércoles' | 'jueves' | 'viernes' | 'sábado';
@@ -42,6 +43,7 @@ export interface Class {
 export class ClassService {
   private readonly firestore = inject(Firestore);
   private readonly auth = inject(AuthService);
+  private readonly activityLogger = inject(ActivityLoggerService);
 
   /**
    * Get all classes for the current school
@@ -122,6 +124,9 @@ export class ClassService {
         createdAt: Date.now(),
       });
 
+      // Log activity
+      await this.activityLogger.logCreate('class', docRef.id, classData.className);
+
       return docRef.id;
     } catch (error) {
       console.error('Error adding class:', error);
@@ -138,6 +143,10 @@ export class ClassService {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { id, tenantId, createdAt, ...updateData } = updates;
       await updateDoc(classRef, updateData);
+
+      // Log activity
+      await this.activityLogger.logUpdate('class', classId, updates.className || 'Clase');
+
       return true;
     } catch (error) {
       console.error('Error updating class:', error);
@@ -148,10 +157,14 @@ export class ClassService {
   /**
    * Delete a class
    */
-  async deleteClass(classId: string): Promise<boolean> {
+  async deleteClass(classId: string, className?: string): Promise<boolean> {
     try {
       const classRef = doc(this.firestore, 'classes', classId);
       await deleteDoc(classRef);
+
+      // Log activity
+      await this.activityLogger.logDelete('class', classId, className || 'Clase');
+
       return true;
     } catch (error) {
       console.error('Error deleting class:', error);

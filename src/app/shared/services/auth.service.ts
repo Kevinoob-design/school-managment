@@ -9,7 +9,15 @@ import {
   signOut,
   onAuthStateChanged,
 } from '@angular/fire/auth';
-import { Firestore, doc, getDoc, setDoc } from '@angular/fire/firestore';
+import {
+  Firestore,
+  doc,
+  getDoc,
+  setDoc,
+  addDoc,
+  collection,
+  Timestamp,
+} from '@angular/fire/firestore';
 
 export type UserRole = 'admin' | 'teacher' | 'parent' | 'unknown';
 
@@ -100,6 +108,11 @@ export class AuthService {
     // Set the role immediately after signup
     this.currentRole.set(profile.role);
 
+    // Log activity only for admin signup (not parents)
+    if (profile.role === 'admin') {
+      await this.logAdminSignup(cred.user.uid, fullName, email);
+    }
+
     return cred.user;
   }
 
@@ -134,5 +147,28 @@ export class AuthService {
       role: data.role,
       createdAt: Date.now(),
     });
+  }
+
+  private async logAdminSignup(uid: string, fullName: string, email: string): Promise<void> {
+    try {
+      const activitiesRef = collection(this.firestore, 'activities');
+      await addDoc(activitiesRef, {
+        tenantId: uid,
+        userId: uid,
+        userName: fullName,
+        userEmail: email,
+        type: 'create',
+        entity: 'user',
+        entityId: uid,
+        entityName: fullName,
+        description: `Se registró como administrador de la escuela`,
+        timestamp: Timestamp.now(),
+        metadata: {
+          role: 'admin',
+        },
+      });
+    } catch (error) {
+      console.error('Error logging admin signup:', error);
+    }
   }
 }

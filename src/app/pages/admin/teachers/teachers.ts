@@ -44,7 +44,7 @@ export class TeachersTab implements OnInit {
     this.loading.set(false);
   }
 
-  protected openAddModal(): void {
+  public openAddModal(): void {
     this.resetForm();
     this.editingTeacher.set(null);
     this.showModal.set(true);
@@ -140,7 +140,7 @@ export class TeachersTab implements OnInit {
     if (!teacher.id) return;
 
     if (confirm(`¿Estás seguro de eliminar a "${teacher.fullName}"?`)) {
-      await this.teacherService.deleteTeacher(teacher.id);
+      await this.teacherService.deleteTeacher(teacher.id, teacher.fullName);
       await this.loadData();
     }
   }
@@ -148,7 +148,7 @@ export class TeachersTab implements OnInit {
   protected async toggleStatus(teacher: Teacher): Promise<void> {
     if (!teacher.id) return;
     const newStatus = teacher.status === 'active' ? 'inactive' : 'active';
-    await this.teacherService.updateTeacherStatus(teacher.id, newStatus);
+    await this.teacherService.updateTeacherStatus(teacher.id, newStatus, teacher.fullName);
     await this.loadData();
   }
 

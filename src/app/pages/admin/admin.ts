@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardOverview } from './dashboard/dashboard';
 import { GradeLevelsTab } from './grade-levels/grade-levels';
@@ -6,6 +6,7 @@ import { SubjectsTab } from './subjects/subjects';
 import { ClassesTab } from './classes/classes';
 import { TeachersTab } from './teachers/teachers';
 import { StudentsTab } from './students/students';
+import { ActivitiesTab } from './activities/activities';
 import { ReportsTab } from './reports/reports';
 import { SidebarNav, NavItem, UserInfo } from '../../shared/ui/sidebar-nav/sidebar-nav';
 
@@ -16,6 +17,7 @@ type TabName =
   | 'classes'
   | 'teachers'
   | 'students'
+  | 'activities'
   | 'reports';
 
 @Component({
@@ -28,6 +30,7 @@ type TabName =
     ClassesTab,
     TeachersTab,
     StudentsTab,
+    ActivitiesTab,
     ReportsTab,
     SidebarNav,
   ],
@@ -37,6 +40,10 @@ type TabName =
 export class AdminDashboard {
   protected activeTab = signal<TabName>('dashboard');
 
+  @ViewChild(ClassesTab) classesTab?: ClassesTab;
+  @ViewChild(TeachersTab) teachersTab?: TeachersTab;
+  @ViewChild(StudentsTab) studentsTab?: StudentsTab;
+
   protected readonly navItems: NavItem[] = [
     { id: 'dashboard', label: 'Panel Principal', icon: 'dashboard' },
     { id: 'grade-levels', label: 'Niveles Académicos', icon: 'stairs' },
@@ -44,6 +51,7 @@ export class AdminDashboard {
     { id: 'classes', label: 'Clases', icon: 'school' },
     { id: 'teachers', label: 'Profesores', icon: 'person' },
     { id: 'students', label: 'Estudiantes', icon: 'groups' },
+    { id: 'activities', label: 'Actividades', icon: 'history' },
     { id: 'reports', label: 'Reportes', icon: 'assessment' },
   ];
 
@@ -59,5 +67,36 @@ export class AdminDashboard {
   protected onUserClick(): void {
     // TODO: Navigate to user profile or show menu
     console.log('User clicked');
+  }
+
+  // Quick action handlers for dashboard
+  protected handleAddClass(): void {
+    this.activeTab.set('classes');
+    setTimeout(() => {
+      this.classesTab?.openAddModal();
+    }, 0);
+  }
+
+  protected handleEnrollStudent(): void {
+    this.activeTab.set('students');
+    setTimeout(() => {
+      this.studentsTab?.openAddModal();
+    }, 0);
+  }
+
+  protected handleAddTeacher(): void {
+    this.activeTab.set('teachers');
+    setTimeout(() => {
+      this.teachersTab?.openAddModal();
+    }, 0);
+  }
+
+  // Navigation handlers for counter cards
+  protected navigateToTab(tab: TabName): void {
+    this.activeTab.set(tab);
+  }
+
+  protected navigateToActivities(): void {
+    this.activeTab.set('activities');
   }
 }

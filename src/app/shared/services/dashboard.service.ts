@@ -1,15 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import {
-  Firestore,
-  collection,
-  query,
-  where,
-  getDocs,
-  orderBy,
-  limit,
-  Timestamp,
-} from '@angular/fire/firestore';
+import { Firestore, collection, query, where, getDocs } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
+import { ActivityLoggerService, Activity as LogActivity } from './activity-logger.service';
 
 export interface DashboardStats {
   totalClasses: number;
@@ -17,13 +9,7 @@ export interface DashboardStats {
   totalStudents: number;
 }
 
-export interface RecentActivity {
-  id: string;
-  description: string;
-  userName: string;
-  timestamp: number;
-  status: string;
-}
+export type RecentActivity = LogActivity;
 
 @Injectable({
   providedIn: 'root',
@@ -31,6 +17,7 @@ export interface RecentActivity {
 export class DashboardService {
   private readonly firestore = inject(Firestore);
   private readonly auth = inject(AuthService);
+  private readonly activityLogger = inject(ActivityLoggerService);
 
   /**
    * Get dashboard statistics for the current school
@@ -51,12 +38,8 @@ export class DashboardService {
       const totalClasses = classesSnapshot.size;
 
       // Count teachers
-      const teachersRef = collection(this.firestore, 'users');
-      const teachersQuery = query(
-        teachersRef,
-        where('tenantId', '==', tenantId),
-        where('role', '==', 'teacher'),
-      );
+      const teachersRef = collection(this.firestore, 'teachers');
+      const teachersQuery = query(teachersRef, where('tenantId', '==', tenantId));
       const teachersSnapshot = await getDocs(teachersQuery);
       const totalTeachers = teachersSnapshot.size;
 
@@ -81,66 +64,6 @@ export class DashboardService {
    * Get recent activities for the current school
    */
   async getRecentActivities(limitCount = 10): Promise<RecentActivity[]> {
-    const user = this.auth.currentUser();
-    if (!user) {
-      return [];
-    }
-
-    const tenantId = user.uid;
-
-    try {
-      const activitiesRef = collection(this.firestore, 'activities');
-      const activitiesQuery = query(
-        activitiesRef,
-        where('tenantId', '==', tenantId),
-        orderBy('timestamp', 'desc'),
-        limit(limitCount),
-      );
-      const activitiesSnapshot = await getDocs(activitiesQuery);
-
-      const activities: RecentActivity[] = [];
-      activitiesSnapshot.forEach((doc) => {
-        const data = doc.data();
-        activities.push({
-          id: doc.id,
-          description: data['description'] || '',
-          userName: data['userName'] || 'Usuario desconocido',
-          timestamp: data['timestamp']?.toMillis?.() || data['timestamp'] || Date.now(),
-          status: data['status'] || 'pendiente',
-        });
-      });
-
-      return activities;
-    } catch (error) {
-      console.error('Error fetching recent activities:', error);
-      return [];
-    }
-  }
-
-  /**
-   * Log a new activity
-   */
-  async logActivity(description: string, status = 'completado'): Promise<void> {
-    const user = this.auth.currentUser();
-    if (!user) return;
-
-    const tenantId = user.uid;
-
-    try {
-      const activitiesRef = collection(this.firestore, 'activities');
-      const activityData = {
-        tenantId,
-        description,
-        userName: user.displayName || user.email || 'Usuario',
-        timestamp: Timestamp.now(),
-        status,
-      };
-
-      await getDocs(query(activitiesRef, limit(1))); // Just to ensure collection exists
-      // In a real implementation, you'd use addDoc here
-      console.log('Activity logged:', activityData);
-    } catch (error) {
-      console.error('Error logging activity:', error);
-    }
+    return this.activityLogger.getRecentActivities(limitCount);
   }
 }
