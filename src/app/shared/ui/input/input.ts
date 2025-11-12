@@ -8,7 +8,7 @@ import { Component, input, output, computed, signal } from '@angular/core';
 })
 export class Input {
   id = input(`input-${Math.random().toString(36).substring(2, 9)}`);
-  type = input<'text' | 'email' | 'password' | 'tel' | 'number' | 'url'>('text');
+  type = input<'text' | 'email' | 'password' | 'tel' | 'number' | 'url' | 'date'>('text');
   placeholder = input('');
   label = input('');
   value = input('');

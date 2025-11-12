@@ -8,6 +8,7 @@ import { TeachersTab } from './teachers/teachers';
 import { StudentsTab } from './students/students';
 import { ActivitiesTab } from './activities/activities';
 import { ReportsTab } from './reports/reports';
+import { FinanceTab } from './finance/finance';
 import { SidebarNav, NavItem, UserInfo } from '../../shared/ui/sidebar-nav/sidebar-nav';
 
 type TabName =
@@ -18,7 +19,8 @@ type TabName =
   | 'teachers'
   | 'students'
   | 'activities'
-  | 'reports';
+  | 'reports'
+  | 'finance';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -33,6 +35,7 @@ type TabName =
     ActivitiesTab,
     ReportsTab,
     SidebarNav,
+    FinanceTab,
   ],
   templateUrl: './admin.html',
   styleUrl: './admin.sass',
@@ -53,6 +56,7 @@ export class AdminDashboard {
     { id: 'students', label: 'Estudiantes', icon: 'groups' },
     { id: 'activities', label: 'Actividades', icon: 'history' },
     { id: 'reports', label: 'Reportes', icon: 'assessment' },
+    { id: 'finance', label: 'Gestion financiera', icon: 'account_balance' },
   ];
 
   protected readonly userInfo: UserInfo = {

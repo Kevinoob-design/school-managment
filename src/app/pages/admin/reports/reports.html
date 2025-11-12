@@ -232,7 +232,7 @@
               <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
                 <div
                   class="h-full bg-gradient-to-r from-orange-400 to-red-500 rounded-full transition-all"
-                  [style.width.%]="getBarWidth(item.count, getActivityTypeEntries()[0]?.count || 1)"
+                  [style.width.%]="getBarWidth(item.count, getActivityTypeEntries()[0]?.count ?? 1)"
                 ></div>
               </div>
             </div>
@@ -269,7 +269,7 @@
                     [style.width.%]="
                       getBarWidth(
                         item.count,
-                        (enrollmentMetrics()?.enrollmentsByGrade || [])[0]?.count || 1
+                        (enrollmentMetrics()?.enrollmentsByGrade || [])[0]?.count ?? 1
                       )
                     "
                   ></div>
@@ -297,7 +297,7 @@
               <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
                 <div
                   class="h-full bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full transition-all"
-                  [style.width.%]="getBarWidth(item.count, getEntityEntries()[0]?.count || 1)"
+                  [style.width.%]="getBarWidth(item.count, getEntityEntries()[0]?.count ?? 1)"
                 ></div>
               </div>
             </div>
