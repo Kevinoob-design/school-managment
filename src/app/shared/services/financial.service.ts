@@ -133,7 +133,7 @@ export class FinancialService {
     try {
       const ref = doc(this.firestore, 'financialFees', feeId);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { id, tenantId,  ...payload } = updates;
+      const { id, tenantId, ...payload } = updates;
       await updateDoc(ref, { ...payload, updatedAt: Date.now() });
       return true;
     } catch (error) {

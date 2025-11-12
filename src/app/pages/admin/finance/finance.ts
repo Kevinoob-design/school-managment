@@ -285,7 +285,9 @@ export class FinanceTab implements OnInit {
 
     const loadingPromise = new Promise<void>((resolve, reject) => {
       const scriptUrl = 'https://pay.google.com/gp/p/js/pay.js';
-      const existingScript = document.querySelector<HTMLScriptElement>(`script[src="${scriptUrl}"]`);
+      const existingScript = document.querySelector<HTMLScriptElement>(
+        `script[src="${scriptUrl}"]`,
+      );
       if (existingScript) {
         if (existingScript.dataset['loaded'] === 'true') {
           resolve();
@@ -304,7 +306,7 @@ export class FinanceTab implements OnInit {
       const script = document.createElement('script');
       script.src = scriptUrl;
       script.async = true;
-      script.dataset["loaded"] = 'false';
+      script.dataset['loaded'] = 'false';
       script.onload = () => {
         script.dataset['loaded'] = 'true';
         resolve();
@@ -637,7 +639,7 @@ export class FinanceTab implements OnInit {
     const detail =
       event instanceof ErrorEvent
         ? event.message
-        : (event as CustomEvent | undefined)?.detail ?? 'Evento desconocido';
+        : ((event as CustomEvent | undefined)?.detail ?? 'Evento desconocido');
     console.error('Error en Google Pay', detail);
     this.googlePayFeedback.set('No se pudo procesar el pago con Google Pay. Intenta nuevamente.');
   }
@@ -661,7 +663,9 @@ export class FinanceTab implements OnInit {
     this.paymentCurrency.set(payment.currency);
     this.paymentGoogleTransactionId.set(payment.googlePayTransactionId);
     this.paymentStatus.set(payment.status);
-    this.paymentDate.set(payment.paymentDate ? new Date(payment.paymentDate).toISOString().slice(0, 10) : '');
+    this.paymentDate.set(
+      payment.paymentDate ? new Date(payment.paymentDate).toISOString().slice(0, 10) : '',
+    );
     this.paymentNotes.set(payment.notes ?? '');
     this.paymentFormError.set('');
     this.googlePayFeedback.set('');
@@ -812,7 +816,10 @@ export class FinanceTab implements OnInit {
     await this.loadData();
   }
 
-  protected async updatePaymentStatus(payment: PaymentRecord, status: PaymentStatus): Promise<void> {
+  protected async updatePaymentStatus(
+    payment: PaymentRecord,
+    status: PaymentStatus,
+  ): Promise<void> {
     if (!payment.id) return;
     await this.financialService.updatePaymentStatus(payment.id, status);
     await this.loadData();
@@ -874,9 +881,7 @@ export class FinanceTab implements OnInit {
   }
 
   protected getPaymentStatusLabel(status: PaymentStatus): string {
-    return (
-      this.paymentStatusOptions.find((option) => option.value === status)?.label ?? status
-    );
+    return this.paymentStatusOptions.find((option) => option.value === status)?.label ?? status;
   }
 
   protected getPaymentStatusClass(status: PaymentStatus): string {

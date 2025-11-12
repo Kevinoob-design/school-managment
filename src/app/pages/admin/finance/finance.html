@@ -67,7 +67,9 @@
   </div>
 
   @if (loading()) {
-    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow border border-indigo-100 p-12 text-center">
+    <div
+      class="bg-white/80 backdrop-blur-sm rounded-2xl shadow border border-indigo-100 p-12 text-center"
+    >
       <p class="text-gray-500 text-lg">Cargando informacion financiera...</p>
     </div>
   } @else {
@@ -77,7 +79,8 @@
         <div>
           <h2 class="panel-title">Catalogo de tarifas</h2>
           <p class="panel-subtitle">
-            Define los conceptos de cobro para tu institucion (colegiatura, inscripciones, talleres, eventos).
+            Define los conceptos de cobro para tu institucion (colegiatura, inscripciones, talleres,
+            eventos).
           </p>
         </div>
         <app-button variant="secondary" size="sm" (click)="openAddFeeModal()">
@@ -206,10 +209,18 @@
                   </td>
                   <td class="text-right">
                     <div class="action-group">
-                      <button type="button" class="action-button" (click)="openEditDueModal(config)">
+                      <button
+                        type="button"
+                        class="action-button"
+                        (click)="openEditDueModal(config)"
+                      >
                         <span class="material-symbols-outlined text-sm">edit_calendar</span>
                       </button>
-                      <button type="button" class="action-button danger" (click)="deleteDueConfig(config)">
+                      <button
+                        type="button"
+                        class="action-button danger"
+                        (click)="deleteDueConfig(config)"
+                      >
                         <span class="material-symbols-outlined text-sm">delete</span>
                       </button>
                     </div>
@@ -295,9 +306,7 @@
                       {{ getPaymentStatusLabel(payment.status) }}
                     </span>
                     @if (payment.receiptNumber) {
-                      <p class="text-xs text-gray-500">
-                        Comprobante: {{ payment.receiptNumber }}
-                      </p>
+                      <p class="text-xs text-gray-500">Comprobante: {{ payment.receiptNumber }}</p>
                     }
                   </td>
                   <td>
@@ -329,7 +338,9 @@
                           class="action-button"
                           (click)="updatePaymentStatus(payment, 'conciliado')"
                         >
-                          <span class="material-symbols-outlined text-sm">assignment_turned_in</span>
+                          <span class="material-symbols-outlined text-sm"
+                            >assignment_turned_in</span
+                          >
                         </button>
                       }
                       @if (payment.status === 'pagado' || payment.status === 'conciliado') {
@@ -417,8 +428,8 @@
       tabindex="0"
       aria-label="Cerrar modal de tarifas"
       (click)="handleBackdropClick($event, 'fee')"
-      (keydown.enter)="closeModalWithKeyboard($event, 'fee')"
-      (keydown.space)="closeModalWithKeyboard($event, 'fee')"
+      (keydown.enter)="closeModalWithKeyboard($any($event), 'fee')"
+      (keydown.space)="closeModalWithKeyboard($any($event), 'fee')"
     >
       <div class="modal" role="dialog" aria-modal="true">
         <div class="modal-header">
@@ -506,7 +517,11 @@
           </div>
 
           <label class="checkbox">
-            <input type="checkbox" [checked]="feeIsActive()" (change)="feeIsActive.set($any($event.target).checked)" />
+            <input
+              type="checkbox"
+              [checked]="feeIsActive()"
+              (change)="feeIsActive.set($any($event.target).checked)"
+            />
             <span>Tarifa activa</span>
           </label>
 
@@ -534,13 +549,17 @@
       tabindex="0"
       aria-label="Cerrar modal de recargos"
       (click)="handleBackdropClick($event, 'due')"
-      (keydown.enter)="closeModalWithKeyboard($event, 'due')"
-      (keydown.space)="closeModalWithKeyboard($event, 'due')"
+      (keydown.enter)="closeModalWithKeyboard($any($event), 'due')"
+      (keydown.space)="closeModalWithKeyboard($any($event), 'due')"
     >
       <div class="modal" role="dialog" aria-modal="true">
         <div class="modal-header">
           <h3>
-            {{ editingDueConfig() ? 'Editar configuracion de recargo' : 'Nueva configuracion de recargo' }}
+            {{
+              editingDueConfig()
+                ? 'Editar configuracion de recargo'
+                : 'Nueva configuracion de recargo'
+            }}
           </h3>
           <button type="button" class="close-button" (click)="closeDueModal()">
             <span class="material-symbols-outlined">close</span>
@@ -658,8 +677,8 @@
       tabindex="0"
       aria-label="Cerrar modal de pagos"
       (click)="handleBackdropClick($event, 'payment')"
-      (keydown.enter)="closeModalWithKeyboard($event, 'payment')"
-      (keydown.space)="closeModalWithKeyboard($event, 'payment')"
+      (keydown.enter)="closeModalWithKeyboard($any($event), 'payment')"
+      (keydown.space)="closeModalWithKeyboard($any($event), 'payment')"
     >
       <div class="modal large" role="dialog" aria-modal="true">
         <div class="modal-header">
@@ -767,7 +786,7 @@
                 buttonBorderType="default_border"
                 buttonLocale="es"
                 buttonSizeMode="fill"
-                style="width: 198px; height: 58px;"
+                style="width: 198px; height: 58px"
                 [paymentRequest]="googlePayPaymentRequest()"
                 [attr.disabled]="!googlePayReady() ? '' : null"
                 (loadpaymentdata)="handleGooglePaySuccess($event)"
