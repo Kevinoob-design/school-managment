@@ -524,19 +524,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@angular/platform-browser@npm:^20.3.0":
-  version: 20.3.10
-  resolution: "@angular/platform-browser@npm:20.3.10"
+"@angular/platform-browser@npm:^21.0.0":
+  version: 21.0.0
+  resolution: "@angular/platform-browser@npm:21.0.0"
   dependencies:
     tslib: "npm:^2.3.0"
   peerDependencies:
-    "@angular/animations": 20.3.10
-    "@angular/common": 20.3.10
-    "@angular/core": 20.3.10
+    "@angular/animations": 21.0.0
+    "@angular/common": 21.0.0
+    "@angular/core": 21.0.0
   peerDependenciesMeta:
     "@angular/animations":
       optional: true
-  checksum: 10c0/a854cdb22ed3c8be2c1d054907d10ef302c773ca51e77a35c0c4656082c9f9e41a6e787b596e183621bcf6053412e3cb85b98f6a6cc541ce5f4a5ecd607ab38e
+  checksum: 10c0/9c1680f98ccca5a5fb2af885b8bd9a20a01869168fc401e699107408d6529d79ead42737eedbfda967817532c3f46795e6c916e1134ba9223fdd73b9bc0bdb32
   languageName: node
   linkType: hard
 
@@ -8508,7 +8508,7 @@ __metadata:
     "@angular/core": "npm:^20.3.0"
     "@angular/fire": "npm:20.0.1"
     "@angular/forms": "npm:^20.3.0"
-    "@angular/platform-browser": "npm:^20.3.0"
+    "@angular/platform-browser": "npm:^21.0.0"
     "@angular/router": "npm:^20.3.0"
     "@commitlint/cli": "npm:^19.8.1"
     "@commitlint/config-conventional": "npm:^19.8.1"
