@@ -5,6 +5,7 @@ import { SignupPage } from './pages/signup/signup';
 import { AdminDashboard } from './pages/admin/admin';
 import { TeacherDashboard } from './pages/teacher/teacher';
 import { ParentDashboard } from './pages/parent/parent';
+import { AnnouncementsPage } from './pages/announcements/announcements';
 import { roleGuard } from './shared/guards/role.guard';
 import { redirectAuthenticatedGuard } from './core/guards/auth-guard';
 
@@ -23,6 +24,10 @@ export const routes: Routes = [
     path: 'signup',
     component: SignupPage,
     canActivate: [redirectAuthenticatedGuard],
+  },
+  {
+    path: 'announcements',
+    component: AnnouncementsPage,
   },
   {
     path: 'admin',

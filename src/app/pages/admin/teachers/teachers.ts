@@ -4,6 +4,8 @@ import { Button } from '../../../shared/ui/button/button';
 import { Input } from '../../../shared/ui/input/input';
 import { TeacherService, Teacher } from '../../../shared/services/teacher.service';
 import { SubjectService, Subject } from '../../../shared/services/subject.service';
+import { TeacherAccountService } from '../../../shared/services/teacher-account.service';
+import { AuthService } from '../../../shared/services/auth.service';
 
 @Component({
   selector: 'app-teachers-tab',
@@ -14,6 +16,8 @@ import { SubjectService, Subject } from '../../../shared/services/subject.servic
 export class TeachersTab implements OnInit {
   private readonly teacherService = inject(TeacherService);
   private readonly subjectService = inject(SubjectService);
+  private readonly teacherAccountService = inject(TeacherAccountService);
+  private readonly authService = inject(AuthService);
 
   protected teachers = signal<Teacher[]>([]);
   protected subjects = signal<Subject[]>([]);
@@ -28,6 +32,13 @@ export class TeachersTab implements OnInit {
   protected selectedSubjects = signal<string[]>([]);
   protected isActive = signal(true);
   protected formError = signal('');
+
+  // Account management
+  protected createAccount = signal(false);
+  protected generatedPassword = signal('');
+  protected passwordCopied = signal(false);
+  protected accountLoading = signal(false);
+  protected showPasswordSection = signal(false);
 
   async ngOnInit(): Promise<void> {
     await this.loadData();
@@ -57,6 +68,7 @@ export class TeachersTab implements OnInit {
     this.phoneNumber.set(teacher.phoneNumber);
     this.selectedSubjects.set([...teacher.subjects]);
     this.isActive.set(teacher.status === 'active');
+    this.createAccount.set(false);
     this.showModal.set(true);
   }
 
@@ -72,6 +84,11 @@ export class TeachersTab implements OnInit {
     this.selectedSubjects.set([]);
     this.isActive.set(true);
     this.formError.set('');
+    this.createAccount.set(false);
+    this.generatedPassword.set('');
+    this.passwordCopied.set(false);
+    this.accountLoading.set(false);
+    this.showPasswordSection.set(false);
   }
 
   protected toggleSubject(subjectId: string): void {
@@ -124,15 +141,128 @@ export class TeachersTab implements OnInit {
       const editing = this.editingTeacher();
       if (editing && editing.id) {
         await this.teacherService.updateTeacher(editing.id, teacherData);
-      } else {
-        await this.teacherService.addTeacher(teacherData);
-      }
 
-      await this.loadData();
-      this.closeModal();
+        // If creating account for existing teacher without account
+        if (this.createAccount() && !editing.userId) {
+          await this.createTeacherAccount(editing.id);
+        } else {
+          await this.loadData();
+          this.closeModal();
+        }
+      } else {
+        // Creating new teacher
+        const teacherId = await this.teacherService.addTeacher(teacherData);
+
+        if (!teacherId) {
+          this.formError.set('Error al crear el profesor');
+          return;
+        }
+
+        // If account creation is requested
+        if (this.createAccount()) {
+          await this.createTeacherAccount(teacherId);
+        } else {
+          await this.loadData();
+          this.closeModal();
+        }
+      }
     } catch (error) {
       this.formError.set('Error al guardar el profesor');
       console.error(error);
+    }
+  }
+
+  private async createTeacherAccount(teacherId: string): Promise<void> {
+    this.accountLoading.set(true);
+    this.formError.set('');
+
+    const currentUser = this.authService.currentUser();
+    if (!currentUser || !currentUser.email) {
+      this.formError.set('No se pudo obtener la sesión del administrador');
+      this.accountLoading.set(false);
+      return;
+    }
+
+    const password = this.teacherAccountService.generateRandomPassword();
+    const tenantId = this.authService.getCurrentTenantId();
+
+    if (!tenantId) {
+      this.formError.set('No se pudo obtener el ID del administrador');
+      this.accountLoading.set(false);
+      return;
+    }
+
+    const result = await this.teacherAccountService.createTeacherAccount(
+      this.email().trim(),
+      password,
+      teacherId,
+      this.fullName().trim(),
+      tenantId,
+    );
+
+    if (result.success) {
+      this.generatedPassword.set(password);
+      this.showPasswordSection.set(true);
+      this.accountLoading.set(false);
+      await this.loadData();
+    } else {
+      this.formError.set(result.error || 'Error al crear la cuenta');
+      this.accountLoading.set(false);
+    }
+  }
+
+  protected async copyPasswordToClipboard(): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(this.generatedPassword());
+      this.passwordCopied.set(true);
+      setTimeout(() => this.passwordCopied.set(false), 3000);
+    } catch (error) {
+      console.error('Error copying to clipboard:', error);
+      this.formError.set('No se pudo copiar la contraseña');
+    }
+  }
+
+  protected closeModalAfterAccountCreation(): void {
+    if (!this.passwordCopied()) {
+      const confirmed = confirm(
+        '¿Estás seguro? No podrás ver la contraseña de nuevo. Asegúrate de copiarla.',
+      );
+      if (!confirmed) return;
+    }
+    this.closeModal();
+  }
+
+  protected async resetPassword(): Promise<void> {
+    const teacher = this.editingTeacher();
+    if (!teacher || !teacher.id || !teacher.userId) return;
+
+    const confirmed = confirm(
+      `¿Generar una nueva contraseña para "${teacher.fullName}"? La contraseña actual dejará de funcionar.`,
+    );
+    if (!confirmed) return;
+
+    this.accountLoading.set(true);
+    this.formError.set('');
+
+    // Generate new password
+    const newPassword = this.teacherAccountService.generateRandomPassword();
+
+    // Call Cloud Function to reset password
+    const result = await this.teacherAccountService.resetTeacherPassword(
+      teacher.userId,
+      teacher.id,
+      newPassword,
+    );
+
+    if (result.success) {
+      // Show the new password
+      this.generatedPassword.set(newPassword);
+      this.showPasswordSection.set(true);
+      this.passwordCopied.set(false);
+      this.accountLoading.set(false);
+    } else {
+      this.formError.set(result.error || 'Error al restablecer la contraseña');
+      this.accountLoading.set(false);
     }
   }
 

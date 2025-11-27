@@ -1,0 +1,385 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1
+        class="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent"
+      >
+        Anuncios
+      </h1>
+      <p class="text-gray-600 mt-1 font-medium">Gestiona los anuncios de tu escuela</p>
+    </div>
+    <app-button variant="primary" size="md" (click)="openAddModal()">
+      <span class="material-symbols-outlined mr-2">add</span>
+      Agregar Anuncio
+    </app-button>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-orange-100 p-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- Search -->
+      <div>
+        <app-input
+          [label]="'Buscar'"
+          [placeholder]="'Buscar por título, contenido...'"
+          [icon]="'search'"
+          [value]="searchQuery()"
+          (valueChange)="searchQuery.set($event)"
+        />
+      </div>
+
+      <!-- Filter by Status -->
+      <div>
+        <label for="filterStatus" class="block text-sm font-medium text-gray-700 mb-1.5">
+          Estado
+        </label>
+        <select
+          id="filterStatus"
+          [value]="filterStatus()"
+          (change)="filterStatus.set($any($event.target).value)"
+          class="block w-full rounded-lg border border-gray-300 bg-white text-gray-900 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+        >
+          <option value="all">Todos</option>
+          <option value="draft">Borradores</option>
+          <option value="published">Publicados</option>
+          <option value="archived">Archivados</option>
+        </select>
+      </div>
+
+      <!-- Filter by Type -->
+      <div>
+        <label for="filterType" class="block text-sm font-medium text-gray-700 mb-1.5">
+          Tipo
+        </label>
+        <select
+          id="filterType"
+          [value]="filterType()"
+          (change)="filterType.set($any($event.target).value)"
+          class="block w-full rounded-lg border border-gray-300 bg-white text-gray-900 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+        >
+          <option value="all">Todos</option>
+          <option value="urgent">Urgentes</option>
+          <option value="info">Información</option>
+          <option value="event">Eventos</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Announcements List -->
+  <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-orange-100 overflow-hidden">
+    @if (loading()) {
+      <div class="p-12 text-center">
+        <div
+          class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-orange-600 border-r-transparent"
+        ></div>
+        <p class="mt-4 text-gray-600">Cargando anuncios...</p>
+      </div>
+    } @else if (filteredAnnouncements().length === 0) {
+      <div class="p-12 text-center">
+        <div
+          class="bg-gradient-to-br from-orange-500 to-red-600 p-6 rounded-2xl shadow-lg inline-block mb-4"
+        >
+          <span class="material-symbols-outlined text-white text-5xl">campaign</span>
+        </div>
+        <p class="text-xl text-gray-600 font-medium">No hay anuncios</p>
+        <p class="text-sm text-gray-500 mt-2">Comienza creando tu primer anuncio</p>
+      </div>
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Título
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Tipo
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Fecha
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Audiencia
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Estado
+              </th>
+              <th
+                class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Acciones
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            @for (announcement of filteredAnnouncements(); track announcement.id) {
+              <tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4">
+                  <div class="text-sm font-medium text-gray-900">{{ announcement.title }}</div>
+                  <div class="text-sm text-gray-500 line-clamp-1">{{ announcement.excerpt }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                    [ngClass]="getTypeClass(announcement.type)"
+                  >
+                    {{ getTypeLabel(announcement.type) }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ formatDate(announcement.date) }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ getTargetAudienceLabel(announcement.targetAudience) }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <button
+                    type="button"
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer"
+                    [ngClass]="getStatusClass(announcement.status)"
+                    (click)="toggleStatus(announcement)"
+                  >
+                    {{ getStatusLabel(announcement.status) }}
+                  </button>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <button
+                    (click)="openEditModal(announcement)"
+                    class="text-blue-600 hover:text-blue-900 mr-3"
+                    title="Editar"
+                  >
+                    <span class="material-symbols-outlined text-lg">edit</span>
+                  </button>
+                  <button
+                    (click)="deleteAnnouncement(announcement)"
+                    class="text-red-600 hover:text-red-900"
+                    title="Eliminar"
+                  >
+                    <span class="material-symbols-outlined text-lg">delete</span>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modal for Add/Edit Announcement -->
+@if (showModal()) {
+  <div
+    class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+    role="dialog"
+    aria-modal="true"
+    (click)="closeModal()"
+    (keydown.escape)="closeModal()"
+  >
+    <div
+      class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl mx-4 overflow-hidden max-h-[90vh] overflow-y-auto"
+      role="document"
+      (click)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
+    >
+      <!-- Modal Header -->
+      <div class="bg-gradient-to-r from-orange-600 to-red-600 p-6">
+        <h2 class="text-2xl font-bold text-white">
+          {{ editingAnnouncement() ? 'Editar Anuncio' : 'Agregar Anuncio' }}
+        </h2>
+      </div>
+
+      <!-- Modal Body -->
+      <form (submit)="$event.preventDefault(); saveAnnouncement()" class="p-6 space-y-6">
+        <!-- Error Message -->
+        @if (formError()) {
+          <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            {{ formError() }}
+          </div>
+        }
+
+        <!-- Basic Information -->
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Información Básica</h3>
+          <div class="space-y-4">
+            <app-input
+              [label]="'Título *'"
+              [placeholder]="'Título del anuncio'"
+              [value]="title()"
+              (valueChange)="title.set($event)"
+              [required]="true"
+              [invalid]="title().trim().length > 0 && !isTitleValid(title())"
+              [errorMessage]="'El título debe tener al menos 5 caracteres'"
+            />
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Type -->
+              <div>
+                <label for="type" class="block text-sm font-medium text-gray-700 mb-1.5">
+                  Tipo *
+                </label>
+                <select
+                  id="type"
+                  [value]="type()"
+                  (change)="type.set($any($event.target).value)"
+                  class="block w-full rounded-lg border border-gray-300 bg-white text-gray-900 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  required
+                >
+                  <option value="info">Información</option>
+                  <option value="urgent">Urgente</option>
+                  <option value="event">Evento</option>
+                </select>
+              </div>
+
+              <!-- Target Audience -->
+              <div>
+                <label for="targetAudience" class="block text-sm font-medium text-gray-700 mb-1.5">
+                  Audiencia *
+                </label>
+                <select
+                  id="targetAudience"
+                  [value]="targetAudience()"
+                  (change)="targetAudience.set($any($event.target).value)"
+                  class="block w-full rounded-lg border border-gray-300 bg-white text-gray-900 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  required
+                >
+                  <option value="all">Todos</option>
+                  <option value="teachers">Profesores</option>
+                  <option value="parents">Padres</option>
+                  <option value="students">Estudiantes</option>
+                </select>
+              </div>
+
+              <!-- Date -->
+              <app-input
+                [label]="'Fecha *'"
+                [type]="'date'"
+                [value]="date()"
+                (valueChange)="date.set($event)"
+                [required]="true"
+                [invalid]="date().length > 0 && !isDateValid(date())"
+              />
+            </div>
+
+            <!-- Status -->
+            <div>
+              <label for="status" class="block text-sm font-medium text-gray-700 mb-1.5">
+                Estado *
+              </label>
+              <select
+                id="status"
+                [value]="status()"
+                (change)="status.set($any($event.target).value)"
+                class="block w-full rounded-lg border border-gray-300 bg-white text-gray-900 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                required
+              >
+                <option value="draft">Borrador</option>
+                <option value="published">Publicado</option>
+                <option value="archived">Archivado</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Contenido</h3>
+          <div class="space-y-4">
+            <!-- Full Content -->
+            <div>
+              <label for="content" class="block text-sm font-medium text-gray-700 mb-1.5">
+                Contenido Completo *
+              </label>
+              <textarea
+                id="content"
+                [value]="content()"
+                (input)="content.set($any($event.target).value)"
+                (blur)="updateExcerptFromContent()"
+                rows="6"
+                class="block w-full rounded-lg border text-gray-900 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                [ngClass]="
+                  content().trim().length > 0 && !isContentValid(content())
+                    ? 'border-red-500'
+                    : 'border-gray-300'
+                "
+                placeholder="Escribe el contenido completo del anuncio"
+                required
+              ></textarea>
+              @if (content().trim().length > 0 && !isContentValid(content())) {
+                <p class="mt-1 text-sm text-red-600">El contenido debe tener al menos 20 caracteres</p>
+              }
+            </div>
+
+            <!-- Excerpt -->
+            <div>
+              <label for="excerpt" class="block text-sm font-medium text-gray-700 mb-1.5">
+                Extracto (opcional)
+              </label>
+              <textarea
+                id="excerpt"
+                [value]="excerpt()"
+                (input)="excerpt.set($any($event.target).value)"
+                rows="2"
+                class="block w-full rounded-lg border border-gray-300 bg-white text-gray-900 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                placeholder="Se generará automáticamente si se deja vacío"
+              ></textarea>
+              <p class="mt-1 text-sm text-gray-500">
+                Si no se proporciona, se usarán los primeros 150 caracteres del contenido
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview -->
+        @if (title().trim() && content().trim()) {
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Vista Previa</h3>
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div class="flex items-center justify-between mb-3">
+                <span
+                  class="px-3 py-1 rounded-full text-xs font-semibold uppercase"
+                  [ngClass]="getTypeClass(type())"
+                >
+                  {{ getTypeLabel(type()) }}
+                </span>
+                <span class="text-sm text-gray-500">{{ formatDate(date()) }}</span>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ title() }}</h3>
+              <p class="text-gray-700">
+                {{ excerpt() || content().substring(0, 150) + (content().length > 150 ? '...' : '') }}
+              </p>
+            </div>
+          </div>
+        }
+      </form>
+
+      <!-- Modal Footer -->
+      <div class="p-6 bg-gray-50 flex items-center justify-end gap-3">
+        <app-button [variant]="'ghost'" [size]="'md'" [type]="'button'" (click)="closeModal()">
+          Cancelar
+        </app-button>
+        <app-button
+          [variant]="'primary'"
+          [size]="'md'"
+          [type]="'submit'"
+          [disabled]="!canSubmit() || loading()"
+          (click)="saveAnnouncement()"
+        >
+          {{ loading() ? 'Guardando…' : editingAnnouncement() ? 'Actualizar' : 'Guardar' }}
+        </app-button>
+      </div>
+    </div>
+  </div>
+}

@@ -120,6 +120,16 @@ export class AuthService {
     await signOut(this.auth);
   }
 
+  async reAuthenticateAdmin(email: string, password: string): Promise<boolean> {
+    try {
+      await signInWithEmailAndPassword(this.auth, email, password);
+      return true;
+    } catch (error) {
+      console.error('Error re-authenticating admin:', error);
+      return false;
+    }
+  }
+
   async fetchUserRole(uid: string): Promise<UserRole> {
     try {
       const ref = doc(this.firestore, 'users', uid);
