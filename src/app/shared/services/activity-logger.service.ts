@@ -22,7 +22,14 @@ export type ActivityType =
   | 'enrollment'
   | 'assignment';
 
-export type ActivityEntity = 'student' | 'teacher' | 'class' | 'grade_level' | 'subject' | 'user';
+export type ActivityEntity =
+	| 'student'
+	| 'teacher'
+	| 'class'
+	| 'grade_level'
+	| 'subject'
+	| 'user'
+	| 'announcement';
 
 export interface Activity {
   id?: string;
@@ -177,14 +184,15 @@ export class ActivityLoggerService {
     entityName: string,
     metadata?: Record<string, unknown>,
   ): Promise<void> {
-    const descriptions = {
-      student: `Inscribió al estudiante "${entityName}"`,
-      teacher: `Agregó al profesor "${entityName}"`,
-      class: `Creó la clase "${entityName}"`,
-      grade_level: `Creó el nivel académico "${entityName}"`,
-      subject: `Creó la asignatura "${entityName}"`,
-      user: `Creó el usuario "${entityName}"`,
-    };
+		const descriptions = {
+			student: `Inscribió al estudiante "${entityName}"`,
+			teacher: `Agregó al profesor "${entityName}"`,
+			class: `Creó la clase "${entityName}"`,
+			grade_level: `Creó el nivel académico "${entityName}"`,
+			subject: `Creó la asignatura "${entityName}"`,
+			user: `Creó el usuario "${entityName}"`,
+			announcement: `Creó el anuncio "${entityName}"`,
+		};
 
     await this.logActivity('create', entity, entityId, entityName, descriptions[entity], metadata);
   }
@@ -195,14 +203,15 @@ export class ActivityLoggerService {
     entityName: string,
     metadata?: Record<string, unknown>,
   ): Promise<void> {
-    const descriptions = {
-      student: `Actualizó los datos del estudiante "${entityName}"`,
-      teacher: `Actualizó los datos del profesor "${entityName}"`,
-      class: `Actualizó la clase "${entityName}"`,
-      grade_level: `Actualizó el nivel académico "${entityName}"`,
-      subject: `Actualizó la asignatura "${entityName}"`,
-      user: `Actualizó el usuario "${entityName}"`,
-    };
+		const descriptions = {
+			student: `Actualizó los datos del estudiante "${entityName}"`,
+			teacher: `Actualizó los datos del profesor "${entityName}"`,
+			class: `Actualizó la clase "${entityName}"`,
+			grade_level: `Actualizó el nivel académico "${entityName}"`,
+			subject: `Actualizó la asignatura "${entityName}"`,
+			user: `Actualizó el usuario "${entityName}"`,
+			announcement: `Actualizó el anuncio "${entityName}"`,
+		};
 
     await this.logActivity('update', entity, entityId, entityName, descriptions[entity], metadata);
   }
@@ -213,14 +222,15 @@ export class ActivityLoggerService {
     entityName: string,
     metadata?: Record<string, unknown>,
   ): Promise<void> {
-    const descriptions = {
-      student: `Eliminó al estudiante "${entityName}"`,
-      teacher: `Eliminó al profesor "${entityName}"`,
-      class: `Eliminó la clase "${entityName}"`,
-      grade_level: `Eliminó el nivel académico "${entityName}"`,
-      subject: `Eliminó la asignatura "${entityName}"`,
-      user: `Eliminó el usuario "${entityName}"`,
-    };
+		const descriptions = {
+			student: `Eliminó al estudiante "${entityName}"`,
+			teacher: `Eliminó al profesor "${entityName}"`,
+			class: `Eliminó la clase "${entityName}"`,
+			grade_level: `Eliminó el nivel académico "${entityName}"`,
+			subject: `Eliminó la asignatura "${entityName}"`,
+			user: `Eliminó el usuario "${entityName}"`,
+			announcement: `Eliminó el anuncio "${entityName}"`,
+		};
 
     await this.logActivity('delete', entity, entityId, entityName, descriptions[entity], metadata);
   }
@@ -233,14 +243,15 @@ export class ActivityLoggerService {
     metadata?: Record<string, unknown>,
   ): Promise<void> {
     const statusText = newStatus === 'active' ? 'activó' : 'desactivó';
-    const descriptions = {
-      student: `${statusText.charAt(0).toUpperCase() + statusText.slice(1)} al estudiante "${entityName}"`,
-      teacher: `${statusText.charAt(0).toUpperCase() + statusText.slice(1)} al profesor "${entityName}"`,
-      class: `${statusText.charAt(0).toUpperCase() + statusText.slice(1)} la clase "${entityName}"`,
-      grade_level: `${statusText.charAt(0).toUpperCase() + statusText.slice(1)} el nivel académico "${entityName}"`,
-      subject: `${statusText.charAt(0).toUpperCase() + statusText.slice(1)} la asignatura "${entityName}"`,
-      user: `${statusText.charAt(0).toUpperCase() + statusText.slice(1)} el usuario "${entityName}"`,
-    };
+		const descriptions = {
+			student: `${statusText.charAt(0).toUpperCase() + statusText.slice(1)} al estudiante "${entityName}"`,
+			teacher: `${statusText.charAt(0).toUpperCase() + statusText.slice(1)} al profesor "${entityName}"`,
+			class: `${statusText.charAt(0).toUpperCase() + statusText.slice(1)} la clase "${entityName}"`,
+			grade_level: `${statusText.charAt(0).toUpperCase() + statusText.slice(1)} el nivel académico "${entityName}"`,
+			subject: `${statusText.charAt(0).toUpperCase() + statusText.slice(1)} la asignatura "${entityName}"`,
+			user: `${statusText.charAt(0).toUpperCase() + statusText.slice(1)} el usuario "${entityName}"`,
+			announcement: `${statusText.charAt(0).toUpperCase() + statusText.slice(1)} el anuncio "${entityName}"`,
+		};
 
     await this.logActivity('status_change', entity, entityId, entityName, descriptions[entity], {
       ...metadata,

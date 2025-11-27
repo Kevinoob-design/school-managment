@@ -2,7 +2,7 @@
 
 ## admin dashboard
 
-1. Add ability to create an account for teachers when they are created on the teacher admin page
+1. [x] Add ability to create an account for teachers when they are created on the teacher admin page
    1. have to add a section to create the account linked to the teacher when adding / editing a teacher
    2. password should be randomly generated, and we should be able to copy it to share it
    3. from this panel, once the account is created / saved we should be able te reset the password for the teacher
