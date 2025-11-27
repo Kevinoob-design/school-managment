@@ -29,7 +29,8 @@ export type ActivityEntity =
 	| 'grade_level'
 	| 'subject'
 	| 'user'
-	| 'announcement';
+	| 'announcement'
+	| 'enrollment';
 
 export interface Activity {
   id?: string;
@@ -192,6 +193,7 @@ export class ActivityLoggerService {
 			subject: `Creó la asignatura "${entityName}"`,
 			user: `Creó el usuario "${entityName}"`,
 			announcement: `Creó el anuncio "${entityName}"`,
+			enrollment: `Inscripción: ${entityName}`,
 		};
 
     await this.logActivity('create', entity, entityId, entityName, descriptions[entity], metadata);
@@ -211,6 +213,7 @@ export class ActivityLoggerService {
 			subject: `Actualizó la asignatura "${entityName}"`,
 			user: `Actualizó el usuario "${entityName}"`,
 			announcement: `Actualizó el anuncio "${entityName}"`,
+			enrollment: `Actualizó inscripción: ${entityName}`,
 		};
 
     await this.logActivity('update', entity, entityId, entityName, descriptions[entity], metadata);
@@ -230,6 +233,7 @@ export class ActivityLoggerService {
 			subject: `Eliminó la asignatura "${entityName}"`,
 			user: `Eliminó el usuario "${entityName}"`,
 			announcement: `Eliminó el anuncio "${entityName}"`,
+			enrollment: `Desinscripción: ${entityName}`,
 		};
 
     await this.logActivity('delete', entity, entityId, entityName, descriptions[entity], metadata);
@@ -251,6 +255,7 @@ export class ActivityLoggerService {
 			subject: `${statusText.charAt(0).toUpperCase() + statusText.slice(1)} la asignatura "${entityName}"`,
 			user: `${statusText.charAt(0).toUpperCase() + statusText.slice(1)} el usuario "${entityName}"`,
 			announcement: `${statusText.charAt(0).toUpperCase() + statusText.slice(1)} el anuncio "${entityName}"`,
+			enrollment: `${statusText.charAt(0).toUpperCase() + statusText.slice(1)} inscripción: ${entityName}`,
 		};
 
     await this.logActivity('status_change', entity, entityId, entityName, descriptions[entity], {

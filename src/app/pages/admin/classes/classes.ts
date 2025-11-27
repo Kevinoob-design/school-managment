@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Button } from '../../../shared/ui/button/button';
 import { Input } from '../../../shared/ui/input/input';
@@ -6,6 +6,8 @@ import { ClassService, Class, ClassSchedule } from '../../../shared/services/cla
 import { GradeLevelService, GradeLevel } from '../../../shared/services/grade-level.service';
 import { SubjectService, Subject } from '../../../shared/services/subject.service';
 import { TeacherService, Teacher } from '../../../shared/services/teacher.service';
+import { StudentService, Student } from '../../../shared/services/student.service';
+import { EnrollmentService, Enrollment } from '../../../shared/services/enrollment.service';
 
 @Component({
   selector: 'app-classes-tab',
@@ -18,14 +20,27 @@ export class ClassesTab implements OnInit {
   private readonly gradeLevelService = inject(GradeLevelService);
   private readonly subjectService = inject(SubjectService);
   private readonly teacherService = inject(TeacherService);
+  private readonly studentService = inject(StudentService);
+  private readonly enrollmentService = inject(EnrollmentService);
 
   protected classes = signal<Class[]>([]);
   protected gradeLevels = signal<GradeLevel[]>([]);
   protected subjects = signal<Subject[]>([]);
   protected teachers = signal<Teacher[]>([]);
+  protected students = signal<Student[]>([]);
   protected loading = signal(true);
   protected showModal = signal(false);
   protected editingClass = signal<Class | null>(null);
+  
+  // Enrollment modal
+  protected showEnrollmentModal = signal(false);
+  protected selectedClass = signal<Class | null>(null);
+  protected enrolledStudents = signal<Student[]>([]);
+  protected enrollments = signal<Enrollment[]>([]);
+  protected enrollmentCounts = signal<Map<string, number>>(new Map());
+  protected availableStudentSearch = signal('');
+  protected enrollmentLoading = signal(false);
+  protected enrollmentError = signal('');
 
   // Form fields
   protected className = signal('');
@@ -57,16 +72,24 @@ export class ClassesTab implements OnInit {
 
   private async loadData(): Promise<void> {
     this.loading.set(true);
-    const [classes, gradeLevels, subjects, teachers] = await Promise.all([
+    const [classes, gradeLevels, subjects, teachers, students] = await Promise.all([
       this.classService.getClasses(),
       this.gradeLevelService.getActiveGradeLevels(),
       this.subjectService.getActiveSubjects(),
       this.teacherService.getTeachers(),
+      this.studentService.getStudents(),
     ]);
     this.classes.set(classes);
     this.gradeLevels.set(gradeLevels);
     this.subjects.set(subjects);
     this.teachers.set(teachers);
+    this.students.set(students);
+    
+    // Load enrollment counts
+    const classIds = classes.map((c) => c.id!).filter(Boolean);
+    const counts = await this.enrollmentService.getEnrollmentCounts(classIds);
+    this.enrollmentCounts.set(counts);
+    
     this.loading.set(false);
   }
 
@@ -251,5 +274,143 @@ export class ClassesTab implements OnInit {
   protected formatSchedule(schedule: ClassSchedule[]): string {
     if (schedule.length === 0) return 'Sin horario';
     return schedule.map((s) => `${s.day.substring(0, 3)} ${s.startTime}-${s.endTime}`).join(', ');
+  }
+
+  // Enrollment management methods
+  protected async openEnrollmentModal(classItem: Class): Promise<void> {
+    if (!classItem.id) return;
+    
+    this.selectedClass.set(classItem);
+    this.enrollmentLoading.set(true);
+    this.showEnrollmentModal.set(true);
+    this.enrollmentError.set('');
+    
+    await this.loadEnrollments(classItem.id);
+    this.enrollmentLoading.set(false);
+  }
+
+  protected closeEnrollmentModal(): void {
+    this.showEnrollmentModal.set(false);
+    this.selectedClass.set(null);
+    this.enrolledStudents.set([]);
+    this.enrollments.set([]);
+    this.availableStudentSearch.set('');
+    this.enrollmentError.set('');
+  }
+
+  private async loadEnrollments(classId: string): Promise<void> {
+    const enrollments = await this.enrollmentService.getClassEnrollments(classId);
+    this.enrollments.set(enrollments);
+    
+    // Get student details for enrolled students
+    const enrolled = this.students().filter((s) =>
+      enrollments.some((e) => e.studentId === s.id)
+    );
+    this.enrolledStudents.set(enrolled);
+  }
+
+  protected filteredAvailableStudents = computed(() => {
+    const selectedClass = this.selectedClass();
+    if (!selectedClass) return [];
+    
+    const enrolled = this.enrollments().map((e) => e.studentId);
+    const search = this.availableStudentSearch().toLowerCase().trim();
+    
+    return this.students().filter((student) => {
+      // Not already enrolled
+      if (enrolled.includes(student.id!)) return false;
+      // Must be active
+      if (student.status !== 'active') return false;
+      // Must match grade level
+      if (student.gradeLevel !== selectedClass.gradeLevelId) return false;
+      // Search filter
+      if (search && !student.fullName.toLowerCase().includes(search)) return false;
+      
+      return true;
+    });
+  });
+
+  protected async enrollStudent(student: Student): Promise<void> {
+    const classItem = this.selectedClass();
+    if (!classItem?.id || !student.id) return;
+    
+    this.enrollmentLoading.set(true);
+    this.enrollmentError.set('');
+    
+    try {
+      await this.enrollmentService.enrollStudent(classItem.id, student.id);
+      await this.loadEnrollments(classItem.id);
+      await this.loadData(); // Refresh counts
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Error al inscribir estudiante';
+      this.enrollmentError.set(message);
+    } finally {
+      this.enrollmentLoading.set(false);
+    }
+  }
+
+  protected async unenrollStudent(enrollment: Enrollment, student: Student): Promise<void> {
+    const classItem = this.selectedClass();
+    if (!enrollment.id || !classItem?.id) return;
+    
+    if (!confirm(`¿Desinscribir a ${student.fullName} de esta clase?`)) {
+      return;
+    }
+    
+    this.enrollmentLoading.set(true);
+    this.enrollmentError.set('');
+    
+    try {
+      await this.enrollmentService.unenrollStudent(
+        enrollment.id,
+        student.fullName,
+        classItem.className
+      );
+      await this.loadEnrollments(classItem.id);
+      await this.loadData(); // Refresh counts
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Error al desinscribir estudiante';
+      this.enrollmentError.set(message);
+    } finally {
+      this.enrollmentLoading.set(false);
+    }
+  }
+
+  protected getEnrollmentCount(classId: string): number {
+    return this.enrollmentCounts().get(classId) || 0;
+  }
+
+  protected getCapacityClass(count: number, max: number): string {
+    const percentage = (count / max) * 100;
+    if (percentage >= 100) return 'text-red-600 font-bold';
+    if (percentage >= 90) return 'text-red-600';
+    if (percentage >= 70) return 'text-yellow-600';
+    return 'text-green-600';
+  }
+
+  protected formatDate(timestamp: number): string {
+    try {
+      return new Date(timestamp).toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+    } catch {
+      return 'N/A';
+    }
+  }
+
+  protected getEnrollmentDate(studentId: string): string {
+    const enrollment = this.enrollments().find((e) => e.studentId === studentId);
+    return enrollment ? this.formatDate(enrollment.enrolledAt) : 'N/A';
+  }
+
+  protected async unenrollStudentById(studentId: string): Promise<void> {
+    const student = this.students().find((s) => s.id === studentId);
+    const enrollment = this.enrollments().find((e) => e.studentId === studentId);
+    
+    if (!student || !enrollment) return;
+    
+    await this.unenrollStudent(enrollment, student);
   }
 }

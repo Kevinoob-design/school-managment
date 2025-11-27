@@ -7,8 +7,8 @@
    2. password should be randomly generated, and we should be able to copy it to share it
    3. from this panel, once the account is created / saved we should be able te reset the password for the teacher
    4. teacher account should be related to the created teacher
-2. Add new announcement pages, replace the hardcoded announcements from the landing page to use the new service and data
-3. add student enrollment to a class
+2. [x] Add new announcement pages, replace the hardcoded announcements from the landing page to use the new service and data
+3. [x] add student enrollment to a class
 
 ## teacher dashboard
 
