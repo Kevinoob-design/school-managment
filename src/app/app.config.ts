@@ -11,6 +11,8 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getDatabase, provideDatabase } from '@angular/fire/database';
 import { getStorage, provideStorage } from '@angular/fire/storage';
+import { getFunctions, provideFunctions, connectFunctionsEmulator } from '@angular/fire/functions';
+import { isDevMode } from '@angular/core';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -28,9 +30,22 @@ export const appConfig: ApplicationConfig = {
         measurementId: 'G-2LRKEGHTT7',
       }),
     ),
-    provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
+    provideAuth(() => {
+      const auth = getAuth();
+      return auth;
+    }),
+    provideFirestore(() => {
+      const firestore = getFirestore();
+      return firestore;
+    }),
     provideDatabase(() => getDatabase()),
     provideStorage(() => getStorage()),
+    provideFunctions(() => {
+      const functions = getFunctions();
+      if (isDevMode()) {
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+      }
+      return functions;
+    }),
   ],
 };

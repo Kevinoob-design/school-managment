@@ -15,6 +15,23 @@
       "request": "launch",
       "preLaunchTask": "npm: test",
       "url": "http://localhost:9876/debug.html"
+    },
+    {
+      "command": "firebase emulators:start",
+      "name": "Firebase Emulators",
+      "request": "launch",
+      "type": "node-terminal"
+    }
+  ],
+  "compounds": [
+    {
+      "presentation": {
+        "hidden": false,
+        "group": "Firebse with Emulator",
+        "order": 1
+      },
+      "name": "Serve with Emulators",
+      "configurations": ["Firebase Emulators", "ng serve"]
     }
   ]
 }

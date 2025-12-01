@@ -16,6 +16,7 @@ import { ActivityLoggerService } from './activity-logger.service';
 
 export interface Teacher {
   id?: string;
+  userId?: string;
   tenantId: string;
   fullName: string;
   email: string;

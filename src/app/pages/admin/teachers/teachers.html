@@ -215,8 +215,199 @@
             </label>
           </div>
 
+          <!-- Account Management Section -->
+          @if (!editingTeacher() || (editingTeacher() && !editingTeacher()?.userId)) {
+            <!-- Creating new teacher or editing teacher without account - show account creation option -->
+            <div class="border-t border-gray-200 pt-4 mt-4">
+              <h3 class="text-lg font-semibold text-gray-800 mb-3">Cuenta de Acceso</h3>
+
+              @if (!showPasswordSection()) {
+                @if (!editingTeacher()) {
+                  <label
+                    class="flex items-center gap-3 p-4 bg-emerald-50 rounded-lg cursor-pointer hover:bg-emerald-100 transition-colors"
+                  >
+                    <input
+                      type="checkbox"
+                      [checked]="createAccount()"
+                      (change)="createAccount.set(!createAccount())"
+                      class="w-5 h-5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
+                    />
+                    <div class="flex-1">
+                      <div class="text-sm font-medium text-gray-900">
+                        Crear cuenta de acceso al guardar
+                      </div>
+                      <p class="text-xs text-gray-600 mt-1">
+                        Se generará una contraseña automáticamente para que el profesor pueda
+                        iniciar sesión
+                      </p>
+                    </div>
+                  </label>
+                } @else {
+                  <!-- Editing teacher without account -->
+                  <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 space-y-3">
+                    <div class="flex items-start gap-2 text-amber-800">
+                      <span class="material-symbols-outlined text-base mt-0.5">info</span>
+                      <div class="flex-1">
+                        <p class="text-sm font-medium">
+                          Este profesor aún no tiene cuenta de acceso
+                        </p>
+                        <p class="text-xs text-amber-700 mt-1">
+                          Puedes crear una cuenta para que pueda iniciar sesión en el sistema
+                        </p>
+                      </div>
+                    </div>
+                    <label
+                      class="flex items-center gap-3 p-3 bg-white rounded-lg cursor-pointer hover:bg-emerald-50 transition-colors border border-amber-200"
+                    >
+                      <input
+                        type="checkbox"
+                        [checked]="createAccount()"
+                        (change)="createAccount.set(!createAccount())"
+                        class="w-5 h-5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
+                      />
+                      <div class="flex-1">
+                        <div class="text-sm font-medium text-gray-900">
+                          Crear cuenta de acceso al guardar
+                        </div>
+                      </div>
+                    </label>
+                  </div>
+                }
+              } @else {
+                <!-- Password generated - show it -->
+                <div
+                  class="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-xl p-6 space-y-4"
+                >
+                  <div class="flex items-center gap-2 text-emerald-700">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <span class="font-semibold">Cuenta creada exitosamente</span>
+                  </div>
+
+                  <div
+                    class="bg-white/80 backdrop-blur-sm rounded-lg p-4 border border-emerald-200"
+                  >
+                    <div class="block text-sm font-medium text-gray-700 mb-2">
+                      Contraseña Generada
+                    </div>
+                    <div class="flex gap-2">
+                      <input
+                        type="text"
+                        [value]="generatedPassword()"
+                        readonly
+                        class="flex-1 px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 font-mono text-sm focus:outline-none"
+                      />
+                      <app-button
+                        [variant]="passwordCopied() ? 'primary' : 'outline'"
+                        [size]="'md'"
+                        (click)="copyPasswordToClipboard()"
+                      >
+                        <span class="material-symbols-outlined">
+                          {{ passwordCopied() ? 'check' : 'content_copy' }}
+                        </span>
+                      </app-button>
+                    </div>
+                  </div>
+
+                  <div
+                    class="flex items-start gap-2 text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-3"
+                  >
+                    <span class="material-symbols-outlined text-base mt-0.5">warning</span>
+                    <p class="text-xs">
+                      <strong>Importante:</strong> Guarda esta contraseña. No podrás verla de nuevo
+                      después de cerrar esta ventana.
+                      {{
+                        passwordCopied()
+                          ? 'Contraseña copiada al portapapeles.'
+                          : 'Haz clic en el botón para copiarla.'
+                      }}
+                    </p>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else if (editingTeacher()?.userId) {
+            <!-- Editing teacher with existing account -->
+            <div class="border-t border-gray-200 pt-4 mt-4">
+              <h3 class="text-lg font-semibold text-gray-800 mb-3">Cuenta de Acceso</h3>
+
+              @if (!showPasswordSection()) {
+                <div class="bg-emerald-50 rounded-lg p-4 space-y-4">
+                  <div class="flex items-center gap-2 text-emerald-700">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <span class="text-sm font-medium"
+                      >Este profesor tiene una cuenta de acceso activa</span
+                    >
+                  </div>
+                  <div class="bg-white rounded-lg p-3 border border-emerald-200">
+                    <p class="text-xs text-gray-600 mb-3">
+                      El profesor puede iniciar sesión con su correo electrónico:
+                      <strong>{{ email() }}</strong>
+                    </p>
+                    <app-button
+                      [variant]="'outline'"
+                      [size]="'sm'"
+                      [disabled]="accountLoading()"
+                      (click)="resetPassword()"
+                    >
+                      <span class="material-symbols-outlined mr-2 text-sm">refresh</span>
+                      {{ accountLoading() ? 'Procesando...' : 'Restablecer Contraseña' }}
+                    </app-button>
+                  </div>
+                </div>
+              } @else {
+                <!-- Password reset - show new password -->
+                <div
+                  class="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-xl p-6 space-y-4"
+                >
+                  <div class="flex items-center gap-2 text-emerald-700">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <span class="font-semibold">Contraseña restablecida exitosamente</span>
+                  </div>
+
+                  <div
+                    class="bg-white/80 backdrop-blur-sm rounded-lg p-4 border border-emerald-200"
+                  >
+                    <div class="block text-sm font-medium text-gray-700 mb-2">Nueva Contraseña</div>
+                    <div class="flex gap-2">
+                      <input
+                        type="text"
+                        [value]="generatedPassword()"
+                        readonly
+                        class="flex-1 px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 font-mono text-sm focus:outline-none"
+                      />
+                      <app-button
+                        [variant]="passwordCopied() ? 'primary' : 'outline'"
+                        [size]="'md'"
+                        (click)="copyPasswordToClipboard()"
+                      >
+                        <span class="material-symbols-outlined">
+                          {{ passwordCopied() ? 'check' : 'content_copy' }}
+                        </span>
+                      </app-button>
+                    </div>
+                  </div>
+
+                  <div
+                    class="flex items-start gap-2 text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-3"
+                  >
+                    <span class="material-symbols-outlined text-base mt-0.5">warning</span>
+                    <p class="text-xs">
+                      <strong>Importante:</strong> Guarda esta contraseña. No podrás verla de nuevo
+                      después de cerrar esta ventana.
+                      {{
+                        passwordCopied()
+                          ? 'Contraseña copiada al portapapeles.'
+                          : 'Haz clic en el botón para copiarla.'
+                      }}
+                    </p>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+
           @if (formError()) {
-            <div class="text-red-600 text-sm flex items-center gap-2">
+            <div class="text-red-600 text-sm flex items-center gap-2 mt-4">
               <span class="material-symbols-outlined text-base">error</span>
               {{ formError() }}
             </div>
@@ -225,8 +416,33 @@
 
         <!-- Modal Footer -->
         <div class="p-6 bg-gray-50 flex items-center justify-end gap-3">
-          <app-button variant="ghost" size="md" (click)="closeModal()"> Cancelar </app-button>
-          <app-button variant="primary" size="md" (click)="saveTeacher()"> Guardar </app-button>
+          @if (showPasswordSection()) {
+            <app-button
+              [variant]="'primary'"
+              [size]="'md'"
+              (click)="closeModalAfterAccountCreation()"
+            >
+              <span class="material-symbols-outlined mr-2">check</span>
+              Cerrar
+            </app-button>
+          } @else {
+            <app-button [variant]="'ghost'" [size]="'md'" (click)="closeModal()">
+              Cancelar
+            </app-button>
+            <app-button
+              [variant]="'primary'"
+              [size]="'md'"
+              [disabled]="accountLoading()"
+              (click)="saveTeacher()"
+            >
+              @if (accountLoading()) {
+                <span
+                  class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-white border-r-transparent mr-2"
+                ></span>
+              }
+              {{ accountLoading() ? 'Creando...' : 'Guardar' }}
+            </app-button>
+          }
         </div>
       </div>
     </div>

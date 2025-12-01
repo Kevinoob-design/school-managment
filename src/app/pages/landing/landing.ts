@@ -1,9 +1,10 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Button } from '../../shared/ui/button/button';
 import { Card } from '../../shared/ui/card/card';
 import { Section } from '../../shared/ui/section/section';
 import { AuthService } from '../../shared/services/auth.service';
+import { AnnouncementService, Announcement } from '../../shared/services/announcement.service';
 
 interface UserType {
   id: string;
@@ -12,15 +13,6 @@ interface UserType {
   icon: string;
   features: string[];
   link: string;
-}
-
-interface Announcement {
-  id: string;
-  title: string;
-  date: string;
-  school: string;
-  excerpt: string;
-  type: 'urgent' | 'info' | 'event';
 }
 
 interface Feature {
@@ -36,9 +28,13 @@ interface Feature {
   templateUrl: './landing.html',
   styleUrl: './landing.sass',
 })
-export class Landing {
+export class Landing implements OnInit {
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
+  private readonly announcementService = inject(AnnouncementService);
+  
+  protected readonly selectedAnnouncement = signal<Announcement | null>(null);
+  protected readonly showDetailModal = signal(false);
   protected readonly userTypes = signal<UserType[]>([
     {
       id: 'school',
@@ -95,35 +91,22 @@ export class Landing {
     },
   ]);
 
-  protected readonly announcements = signal<Announcement[]>([
-    {
-      id: '1',
-      title: 'Actualización del Horario de Vacaciones',
-      date: '2025-10-28',
-      school: 'Colegio Lincoln',
-      excerpt:
-        'Cambios importantes en el calendario de vacaciones de primavera. Por favor revisa el horario actualizado.',
-      type: 'urgent',
-    },
-    {
-      id: '2',
-      title: 'Registro Abierto para Conferencias Padres-Maestros',
-      date: '2025-10-26',
-      school: 'Escuela Roosevelt',
-      excerpt:
-        'Reserva tu horario para las próximas conferencias padres-maestros programadas para noviembre.',
-      type: 'event',
-    },
-    {
-      id: '3',
-      title: 'Nuevos Recursos de Aprendizaje en Línea Disponibles',
-      date: '2025-10-25',
-      school: 'Todas las Escuelas',
-      excerpt:
-        'Accede a una amplia gama de nuevos materiales educativos y herramientas de aprendizaje interactivas.',
-      type: 'info',
-    },
-  ]);
+  protected readonly announcements = signal<Announcement[]>([]);
+  protected readonly announcementsLoading = signal(true);
+
+  async ngOnInit(): Promise<void> {
+    await this.loadAnnouncements();
+  }
+
+  private async loadAnnouncements(): Promise<void> {
+    this.announcementsLoading.set(true);
+    try {
+      const announcements = await this.announcementService.getPublicAnnouncements(3);
+      this.announcements.set(announcements);
+    } finally {
+      this.announcementsLoading.set(false);
+    }
+  }
   protected readonly features = signal<Feature[]>([
     {
       id: '1',
@@ -159,6 +142,39 @@ export class Landing {
       info: 'bg-green-100 text-green-800',
     };
     return typeMap[type] || typeMap['info'];
+  }
+
+  protected formatDate(dateString: string): string {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      return date.toISOString().split('T')[0];
+    } catch {
+      return dateString;
+    }
+  }
+
+  protected async goToAllAnnouncements(): Promise<void> {
+    await this.router.navigate(['/announcements']);
+  }
+
+  protected openDetailModal(announcement: Announcement): void {
+    this.selectedAnnouncement.set(announcement);
+    this.showDetailModal.set(true);
+  }
+
+  protected closeDetailModal(): void {
+    this.showDetailModal.set(false);
+    this.selectedAnnouncement.set(null);
+  }
+
+  protected getTypeLabel(type: string): string {
+    const labelMap: Record<string, string> = {
+      urgent: 'Urgente',
+      info: 'Información',
+      event: 'Evento',
+    };
+    return labelMap[type] || type;
   }
 
   // Navigation handlers
