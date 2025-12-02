@@ -63,19 +63,19 @@ export class Landing implements OnInit {
       link: '/parent/login',
     },
 
-    {
-      id: 'teacher',
-      title: 'Maestros',
-      description: 'Optimiza tus tareas docentes y administrativas',
-      icon: 'co_present',
-      features: [
-        'Gestión de calificaciones y asignaciones',
-        'Registro de asistencia',
-        'Comunicación padres-maestros',
-        'Planificación curricular',
-      ],
-      link: '/teacher/login',
-    },
+	{
+		id: 'teacher',
+		title: 'Maestros',
+		description: 'Optimiza tus tareas docentes y administrativas',
+		icon: 'co_present',
+		features: [
+			'Gestión de calificaciones y asignaciones',
+			'Registro de asistencia',
+			'Comunicación padres-maestros',
+			'Planificación curricular',
+		],
+		link: '/auth',
+	},
     {
       id: 'admin',
       title: 'Administradores',
