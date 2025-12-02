@@ -46,10 +46,8 @@ export class EnrollmentService {
 	 * Enroll a student in a class with validations
 	 */
 	async enrollStudent(classId: string, studentId: string): Promise<string | null> {
-		const user = this.auth.currentUser()
-		if (!user) return null
-
-		const tenantId = user.uid
+		const tenantId = await this.auth.getTenantIdForCurrentUser()
+		if (!tenantId) return null
 
 		try {
 			// Get class and student data
@@ -150,10 +148,8 @@ export class EnrollmentService {
 	 * Get all enrollments for a class
 	 */
 	async getClassEnrollments(classId: string): Promise<Enrollment[]> {
-		const user = this.auth.currentUser()
-		if (!user) return []
-
-		const tenantId = user.uid
+		const tenantId = await this.auth.getTenantIdForCurrentUser()
+		if (!tenantId) return []
 
 		try {
 			const enrollmentsRef = collection(this.firestore, 'enrollments')
@@ -182,10 +178,8 @@ export class EnrollmentService {
 	 * Get all enrollments for a student
 	 */
 	async getStudentEnrollments(studentId: string): Promise<Enrollment[]> {
-		const user = this.auth.currentUser()
-		if (!user) return []
-
-		const tenantId = user.uid
+		const tenantId = await this.auth.getTenantIdForCurrentUser()
+		if (!tenantId) return []
 
 		try {
 			const enrollmentsRef = collection(this.firestore, 'enrollments')

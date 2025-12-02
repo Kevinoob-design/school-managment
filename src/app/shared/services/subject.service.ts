@@ -38,10 +38,8 @@ export class SubjectService {
    * Get all subjects for the current school
    */
   async getSubjects(): Promise<Subject[]> {
-    const user = this.auth.currentUser();
-    if (!user) return [];
-
-    const tenantId = user.uid;
+    const tenantId = await this.auth.getTenantIdForCurrentUser();
+    if (!tenantId) return [];
 
     try {
       const subjectsRef = collection(this.firestore, 'subjects');
@@ -86,10 +84,8 @@ export class SubjectService {
   async addSubject(
     subjectData: Omit<Subject, 'id' | 'tenantId' | 'createdAt'>,
   ): Promise<string | null> {
-    const user = this.auth.currentUser();
-    if (!user) return null;
-
-    const tenantId = user.uid;
+    const tenantId = await this.auth.getTenantIdForCurrentUser();
+    if (!tenantId) return null;
 
     try {
       const subjectsRef = collection(this.firestore, 'subjects');

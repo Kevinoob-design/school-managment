@@ -17,7 +17,7 @@
 3. they should be able to see the students of an specific class
 4. they should be able to publish grades per students
 5. they should be able to publish the assistance rate of an student
-6. they should be able to see if there are any absence request from a parent of an specific student
+6. they should be able to see if there are any absence request from a parent of an specific student (use bucket firebase storage)
 
 ## parent dashboard
 

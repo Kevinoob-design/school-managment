@@ -1,4 +1,129 @@
-<div class="p-6">
-	<h2 class="text-2xl font-bold text-gray-900 mb-6">Mis Clases</h2>
-	<p class="text-gray-600">Este módulo mostrará las clases asignadas al profesor.</p>
+<div class="space-y-6">
+	<!-- Header -->
+	<div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-emerald-100 p-6">
+		<h2 class="text-2xl font-bold text-gray-900 mb-2">Mis Clases</h2>
+		<p class="text-gray-600">Clases asignadas y su información detallada</p>
+	</div>
+
+	<!-- Loading State -->
+	@if (loading()) {
+		<div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-emerald-100 p-12 text-center">
+			<div
+				class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-emerald-600 border-r-transparent mb-4"
+			></div>
+			<p class="text-gray-600">Cargando clases...</p>
+		</div>
+	}
+
+	<!-- Empty State -->
+	@if (!loading() && classes().length === 0) {
+		<div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-emerald-100 p-12 text-center">
+			<div class="bg-gradient-to-br from-emerald-500 to-teal-600 p-6 rounded-2xl shadow-lg inline-block mb-4">
+				<span class="material-symbols-outlined text-white text-5xl">school</span>
+			</div>
+			<p class="text-xl text-gray-600 font-medium">No tienes clases asignadas</p>
+			<p class="text-sm text-gray-500 mt-2">Contacta al administrador para que te asigne clases.</p>
+		</div>
+	}
+
+	<!-- Active Classes -->
+	@if (!loading() && activeClasses().length > 0) {
+		<div>
+			<h3 class="text-xl font-semibold text-gray-900 mb-4">Clases Activas</h3>
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+				@for (cls of activeClasses(); track cls.id) {
+					<app-card [hover]="true" padding="lg">
+						<div class="space-y-4">
+							<!-- Header -->
+							<div class="flex items-start justify-between">
+								<div class="flex-1">
+									<h4 class="text-lg font-semibold text-gray-900 mb-1">
+										{{ cls.className }}
+									</h4>
+									<p class="text-sm text-gray-600">Sección {{ cls.section }}</p>
+								</div>
+								<span
+									[class]="'px-3 py-1 rounded-full text-xs font-semibold ' + getStatusColor(cls.status)"
+								>
+									{{ getStatusLabel(cls.status) }}
+								</span>
+							</div>
+
+							<!-- Info -->
+							<div class="space-y-2">
+								<div class="flex items-center text-sm text-gray-700">
+									<span class="material-symbols-outlined text-emerald-600 text-lg mr-2">book</span>
+									<span><strong>Asignatura:</strong> {{ cls.subjectName }}</span>
+								</div>
+								<div class="flex items-center text-sm text-gray-700">
+									<span class="material-symbols-outlined text-emerald-600 text-lg mr-2">stairs</span>
+									<span><strong>Nivel:</strong> {{ cls.gradeLevelName }}</span>
+								</div>
+								<div class="flex items-center text-sm text-gray-700">
+									<span class="material-symbols-outlined text-emerald-600 text-lg mr-2">groups</span>
+									<span
+										><strong>Estudiantes:</strong>
+										<span [class]="getCapacityColor(cls.enrollmentCount || 0, cls.maxStudents)">
+											{{ cls.enrollmentCount }}/{{ cls.maxStudents }}
+										</span>
+									</span>
+								</div>
+								<div class="flex items-center text-sm text-gray-700">
+									<span class="material-symbols-outlined text-emerald-600 text-lg mr-2">calendar_today</span>
+									<span><strong>Período:</strong> {{ cls.academicYear }} - Semestre {{ cls.semester }}</span>
+								</div>
+							</div>
+
+							<!-- Schedule -->
+							@if (cls.schedule && cls.schedule.length > 0) {
+								<div class="pt-4 border-t border-gray-200">
+									<p class="text-xs font-semibold text-gray-500 uppercase mb-2">Horario</p>
+									<div class="space-y-1">
+										@for (s of cls.schedule; track s.day) {
+											<div class="text-xs text-gray-600">
+												<span class="font-medium">{{ s.day }}:</span>
+												{{ s.startTime }} - {{ s.endTime }}
+												@if (s.room) {
+													<span class="text-emerald-600">({{ s.room }})</span>
+												}
+											</div>
+										}
+									</div>
+								</div>
+							}
+						</div>
+					</app-card>
+				}
+			</div>
+		</div>
+	}
+
+	<!-- Completed Classes -->
+	@if (!loading() && completedClasses().length > 0) {
+		<div>
+			<h3 class="text-xl font-semibold text-gray-900 mb-4">Clases Completadas</h3>
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+				@for (cls of completedClasses(); track cls.id) {
+					<app-card [hover]="false" padding="lg">
+						<div class="space-y-3 opacity-75">
+							<div class="flex items-start justify-between">
+								<div>
+									<h4 class="text-lg font-semibold text-gray-900">{{ cls.className }}</h4>
+									<p class="text-sm text-gray-600">Sección {{ cls.section }}</p>
+								</div>
+								<span [class]="'px-3 py-1 rounded-full text-xs font-semibold ' + getStatusColor(cls.status)">
+									{{ getStatusLabel(cls.status) }}
+								</span>
+							</div>
+							<div class="text-sm text-gray-600">
+								<p><strong>Asignatura:</strong> {{ cls.subjectName }}</p>
+								<p><strong>Nivel:</strong> {{ cls.gradeLevelName }}</p>
+								<p><strong>Período:</strong> {{ cls.academicYear }} - Semestre {{ cls.semester }}</p>
+							</div>
+						</div>
+					</app-card>
+				}
+			</div>
+		</div>
+	}
 </div>
