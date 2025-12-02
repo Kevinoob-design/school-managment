@@ -37,21 +37,6 @@
 		<!-- Main content area -->
 		<main class="flex-1 overflow-y-auto">
 			<div class="max-w-7xl mx-auto p-8">
-				<!-- Welcome Header -->
-				<div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-emerald-100 p-6 mb-6">
-					<div class="flex items-center justify-between">
-						<div>
-							<h1 class="text-3xl font-bold text-gray-900 mb-2">
-								Bienvenido, {{ teacher()?.fullName }}
-							</h1>
-							<p class="text-gray-600">Panel de Gestión Docente</p>
-						</div>
-						<app-button [variant]="'ghost'" [size]="'sm'" (click)="logout()">
-							Cerrar Sesión
-						</app-button>
-					</div>
-				</div>
-
 				<!-- Tab Content -->
 				@switch (activeTab()) {
 					@case ('classes') {

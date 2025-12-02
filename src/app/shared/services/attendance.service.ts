@@ -143,20 +143,28 @@ export class AttendanceService {
 				if (existingRecord) {
 					// Update existing record
 					const docRef = doc(this.firestore, 'attendance', existingRecord.id!)
-					batch.update(docRef, {
+					const updateData: Record<string, unknown> = {
 						status: record.status,
-						notes: record.notes,
 						updatedAt: now,
-					})
+					}
+					if (record.notes !== undefined) updateData['notes'] = record.notes
+					batch.update(docRef, updateData)
 				} else {
-					// Create new record
+					// Create new record - filter out undefined values
 					const docRef = doc(collection(this.firestore, 'attendance'))
-					batch.set(docRef, {
-						...record,
+					const cleanData: Record<string, unknown> = {
+						classId: record.classId,
+						studentId: record.studentId,
+						teacherId: record.teacherId,
+						date: record.date,
+						status: record.status,
 						tenantId,
 						createdAt: now,
 						updatedAt: now,
-					})
+					}
+					// Add optional fields only if defined
+					if (record.notes !== undefined) cleanData['notes'] = record.notes
+					batch.set(docRef, cleanData)
 				}
 			}
 
@@ -188,10 +196,15 @@ export class AttendanceService {
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { id, tenantId, createdAt, ...updateData } = updates
 
-			await updateDoc(recordRef, {
-				...updateData,
-				updatedAt: Date.now(),
+			// Filter out undefined values
+			const cleanUpdateData: Record<string, unknown> = { updatedAt: Date.now() }
+			Object.entries(updateData).forEach(([key, value]) => {
+				if (value !== undefined) {
+					cleanUpdateData[key] = value
+				}
 			})
+
+			await updateDoc(recordRef, cleanUpdateData)
 
 			// Log activity
 			await this.activityLogger.logActivity(
