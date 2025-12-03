@@ -72,16 +72,45 @@ export class AbsenceRequestService {
     }
   }
 
-  /**
-   * Get absence requests by status
-   */
-  async getRequestsByStatus(
-    teacherId: string,
-    status: AbsenceRequestStatus,
-  ): Promise<AbsenceRequest[]> {
-    const requests = await this.getRequestsByTeacher(teacherId);
-    return requests.filter((r) => r.status === status);
-  }
+	/**
+	 * Get all absence requests for a student (for parents)
+	 */
+	async getRequestsByStudent(studentId: string): Promise<AbsenceRequest[]> {
+		const tenantId = await this.auth.getTenantIdForCurrentUser()
+		if (!tenantId) return []
+
+		try {
+			const requestsRef = collection(this.firestore, 'absenceRequests')
+			const requestsQuery = query(
+				requestsRef,
+				where('tenantId', '==', tenantId),
+				where('studentId', '==', studentId),
+				orderBy('createdAt', 'desc'),
+			)
+			const snapshot = await getDocs(requestsQuery)
+
+			const requests: AbsenceRequest[] = []
+			snapshot.forEach((doc) => {
+				requests.push({ id: doc.id, ...doc.data() } as AbsenceRequest)
+			})
+
+			return requests
+		} catch (error) {
+			console.error('Error fetching student requests:', error)
+			return []
+		}
+	}
+
+	/**
+	 * Get absence requests by status
+	 */
+	async getRequestsByStatus(
+		teacherId: string,
+		status: AbsenceRequestStatus,
+	): Promise<AbsenceRequest[]> {
+		const requests = await this.getRequestsByTeacher(teacherId)
+		return requests.filter((r) => r.status === status)
+	}
 
   /**
    * Get pending requests count for a teacher
