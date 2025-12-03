@@ -1,6 +1,5 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core'
 import { Button } from '../../../shared/ui/button/button'
-import { Input } from '../../../shared/ui/input/input'
 import { StudentService } from '../../../shared/services/student.service'
 import { ClassService } from '../../../shared/services/class.service'
 import {
@@ -17,7 +16,7 @@ interface EnrichedRequest extends AbsenceRequest {
 
 @Component({
 	selector: 'app-teacher-requests',
-	imports: [Button, Input],
+	imports: [Button],
 	templateUrl: './requests.html',
 	styleUrl: './requests.sass',
 })
