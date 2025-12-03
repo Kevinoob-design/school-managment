@@ -21,6 +21,6 @@
 
 ## parent dashboard
 
-1. parents should be able to find their child based on the parent email on students table that was added fro the admin dashboard
-2. they should be able to submit absent request for a child to specific date
-3. they should be able to see the grades of their children per class
+1. [x]parents should be able to find their child based on the parent email on students table that was added fro the admin dashboard
+2. [x]they should be able to submit absent request for a child to specific date
+3. [x]they should be able to see the grades of their children per class
