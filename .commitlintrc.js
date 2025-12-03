@@ -10,8 +10,6 @@ const config = {
     'body-leading-blank': [2, 'always'],
     'body-empty': [2, 'never'],
     'body-min-length': [2, 'always', 40],
-    'body-case': [2, 'always', 'lower-case'],
-    'scope-case': [2, 'always', 'lower-case'],
     'scope-empty': [2, 'never'],
   },
 };
