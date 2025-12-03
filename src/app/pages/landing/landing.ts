@@ -32,7 +32,7 @@ export class Landing implements OnInit {
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
   private readonly announcementService = inject(AnnouncementService);
-  
+
   protected readonly selectedAnnouncement = signal<Announcement | null>(null);
   protected readonly showDetailModal = signal(false);
   protected readonly userTypes = signal<UserType[]>([
@@ -63,19 +63,19 @@ export class Landing implements OnInit {
       link: '/parent/login',
     },
 
-	{
-		id: 'teacher',
-		title: 'Maestros',
-		description: 'Optimiza tus tareas docentes y administrativas',
-		icon: 'co_present',
-		features: [
-			'Gestión de calificaciones y asignaciones',
-			'Registro de asistencia',
-			'Comunicación padres-maestros',
-			'Planificación curricular',
-		],
-		link: '/auth',
-	},
+    {
+      id: 'teacher',
+      title: 'Maestros',
+      description: 'Optimiza tus tareas docentes y administrativas',
+      icon: 'co_present',
+      features: [
+        'Gestión de calificaciones y asignaciones',
+        'Registro de asistencia',
+        'Comunicación padres-maestros',
+        'Planificación curricular',
+      ],
+      link: '/auth',
+    },
     {
       id: 'admin',
       title: 'Administradores',

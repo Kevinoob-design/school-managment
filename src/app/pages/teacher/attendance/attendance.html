@@ -1,298 +1,325 @@
 <div class="space-y-6">
-	<!-- Header -->
-	<div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-emerald-100 p-6">
-		<div class="flex items-center justify-between">
-			<div>
-				<h2 class="text-2xl font-bold text-gray-900 mb-2">Asistencia</h2>
-				<p class="text-gray-600">Registra la asistencia diaria de tus estudiantes</p>
-			</div>
-			@if (selectedClass() && students().length > 0) {
-				<div class="flex gap-3">
-					<app-button [variant]="'outline'" [size]="'md'" (click)="loadHistory()">
-						<span class="material-symbols-outlined text-lg mr-2">history</span>
-						Historial
-					</app-button>
-					<app-button
-						[variant]="'primary'"
-						[size]="'md'"
-						(click)="saveAttendance()"
-						[disabled]="!canSave()"
-					>
-						<span class="material-symbols-outlined text-lg mr-2">save</span>
-						{{ saving() ? 'Guardando...' : 'Guardar Asistencia' }}
-					</app-button>
-				</div>
-			}
-		</div>
-	</div>
+  <!-- Header -->
+  <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-emerald-100 p-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Asistencia</h2>
+        <p class="text-gray-600">Registra la asistencia diaria de tus estudiantes</p>
+      </div>
+      @if (selectedClass() && students().length > 0) {
+        <div class="flex gap-3">
+          <app-button [variant]="'outline'" [size]="'md'" (click)="loadHistory()">
+            <span class="material-symbols-outlined text-lg mr-2">history</span>
+            Historial
+          </app-button>
+          <app-button
+            [variant]="'primary'"
+            [size]="'md'"
+            (click)="saveAttendance()"
+            [disabled]="!canSave()"
+          >
+            <span class="material-symbols-outlined text-lg mr-2">save</span>
+            {{ saving() ? 'Guardando...' : 'Guardar Asistencia' }}
+          </app-button>
+        </div>
+      }
+    </div>
+  </div>
 
-	<!-- Class & Date Selectors -->
-	@if (!loading() && classes().length > 0) {
-		<div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-emerald-100 p-6">
-			<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-				<!-- Class Selector -->
-				<div>
-					<div class="block text-sm font-medium text-gray-700 mb-3">Seleccionar Clase</div>
-					<div class="grid grid-cols-1 gap-3">
-						@for (cls of classes(); track cls.id) {
-							<button
-								type="button"
-								(click)="selectClass(cls)"
-								[class]="'p-4 rounded-lg border-2 text-left transition-all ' + (selectedClass()?.id === cls.id ? 'border-emerald-600 bg-emerald-50' : 'border-gray-200 hover:border-emerald-300')"
-							>
-								<div class="font-semibold text-gray-900">{{ cls.className }}</div>
-								<div class="text-sm text-gray-600">Sección {{ cls.section }}</div>
-							</button>
-						}
-					</div>
-				</div>
+  <!-- Class & Date Selectors -->
+  @if (!loading() && classes().length > 0) {
+    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-emerald-100 p-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Class Selector -->
+        <div>
+          <div class="block text-sm font-medium text-gray-700 mb-3">Seleccionar Clase</div>
+          <div class="grid grid-cols-1 gap-3">
+            @for (cls of classes(); track cls.id) {
+              <button
+                type="button"
+                (click)="selectClass(cls)"
+                [class]="
+                  'p-4 rounded-lg border-2 text-left transition-all ' +
+                  (selectedClass()?.id === cls.id
+                    ? 'border-emerald-600 bg-emerald-50'
+                    : 'border-gray-200 hover:border-emerald-300')
+                "
+              >
+                <div class="font-semibold text-gray-900">{{ cls.className }}</div>
+                <div class="text-sm text-gray-600">Sección {{ cls.section }}</div>
+              </button>
+            }
+          </div>
+        </div>
 
-				<!-- Date Selector -->
-				<div>
-					<label for="attendance-date" class="block text-sm font-medium text-gray-700 mb-3">
-						Fecha
-					</label>
-					<input
-						id="attendance-date"
-						type="date"
-						[value]="selectedDate()"
-						(change)="changeDate($event)"
-						class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-lg"
-					/>
-					<p class="text-sm text-gray-500 mt-2">{{ formatDate(selectedDate()) }}</p>
-				</div>
-			</div>
-		</div>
-	}
+        <!-- Date Selector -->
+        <div>
+          <label for="attendance-date" class="block text-sm font-medium text-gray-700 mb-3">
+            Fecha
+          </label>
+          <input
+            id="attendance-date"
+            type="date"
+            [value]="selectedDate()"
+            (change)="changeDate($event)"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-lg"
+          />
+          <p class="text-sm text-gray-500 mt-2">{{ formatDate(selectedDate()) }}</p>
+        </div>
+      </div>
+    </div>
+  }
 
-	<!-- Loading State -->
-	@if (loading()) {
-		<div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-emerald-100 p-12 text-center">
-			<div
-				class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-emerald-600 border-r-transparent mb-4"
-			></div>
-			<p class="text-gray-600">Cargando...</p>
-		</div>
-	}
+  <!-- Loading State -->
+  @if (loading()) {
+    <div
+      class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-emerald-100 p-12 text-center"
+    >
+      <div
+        class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-emerald-600 border-r-transparent mb-4"
+      ></div>
+      <p class="text-gray-600">Cargando...</p>
+    </div>
+  }
 
-	<!-- Statistics -->
-	@if (!loading() && selectedClass() && students().length > 0) {
-		<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-			<div class="bg-green-50 rounded-xl border border-green-200 p-4">
-				<p class="text-sm text-green-600 font-medium">Presentes</p>
-				<p class="text-3xl font-bold text-green-700">{{ statistics().present }}</p>
-			</div>
-			<div class="bg-red-50 rounded-xl border border-red-200 p-4">
-				<p class="text-sm text-red-600 font-medium">Ausentes</p>
-				<p class="text-3xl font-bold text-red-700">{{ statistics().absent }}</p>
-			</div>
-			<div class="bg-yellow-50 rounded-xl border border-yellow-200 p-4">
-				<p class="text-sm text-yellow-600 font-medium">Tarde</p>
-				<p class="text-3xl font-bold text-yellow-700">{{ statistics().late }}</p>
-			</div>
-			<div class="bg-blue-50 rounded-xl border border-blue-200 p-4">
-				<p class="text-sm text-blue-600 font-medium">Justificados</p>
-				<p class="text-3xl font-bold text-blue-700">{{ statistics().excused }}</p>
-			</div>
-		</div>
-	}
+  <!-- Statistics -->
+  @if (!loading() && selectedClass() && students().length > 0) {
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-green-50 rounded-xl border border-green-200 p-4">
+        <p class="text-sm text-green-600 font-medium">Presentes</p>
+        <p class="text-3xl font-bold text-green-700">{{ statistics().present }}</p>
+      </div>
+      <div class="bg-red-50 rounded-xl border border-red-200 p-4">
+        <p class="text-sm text-red-600 font-medium">Ausentes</p>
+        <p class="text-3xl font-bold text-red-700">{{ statistics().absent }}</p>
+      </div>
+      <div class="bg-yellow-50 rounded-xl border border-yellow-200 p-4">
+        <p class="text-sm text-yellow-600 font-medium">Tarde</p>
+        <p class="text-3xl font-bold text-yellow-700">{{ statistics().late }}</p>
+      </div>
+      <div class="bg-blue-50 rounded-xl border border-blue-200 p-4">
+        <p class="text-sm text-blue-600 font-medium">Justificados</p>
+        <p class="text-3xl font-bold text-blue-700">{{ statistics().excused }}</p>
+      </div>
+    </div>
+  }
 
-	<!-- Quick Actions -->
-	@if (!loading() && selectedClass() && students().length > 0) {
-		<div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-emerald-100 p-6">
-			<div class="flex items-center justify-between mb-4">
-				<h3 class="text-lg font-semibold text-gray-900">Acciones Rápidas</h3>
-			</div>
-			<div class="flex flex-wrap gap-3">
-				@for (option of statusOptions; track option.value) {
-					<app-button
-						[variant]="'outline'"
-						[size]="'sm'"
-						(click)="setAllStatus(option.value)"
-					>
-						Marcar todos como {{ option.label }}
-					</app-button>
-				}
-			</div>
-		</div>
-	}
+  <!-- Quick Actions -->
+  @if (!loading() && selectedClass() && students().length > 0) {
+    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-emerald-100 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-900">Acciones Rápidas</h3>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        @for (option of statusOptions; track option.value) {
+          <app-button [variant]="'outline'" [size]="'sm'" (click)="setAllStatus(option.value)">
+            Marcar todos como {{ option.label }}
+          </app-button>
+        }
+      </div>
+    </div>
+  }
 
-	<!-- Students Table -->
-	@if (!loading() && selectedClass() && students().length > 0) {
-		<div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-emerald-100 overflow-hidden">
-			<div class="overflow-x-auto">
-				<table class="w-full">
-					<thead class="bg-emerald-50 border-b border-emerald-200">
-						<tr>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-								Estudiante
-							</th>
-							<th class="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">
-								Estado
-							</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-								Notas
-							</th>
-						</tr>
-					</thead>
-					<tbody class="bg-white divide-y divide-gray-200">
-						@for (student of students(); track student.id) {
-							<tr class="hover:bg-gray-50 transition-colors">
-								<td class="px-6 py-4">
-									<div class="flex items-center">
-										<div class="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center mr-3">
-											<span class="material-symbols-outlined text-emerald-600">person</span>
-										</div>
-										<div>
-											<div class="font-medium text-gray-900">{{ student.fullName }}</div>
-											<div class="text-sm text-gray-500">{{ student.email }}</div>
-										</div>
-									</div>
-								</td>
-								<td class="px-6 py-4">
-									<div class="flex justify-center gap-2">
-										@for (option of statusOptions; track option.value) {
-											<button
-												type="button"
-												(click)="setStudentStatus(student.id!, option.value)"
-												[class]="'px-3 py-1 rounded-lg text-xs font-semibold transition-all ' + (student.attendanceStatus === option.value ? option.color + ' ring-2 ring-offset-2 ring-emerald-500' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')"
-											>
-												{{ option.label }}
-											</button>
-										}
-									</div>
-								</td>
-								<td class="px-6 py-4">
-									<input
-										type="text"
-										[value]="student.notes"
-										(input)="setStudentNotes(student.id!, $any($event.target).value)"
-										class="w-full px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
-										placeholder="Notas opcionales"
-									/>
-								</td>
-							</tr>
-						}
-					</tbody>
-				</table>
-			</div>
-		</div>
-	}
+  <!-- Students Table -->
+  @if (!loading() && selectedClass() && students().length > 0) {
+    <div
+      class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-emerald-100 overflow-hidden"
+    >
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-emerald-50 border-b border-emerald-200">
+            <tr>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider"
+              >
+                Estudiante
+              </th>
+              <th
+                class="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider"
+              >
+                Estado
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider"
+              >
+                Notas
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            @for (student of students(); track student.id) {
+              <tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4">
+                  <div class="flex items-center">
+                    <div
+                      class="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center mr-3"
+                    >
+                      <span class="material-symbols-outlined text-emerald-600">person</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">{{ student.fullName }}</div>
+                      <div class="text-sm text-gray-500">{{ student.email }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="flex justify-center gap-2">
+                    @for (option of statusOptions; track option.value) {
+                      <button
+                        type="button"
+                        (click)="setStudentStatus(student.id!, option.value)"
+                        [class]="
+                          'px-3 py-1 rounded-lg text-xs font-semibold transition-all ' +
+                          (student.attendanceStatus === option.value
+                            ? option.color + ' ring-2 ring-offset-2 ring-emerald-500'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200')
+                        "
+                      >
+                        {{ option.label }}
+                      </button>
+                    }
+                  </div>
+                </td>
+                <td class="px-6 py-4">
+                  <input
+                    type="text"
+                    [value]="student.notes"
+                    (input)="setStudentNotes(student.id!, $any($event.target).value)"
+                    class="w-full px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                    placeholder="Notas opcionales"
+                  />
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
 
-	<!-- Empty States -->
-	@if (!loading() && classes().length === 0) {
-		<div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-emerald-100 p-12 text-center">
-			<div class="bg-gradient-to-br from-emerald-500 to-teal-600 p-6 rounded-2xl shadow-lg inline-block mb-4">
-				<span class="material-symbols-outlined text-white text-5xl">school</span>
-			</div>
-			<p class="text-xl text-gray-600 font-medium">No tienes clases asignadas</p>
-			<p class="text-sm text-gray-500 mt-2">Contacta al administrador.</p>
-		</div>
-	}
+  <!-- Empty States -->
+  @if (!loading() && classes().length === 0) {
+    <div
+      class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-emerald-100 p-12 text-center"
+    >
+      <div
+        class="bg-gradient-to-br from-emerald-500 to-teal-600 p-6 rounded-2xl shadow-lg inline-block mb-4"
+      >
+        <span class="material-symbols-outlined text-white text-5xl">school</span>
+      </div>
+      <p class="text-xl text-gray-600 font-medium">No tienes clases asignadas</p>
+      <p class="text-sm text-gray-500 mt-2">Contacta al administrador.</p>
+    </div>
+  }
 
-	@if (!loading() && selectedClass() && students().length === 0) {
-		<div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-emerald-100 p-12 text-center">
-			<div class="bg-gradient-to-br from-emerald-500 to-teal-600 p-6 rounded-2xl shadow-lg inline-block mb-4">
-				<span class="material-symbols-outlined text-white text-5xl">groups</span>
-			</div>
-			<p class="text-xl text-gray-600 font-medium">No hay estudiantes inscritos</p>
-			<p class="text-sm text-gray-500 mt-2">Esta clase no tiene estudiantes inscritos.</p>
-		</div>
-	}
+  @if (!loading() && selectedClass() && students().length === 0) {
+    <div
+      class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-emerald-100 p-12 text-center"
+    >
+      <div
+        class="bg-gradient-to-br from-emerald-500 to-teal-600 p-6 rounded-2xl shadow-lg inline-block mb-4"
+      >
+        <span class="material-symbols-outlined text-white text-5xl">groups</span>
+      </div>
+      <p class="text-xl text-gray-600 font-medium">No hay estudiantes inscritos</p>
+      <p class="text-sm text-gray-500 mt-2">Esta clase no tiene estudiantes inscritos.</p>
+    </div>
+  }
 </div>
 
 <!-- History Modal -->
 @if (showHistory()) {
-	<div
-		class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-		role="dialog"
-		aria-modal="true"
-		(click)="closeHistory()"
-		(keydown.escape)="closeHistory()"
-	>
-		<div
-			class="bg-white rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden max-h-[90vh] overflow-y-auto"
-			role="document"
-			(click)="$event.stopPropagation()"
-			(keydown)="$event.stopPropagation()"
-		>
-			<!-- Modal Header -->
-			<div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-6">
-				<h2 class="text-2xl font-bold text-white">Historial de Asistencia</h2>
-				<p class="text-emerald-100 mt-1">{{ selectedClass()?.className }}</p>
-			</div>
+  <div
+    class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+    role="dialog"
+    aria-modal="true"
+    (click)="closeHistory()"
+    (keydown.escape)="closeHistory()"
+  >
+    <div
+      class="bg-white rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden max-h-[90vh] overflow-y-auto"
+      role="document"
+      (click)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
+    >
+      <!-- Modal Header -->
+      <div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-6">
+        <h2 class="text-2xl font-bold text-white">Historial de Asistencia</h2>
+        <p class="text-emerald-100 mt-1">{{ selectedClass()?.className }}</p>
+      </div>
 
-			<!-- Modal Body -->
-			<div class="p-6">
-				@if (historyLoading()) {
-					<div class="p-12 text-center">
-						<div
-							class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-emerald-600 border-r-transparent mb-4"
-						></div>
-						<p class="text-gray-600">Cargando historial...</p>
-					</div>
-				} @else if (historyRecords().length === 0) {
-					<div class="p-12 text-center">
-						<p class="text-gray-600">No hay registros de asistencia</p>
-					</div>
-				} @else {
-					<div class="overflow-x-auto">
-						<table class="w-full">
-							<thead class="bg-gray-50 border-b border-gray-200">
-								<tr>
-									<th
-										class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-									>
-										Fecha
-									</th>
-									<th
-										class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-									>
-										Estudiante
-									</th>
-									<th
-										class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
-									>
-										Estado
-									</th>
-									<th
-										class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-									>
-										Notas
-									</th>
-								</tr>
-							</thead>
-							<tbody class="bg-white divide-y divide-gray-200">
-								@for (record of historyRecords(); track record.id) {
-									<tr class="hover:bg-gray-50">
-										<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-											{{ formatDate(record.date) }}
-										</td>
-										<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-											{{ record.studentId }}
-										</td>
-										<td class="px-6 py-4 whitespace-nowrap text-center">
-											<span
-												[class]="'px-3 py-1 rounded-full text-xs font-semibold ' + getStatusColor(record.status)"
-											>
-												{{ getStatusLabel(record.status) }}
-											</span>
-										</td>
-										<td class="px-6 py-4 text-sm text-gray-600">{{ record.notes || '-' }}</td>
-									</tr>
-								}
-							</tbody>
-						</table>
-					</div>
-				}
-			</div>
+      <!-- Modal Body -->
+      <div class="p-6">
+        @if (historyLoading()) {
+          <div class="p-12 text-center">
+            <div
+              class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-emerald-600 border-r-transparent mb-4"
+            ></div>
+            <p class="text-gray-600">Cargando historial...</p>
+          </div>
+        } @else if (historyRecords().length === 0) {
+          <div class="p-12 text-center">
+            <p class="text-gray-600">No hay registros de asistencia</p>
+          </div>
+        } @else {
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Fecha
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Estudiante
+                  </th>
+                  <th
+                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Estado
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Notas
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                @for (record of historyRecords(); track record.id) {
+                  <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {{ formatDate(record.date) }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {{ record.studentId }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                      <span
+                        [class]="
+                          'px-3 py-1 rounded-full text-xs font-semibold ' +
+                          getStatusColor(record.status)
+                        "
+                      >
+                        {{ getStatusLabel(record.status) }}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-600">{{ record.notes || '-' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
 
-			<!-- Modal Footer -->
-			<div class="p-6 bg-gray-50 flex items-center justify-end">
-				<app-button [variant]="'ghost'" [size]="'md'" (click)="closeHistory()">
-					Cerrar
-				</app-button>
-			</div>
-		</div>
-	</div>
+      <!-- Modal Footer -->
+      <div class="p-6 bg-gray-50 flex items-center justify-end">
+        <app-button [variant]="'ghost'" [size]="'md'" (click)="closeHistory()"> Cerrar </app-button>
+      </div>
+    </div>
+  </div>
 }

@@ -64,12 +64,18 @@
       </div>
     } @else if (filteredAnnouncements().length === 0) {
       <div class="text-center py-12">
-        <div class="bg-gradient-to-br from-blue-500 to-indigo-600 p-6 rounded-2xl shadow-lg inline-block mb-4">
+        <div
+          class="bg-gradient-to-br from-blue-500 to-indigo-600 p-6 rounded-2xl shadow-lg inline-block mb-4"
+        >
           <span class="material-symbols-outlined text-white text-5xl">campaign</span>
         </div>
         <p class="text-xl text-gray-600 font-medium">No se encontraron anuncios</p>
         <p class="text-sm text-gray-500 mt-2">
-          {{ searchQuery() || filterType() !== 'all' ? 'Intenta cambiar los filtros' : 'No hay anuncios publicados' }}
+          {{
+            searchQuery() || filterType() !== 'all'
+              ? 'Intenta cambiar los filtros'
+              : 'No hay anuncios publicados'
+          }}
         </p>
       </div>
     } @else {
