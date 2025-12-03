@@ -1,1 +1,62 @@
-<div class="p-6">Teacher dashboard</div>
+@if (loading()) {
+  <div
+    class="flex h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 items-center justify-center"
+  >
+    <div class="text-center">
+      <div
+        class="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-emerald-600 border-r-transparent mb-4"
+      ></div>
+      <p class="text-xl text-gray-700 font-medium">Cargando perfil...</p>
+    </div>
+  </div>
+} @else if (error()) {
+  <div
+    class="flex h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 items-center justify-center"
+  >
+    <div class="text-center max-w-md">
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-red-200 p-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
+          <span class="material-symbols-outlined text-4xl text-red-600">error</span>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-3">Error</h2>
+        <p class="text-gray-700 mb-6">{{ error() }}</p>
+        <app-button [variant]="'primary'" [size]="'md'" (click)="logout()">
+          Cerrar Sesión
+        </app-button>
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="flex h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
+    <!-- Sidebar -->
+    <app-sidebar-nav
+      title="Portal de Profesores"
+      [subtitle]="teacher()?.fullName || 'Profesor'"
+      [navItems]="navItems"
+      [activeItemId]="activeTab()"
+      [showUser]="false"
+      (navItemClick)="onNavItemClick($event)"
+    />
+
+    <!-- Main content area -->
+    <main class="flex-1 overflow-y-auto">
+      <div class="max-w-7xl mx-auto p-8">
+        <!-- Tab Content -->
+        @switch (activeTab()) {
+          @case ('classes') {
+            <app-teacher-classes />
+          }
+          @case ('grades') {
+            <app-teacher-grades />
+          }
+          @case ('attendance') {
+            <app-teacher-attendance />
+          }
+          @case ('requests') {
+            <app-teacher-requests />
+          }
+        }
+      </div>
+    </main>
+  </div>
+}

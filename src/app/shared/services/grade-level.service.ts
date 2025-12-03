@@ -39,10 +39,8 @@ export class GradeLevelService {
    * Get all grade levels for the current school
    */
   async getGradeLevels(): Promise<GradeLevel[]> {
-    const user = this.auth.currentUser();
-    if (!user) return [];
-
-    const tenantId = user.uid;
+    const tenantId = await this.auth.getTenantIdForCurrentUser();
+    if (!tenantId) return [];
 
     try {
       const gradeLevelsRef = collection(this.firestore, 'gradeLevels');
@@ -87,10 +85,8 @@ export class GradeLevelService {
   async addGradeLevel(
     gradeLevelData: Omit<GradeLevel, 'id' | 'tenantId' | 'createdAt'>,
   ): Promise<string | null> {
-    const user = this.auth.currentUser();
-    if (!user) return null;
-
-    const tenantId = user.uid;
+    const tenantId = await this.auth.getTenantIdForCurrentUser();
+    if (!tenantId) return null;
 
     try {
       const gradeLevelsRef = collection(this.firestore, 'gradeLevels');

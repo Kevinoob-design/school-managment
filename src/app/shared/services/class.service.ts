@@ -49,10 +49,8 @@ export class ClassService {
    * Get all classes for the current school
    */
   async getClasses(): Promise<Class[]> {
-    const user = this.auth.currentUser();
-    if (!user) return [];
-
-    const tenantId = user.uid;
+    const tenantId = await this.auth.getTenantIdForCurrentUser();
+    if (!tenantId) return [];
 
     try {
       const classesRef = collection(this.firestore, 'classes');
@@ -111,10 +109,8 @@ export class ClassService {
    * Add a new class
    */
   async addClass(classData: Omit<Class, 'id' | 'tenantId' | 'createdAt'>): Promise<string | null> {
-    const user = this.auth.currentUser();
-    if (!user) return null;
-
-    const tenantId = user.uid;
+    const tenantId = await this.auth.getTenantIdForCurrentUser();
+    if (!tenantId) return null;
 
     try {
       const classesRef = collection(this.firestore, 'classes');

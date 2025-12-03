@@ -45,10 +45,8 @@ export class StudentService {
    * Get all students for the current school
    */
   async getStudents(): Promise<Student[]> {
-    const user = this.auth.currentUser();
-    if (!user) return [];
-
-    const tenantId = user.uid;
+    const tenantId = await this.auth.getTenantIdForCurrentUser();
+    if (!tenantId) return [];
 
     try {
       const studentsRef = collection(this.firestore, 'students');
@@ -77,10 +75,8 @@ export class StudentService {
   async enrollStudent(
     studentData: Omit<Student, 'id' | 'tenantId' | 'enrollmentDate'>,
   ): Promise<string | null> {
-    const user = this.auth.currentUser();
-    if (!user) return null;
-
-    const tenantId = user.uid;
+    const tenantId = await this.auth.getTenantIdForCurrentUser();
+    if (!tenantId) return null;
 
     try {
       const studentsRef = collection(this.firestore, 'students');

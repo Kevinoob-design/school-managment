@@ -38,10 +38,8 @@ export class TeacherService {
    * Get all teachers for the current school
    */
   async getTeachers(): Promise<Teacher[]> {
-    const user = this.auth.currentUser();
-    if (!user) return [];
-
-    const tenantId = user.uid;
+    const tenantId = await this.auth.getTenantIdForCurrentUser();
+    if (!tenantId) return [];
 
     try {
       const teachersRef = collection(this.firestore, 'teachers');
@@ -70,10 +68,8 @@ export class TeacherService {
   async addTeacher(
     teacherData: Omit<Teacher, 'id' | 'tenantId' | 'createdAt'>,
   ): Promise<string | null> {
-    const user = this.auth.currentUser();
-    if (!user) return null;
-
-    const tenantId = user.uid;
+    const tenantId = await this.auth.getTenantIdForCurrentUser();
+    if (!tenantId) return null;
 
     try {
       const teachersRef = collection(this.firestore, 'teachers');

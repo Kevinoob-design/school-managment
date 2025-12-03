@@ -13,56 +13,56 @@ import { AnnouncementsTab } from './announcements/announcements';
 import { SidebarNav, NavItem, UserInfo } from '../../shared/ui/sidebar-nav/sidebar-nav';
 
 type TabName =
-	| 'dashboard'
-	| 'grade-levels'
-	| 'subjects'
-	| 'classes'
-	| 'teachers'
-	| 'students'
-	| 'announcements'
-	| 'activities'
-	| 'reports'
-	| 'finance';
+  | 'dashboard'
+  | 'grade-levels'
+  | 'subjects'
+  | 'classes'
+  | 'teachers'
+  | 'students'
+  | 'announcements'
+  | 'activities'
+  | 'reports'
+  | 'finance';
 
 @Component({
   selector: 'app-admin-dashboard',
-	imports: [
-		CommonModule,
-		DashboardOverview,
-		GradeLevelsTab,
-		SubjectsTab,
-		ClassesTab,
-		TeachersTab,
-		StudentsTab,
-		AnnouncementsTab,
-		ActivitiesTab,
-		ReportsTab,
-		SidebarNav,
-		FinanceTab,
-	],
+  imports: [
+    CommonModule,
+    DashboardOverview,
+    GradeLevelsTab,
+    SubjectsTab,
+    ClassesTab,
+    TeachersTab,
+    StudentsTab,
+    AnnouncementsTab,
+    ActivitiesTab,
+    ReportsTab,
+    SidebarNav,
+    FinanceTab,
+  ],
   templateUrl: './admin.html',
   styleUrl: './admin.sass',
 })
 export class AdminDashboard {
   protected activeTab = signal<TabName>('dashboard');
 
-	@ViewChild(ClassesTab) classesTab?: ClassesTab;
-	@ViewChild(TeachersTab) teachersTab?: TeachersTab;
-	@ViewChild(StudentsTab) studentsTab?: StudentsTab;
-	@ViewChild(AnnouncementsTab) announcementsTab?: AnnouncementsTab;
+  @ViewChild(ClassesTab) classesTab?: ClassesTab;
+  @ViewChild(TeachersTab) teachersTab?: TeachersTab;
+  @ViewChild(StudentsTab) studentsTab?: StudentsTab;
+  @ViewChild(AnnouncementsTab) announcementsTab?: AnnouncementsTab;
 
-	protected readonly navItems: NavItem[] = [
-		{ id: 'dashboard', label: 'Panel Principal', icon: 'dashboard' },
-		{ id: 'grade-levels', label: 'Niveles Académicos', icon: 'stairs' },
-		{ id: 'subjects', label: 'Asignaturas', icon: 'book' },
-		{ id: 'classes', label: 'Clases', icon: 'school' },
-		{ id: 'teachers', label: 'Profesores', icon: 'person' },
-		{ id: 'students', label: 'Estudiantes', icon: 'groups' },
-		{ id: 'announcements', label: 'Anuncios', icon: 'campaign' },
-		{ id: 'activities', label: 'Actividades', icon: 'history' },
-		{ id: 'reports', label: 'Reportes', icon: 'assessment' },
-		{ id: 'finance', label: 'Gestion financiera', icon: 'account_balance' },
-	];
+  protected readonly navItems: NavItem[] = [
+    { id: 'dashboard', label: 'Panel Principal', icon: 'dashboard' },
+    { id: 'grade-levels', label: 'Niveles Académicos', icon: 'stairs' },
+    { id: 'subjects', label: 'Asignaturas', icon: 'book' },
+    { id: 'classes', label: 'Clases', icon: 'school' },
+    { id: 'teachers', label: 'Profesores', icon: 'person' },
+    { id: 'students', label: 'Estudiantes', icon: 'groups' },
+    { id: 'announcements', label: 'Anuncios', icon: 'campaign' },
+    { id: 'activities', label: 'Actividades', icon: 'history' },
+    { id: 'reports', label: 'Reportes', icon: 'assessment' },
+    { id: 'finance', label: 'Gestion financiera', icon: 'account_balance' },
+  ];
 
   protected readonly userInfo: UserInfo = {
     name: 'Administrador',

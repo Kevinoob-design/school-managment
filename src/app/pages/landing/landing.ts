@@ -32,7 +32,7 @@ export class Landing implements OnInit {
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
   private readonly announcementService = inject(AnnouncementService);
-  
+
   protected readonly selectedAnnouncement = signal<Announcement | null>(null);
   protected readonly showDetailModal = signal(false);
   protected readonly userTypes = signal<UserType[]>([
@@ -74,7 +74,7 @@ export class Landing implements OnInit {
         'Comunicación padres-maestros',
         'Planificación curricular',
       ],
-      link: '/teacher/login',
+      link: '/auth',
     },
     {
       id: 'admin',

@@ -31,7 +31,7 @@ export class ClassesTab implements OnInit {
   protected loading = signal(true);
   protected showModal = signal(false);
   protected editingClass = signal<Class | null>(null);
-  
+
   // Enrollment modal
   protected showEnrollmentModal = signal(false);
   protected selectedClass = signal<Class | null>(null);
@@ -84,12 +84,12 @@ export class ClassesTab implements OnInit {
     this.subjects.set(subjects);
     this.teachers.set(teachers);
     this.students.set(students);
-    
+
     // Load enrollment counts
     const classIds = classes.map((c) => c.id!).filter(Boolean);
     const counts = await this.enrollmentService.getEnrollmentCounts(classIds);
     this.enrollmentCounts.set(counts);
-    
+
     this.loading.set(false);
   }
 
@@ -279,12 +279,12 @@ export class ClassesTab implements OnInit {
   // Enrollment management methods
   protected async openEnrollmentModal(classItem: Class): Promise<void> {
     if (!classItem.id) return;
-    
+
     this.selectedClass.set(classItem);
     this.enrollmentLoading.set(true);
     this.showEnrollmentModal.set(true);
     this.enrollmentError.set('');
-    
+
     await this.loadEnrollments(classItem.id);
     this.enrollmentLoading.set(false);
   }
@@ -301,21 +301,19 @@ export class ClassesTab implements OnInit {
   private async loadEnrollments(classId: string): Promise<void> {
     const enrollments = await this.enrollmentService.getClassEnrollments(classId);
     this.enrollments.set(enrollments);
-    
+
     // Get student details for enrolled students
-    const enrolled = this.students().filter((s) =>
-      enrollments.some((e) => e.studentId === s.id)
-    );
+    const enrolled = this.students().filter((s) => enrollments.some((e) => e.studentId === s.id));
     this.enrolledStudents.set(enrolled);
   }
 
   protected filteredAvailableStudents = computed(() => {
     const selectedClass = this.selectedClass();
     if (!selectedClass) return [];
-    
+
     const enrolled = this.enrollments().map((e) => e.studentId);
     const search = this.availableStudentSearch().toLowerCase().trim();
-    
+
     return this.students().filter((student) => {
       // Not already enrolled
       if (enrolled.includes(student.id!)) return false;
@@ -325,7 +323,7 @@ export class ClassesTab implements OnInit {
       if (student.gradeLevel !== selectedClass.gradeLevelId) return false;
       // Search filter
       if (search && !student.fullName.toLowerCase().includes(search)) return false;
-      
+
       return true;
     });
   });
@@ -333,10 +331,10 @@ export class ClassesTab implements OnInit {
   protected async enrollStudent(student: Student): Promise<void> {
     const classItem = this.selectedClass();
     if (!classItem?.id || !student.id) return;
-    
+
     this.enrollmentLoading.set(true);
     this.enrollmentError.set('');
-    
+
     try {
       await this.enrollmentService.enrollStudent(classItem.id, student.id);
       await this.loadEnrollments(classItem.id);
@@ -352,19 +350,19 @@ export class ClassesTab implements OnInit {
   protected async unenrollStudent(enrollment: Enrollment, student: Student): Promise<void> {
     const classItem = this.selectedClass();
     if (!enrollment.id || !classItem?.id) return;
-    
+
     if (!confirm(`¿Desinscribir a ${student.fullName} de esta clase?`)) {
       return;
     }
-    
+
     this.enrollmentLoading.set(true);
     this.enrollmentError.set('');
-    
+
     try {
       await this.enrollmentService.unenrollStudent(
         enrollment.id,
         student.fullName,
-        classItem.className
+        classItem.className,
       );
       await this.loadEnrollments(classItem.id);
       await this.loadData(); // Refresh counts
@@ -408,9 +406,9 @@ export class ClassesTab implements OnInit {
   protected async unenrollStudentById(studentId: string): Promise<void> {
     const student = this.students().find((s) => s.id === studentId);
     const enrollment = this.enrollments().find((e) => e.studentId === studentId);
-    
+
     if (!student || !enrollment) return;
-    
+
     await this.unenrollStudent(enrollment, student);
   }
 }

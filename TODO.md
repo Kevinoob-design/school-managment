@@ -12,12 +12,12 @@
 
 ## teacher dashboard
 
-1. teachers must login with the newly created account and password from the admin dashboard
-2. they should be able to see the list of classes they are assigned to
-3. they should be able to see the students of an specific class
-4. they should be able to publish grades per students
-5. they should be able to publish the assistance rate of an student
-6. they should be able to see if there are any absence request from a parent of an specific student
+1. [x]teachers must login with the newly created account and password from the admin dashboard
+2. [x]they should be able to see the list of classes they are assigned to
+3. [x]they should be able to see the students of an specific class
+4. [x]they should be able to publish grades per students
+5. [x]they should be able to publish the assistance rate of an student
+6. [x]they should be able to see if there are any absence request from a parent of an specific student (use bucket firebase storage)
 
 ## parent dashboard
 

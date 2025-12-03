@@ -150,6 +150,41 @@ export class AuthService {
     return user?.uid || null;
   }
 
+  /**
+   * Get tenant ID based on user role
+   * - For admin: user.uid IS the tenantId
+   * - For teacher: get tenantId from users collection
+   * - For parent: get tenantId from users collection (future implementation)
+   */
+  async getTenantIdForCurrentUser(): Promise<string | null> {
+    const role = this.currentRole();
+    const user = this.currentUser();
+
+    if (!user) return null;
+
+    // Admin: uid is the tenantId
+    if (role === 'admin') {
+      return user.uid;
+    }
+
+    // Teacher or Parent: get tenantId from users collection
+    if (role === 'teacher' || role === 'parent') {
+      try {
+        const ref = doc(this.firestore, 'users', user.uid);
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+          const data = snap.data() as { tenantId?: string };
+          return data.tenantId || null;
+        }
+      } catch (error) {
+        console.error('Error fetching tenantId for user:', error);
+        return null;
+      }
+    }
+
+    return null;
+  }
+
   private async createProfile(
     uid: string,
     data: { fullName: string; phoneNumber: string; email: string; role: 'admin' | 'parent' },
