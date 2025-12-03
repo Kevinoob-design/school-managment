@@ -1,454 +1,522 @@
 <div class="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
-	<!-- Header -->
-	<div class="bg-white/80 backdrop-blur-sm border-b border-purple-100 p-6">
-		<div class="max-w-7xl mx-auto flex items-center justify-between">
-			<div>
-				<h1 class="text-3xl font-bold text-gray-900 mb-1">Portal de Padres</h1>
-				<p class="text-gray-600">{{ children().length }} {{ children().length === 1 ? 'hijo' : 'hijos' }}</p>
-			</div>
-		</div>
-	</div>
+  <!-- Header -->
+  <div class="bg-white/80 backdrop-blur-sm border-b border-purple-100 p-6">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 mb-1">Portal de Padres</h1>
+        <p class="text-gray-600">
+          {{ children().length }} {{ children().length === 1 ? 'hijo' : 'hijos' }}
+        </p>
+      </div>
+    </div>
+  </div>
 
-	<!-- Main Content -->
-	<div class="max-w-7xl mx-auto p-6 space-y-6">
-		<!-- Loading State -->
-		@if (loading()) {
-			<div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 p-12 text-center">
-				<div
-					class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-purple-600 border-r-transparent mb-4"
-				></div>
-				<p class="text-gray-600">Cargando...</p>
-			</div>
-		}
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto p-6 space-y-6">
+    <!-- Loading State -->
+    @if (loading()) {
+      <div
+        class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 p-12 text-center"
+      >
+        <div
+          class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-purple-600 border-r-transparent mb-4"
+        ></div>
+        <p class="text-gray-600">Cargando...</p>
+      </div>
+    }
 
-		<!-- No Children -->
-		@if (!loading() && children().length === 0) {
-			<div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 p-12 text-center">
-				<div class="bg-gradient-to-br from-purple-500 to-pink-600 p-6 rounded-2xl shadow-lg inline-block mb-4">
-					<span class="material-symbols-outlined text-white text-5xl">family_restroom</span>
-				</div>
-				<p class="text-xl text-gray-600 font-medium">No se encontraron hijos</p>
-				<p class="text-sm text-gray-500 mt-2">
-					Contacta al administrador si crees que esto es un error.
-				</p>
-			</div>
-		}
+    <!-- No Children -->
+    @if (!loading() && children().length === 0) {
+      <div
+        class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 p-12 text-center"
+      >
+        <div
+          class="bg-gradient-to-br from-purple-500 to-pink-600 p-6 rounded-2xl shadow-lg inline-block mb-4"
+        >
+          <span class="material-symbols-outlined text-white text-5xl">family_restroom</span>
+        </div>
+        <p class="text-xl text-gray-600 font-medium">No se encontraron hijos</p>
+        <p class="text-sm text-gray-500 mt-2">
+          Contacta al administrador si crees que esto es un error.
+        </p>
+      </div>
+    }
 
-		<!-- Dashboard -->
-		@if (!loading() && children().length > 0) {
-			<!-- Child Selector (only for grades/requests tabs) -->
-			@if (currentTab() !== 'overview' && children().length > 1) {
-				<div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 p-6">
-					<div class="block text-sm font-medium text-gray-700 mb-3">Seleccionar Hijo/a</div>
-					<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-						@for (child of children(); track child.id) {
-							<button
-								type="button"
-								(click)="selectChild(child)"
-								[class]="'p-4 rounded-lg border-2 text-left transition-all ' + (selectedChild()?.id === child.id ? 'border-purple-600 bg-purple-50' : 'border-gray-200 hover:border-purple-300')"
-							>
-								<div class="font-semibold text-gray-900">{{ child.fullName }}</div>
-								<div class="text-sm text-gray-600">{{ child.gradeLevel }}</div>
-							</button>
-						}
-					</div>
-				</div>
-			}
+    <!-- Dashboard -->
+    @if (!loading() && children().length > 0) {
+      <!-- Child Selector (only for grades/requests tabs) -->
+      @if (currentTab() !== 'overview' && children().length > 1) {
+        <div
+          class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 p-6"
+        >
+          <div class="block text-sm font-medium text-gray-700 mb-3">Seleccionar Hijo/a</div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            @for (child of children(); track child.id) {
+              <button
+                type="button"
+                (click)="selectChild(child)"
+                [class]="
+                  'p-4 rounded-lg border-2 text-left transition-all ' +
+                  (selectedChild()?.id === child.id
+                    ? 'border-purple-600 bg-purple-50'
+                    : 'border-gray-200 hover:border-purple-300')
+                "
+              >
+                <div class="font-semibold text-gray-900">{{ child.fullName }}</div>
+                <div class="text-sm text-gray-600">{{ child.gradeLevel }}</div>
+              </button>
+            }
+          </div>
+        </div>
+      }
 
-			<!-- Tab Navigation -->
-			<div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 p-2">
-				<div class="flex gap-2 overflow-x-auto">
-					@for (tab of tabs; track tab.value) {
-						<button
-							type="button"
-							(click)="selectTab(tab.value)"
-							[class]="'flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-all whitespace-nowrap ' + (currentTab() === tab.value ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg' : 'text-gray-700 hover:bg-purple-50')"
-						>
-							<span class="material-symbols-outlined text-lg">{{ tab.icon }}</span>
-							{{ tab.label }}
-							@if (tab.value === 'requests' && pendingRequests() > 0) {
-								<span class="bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full text-xs font-bold">
-									{{ pendingRequests() }}
-								</span>
-							}
-						</button>
-					}
-				</div>
-			</div>
+      <!-- Tab Navigation -->
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 p-2">
+        <div class="flex gap-2 overflow-x-auto">
+          @for (tab of tabs; track tab.value) {
+            <button
+              type="button"
+              (click)="selectTab(tab.value)"
+              [class]="
+                'flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-all whitespace-nowrap ' +
+                (currentTab() === tab.value
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
+                  : 'text-gray-700 hover:bg-purple-50')
+              "
+            >
+              <span class="material-symbols-outlined text-lg">{{ tab.icon }}</span>
+              {{ tab.label }}
+              @if (tab.value === 'requests' && pendingRequests() > 0) {
+                <span
+                  class="bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full text-xs font-bold"
+                >
+                  {{ pendingRequests() }}
+                </span>
+              }
+            </button>
+          }
+        </div>
+      </div>
 
-			<!-- Overview Tab - All Children -->
-			@if (currentTab() === 'overview') {
-				<div class="space-y-6">
-					<h2 class="text-2xl font-bold text-gray-900">Todos los Hijos</h2>
-					<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-						@for (overview of childrenOverview(); track overview.student.id) {
-							<div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 overflow-hidden">
-								<!-- Child Header -->
-								<div class="bg-gradient-to-r from-purple-600 to-pink-600 p-6">
-									<div class="flex items-center gap-4">
-										<div class="bg-white/20 backdrop-blur-sm p-3 rounded-full">
-											<span class="material-symbols-outlined text-white text-4xl">person</span>
-										</div>
-										<div class="flex-1">
-											<h3 class="text-2xl font-bold text-white">{{ overview.student.fullName }}</h3>
-											<p class="text-purple-100">{{ overview.student.gradeLevel }}</p>
-										</div>
-									</div>
-								</div>
+      <!-- Overview Tab - All Children -->
+      @if (currentTab() === 'overview') {
+        <div class="space-y-6">
+          <h2 class="text-2xl font-bold text-gray-900">Todos los Hijos</h2>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            @for (overview of childrenOverview(); track overview.student.id) {
+              <div
+                class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 overflow-hidden"
+              >
+                <!-- Child Header -->
+                <div class="bg-gradient-to-r from-purple-600 to-pink-600 p-6">
+                  <div class="flex items-center gap-4">
+                    <div class="bg-white/20 backdrop-blur-sm p-3 rounded-full">
+                      <span class="material-symbols-outlined text-white text-4xl">person</span>
+                    </div>
+                    <div class="flex-1">
+                      <h3 class="text-2xl font-bold text-white">{{ overview.student.fullName }}</h3>
+                      <p class="text-purple-100">{{ overview.student.gradeLevel }}</p>
+                    </div>
+                  </div>
+                </div>
 
-								<!-- Child Info -->
-								<div class="p-6 space-y-4">
-									@if (overview.loading) {
-										<div class="text-center py-4">
-											<div class="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-purple-600 border-r-transparent"></div>
-											<p class="text-sm text-gray-600 mt-2">Cargando...</p>
-										</div>
-									} @else {
-										<!-- Contact Info -->
-										<div class="grid grid-cols-2 gap-3">
-											<div>
-												<p class="text-xs text-gray-500 mb-1">Email</p>
-												<p class="text-sm font-medium text-gray-900">{{ overview.student.email }}</p>
-											</div>
-											<div>
-												<p class="text-xs text-gray-500 mb-1">Teléfono</p>
-												<p class="text-sm font-medium text-gray-900">{{ overview.student.phone }}</p>
-											</div>
-										</div>
+                <!-- Child Info -->
+                <div class="p-6 space-y-4">
+                  @if (overview.loading) {
+                    <div class="text-center py-4">
+                      <div
+                        class="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-purple-600 border-r-transparent"
+                      ></div>
+                      <p class="text-sm text-gray-600 mt-2">Cargando...</p>
+                    </div>
+                  } @else {
+                    <!-- Contact Info -->
+                    <div class="grid grid-cols-2 gap-3">
+                      <div>
+                        <p class="text-xs text-gray-500 mb-1">Email</p>
+                        <p class="text-sm font-medium text-gray-900">
+                          {{ overview.student.email }}
+                        </p>
+                      </div>
+                      <div>
+                        <p class="text-xs text-gray-500 mb-1">Teléfono</p>
+                        <p class="text-sm font-medium text-gray-900">
+                          {{ overview.student.phone }}
+                        </p>
+                      </div>
+                    </div>
 
-										<!-- Statistics -->
-										<div class="grid grid-cols-2 gap-3 pt-3 border-t border-gray-200">
-											<div class="bg-purple-50 rounded-lg p-3 text-center">
-												<p class="text-xs text-gray-600 mb-1">Asistencia</p>
-												<p class="text-2xl font-bold text-purple-600">{{ overview.attendanceRate.toFixed(1) }}%</p>
-											</div>
-											<div class="bg-pink-50 rounded-lg p-3 text-center">
-												<p class="text-xs text-gray-600 mb-1">Clases</p>
-												<p class="text-2xl font-bold text-pink-600">{{ overview.classesCount }}</p>
-											</div>
-										</div>
+                    <!-- Statistics -->
+                    <div class="grid grid-cols-2 gap-3 pt-3 border-t border-gray-200">
+                      <div class="bg-purple-50 rounded-lg p-3 text-center">
+                        <p class="text-xs text-gray-600 mb-1">Asistencia</p>
+                        <p class="text-2xl font-bold text-purple-600">
+                          {{ overview.attendanceRate.toFixed(1) }}%
+                        </p>
+                      </div>
+                      <div class="bg-pink-50 rounded-lg p-3 text-center">
+                        <p class="text-xs text-gray-600 mb-1">Clases</p>
+                        <p class="text-2xl font-bold text-pink-600">{{ overview.classesCount }}</p>
+                      </div>
+                    </div>
 
-										<!-- Action Buttons -->
-										<div class="flex gap-2 pt-3 border-t border-gray-200">
-											<app-button
-												[variant]="'outline'"
-												[size]="'sm'"
-												class="flex-1"
-												(click)="selectChild(overview.student); selectTab('grades')"
-											>
-												<span class="material-symbols-outlined text-sm mr-1">grade</span>
-												Calificaciones
-											</app-button>
-											<app-button
-												[variant]="'outline'"
-												[size]="'sm'"
-												class="flex-1"
-												(click)="selectChild(overview.student); selectTab('requests')"
-											>
-												<span class="material-symbols-outlined text-sm mr-1">inbox</span>
-												Solicitudes
-											</app-button>
-										</div>
-									}
-								</div>
-							</div>
-						}
-					</div>
-				</div>
-			}
+                    <!-- Action Buttons -->
+                    <div class="flex gap-2 pt-3 border-t border-gray-200">
+                      <app-button
+                        [variant]="'outline'"
+                        [size]="'sm'"
+                        class="flex-1"
+                        (click)="selectChild(overview.student); selectTab('grades')"
+                      >
+                        <span class="material-symbols-outlined text-sm mr-1">grade</span>
+                        Calificaciones
+                      </app-button>
+                      <app-button
+                        [variant]="'outline'"
+                        [size]="'sm'"
+                        class="flex-1"
+                        (click)="selectChild(overview.student); selectTab('requests')"
+                      >
+                        <span class="material-symbols-outlined text-sm mr-1">inbox</span>
+                        Solicitudes
+                      </app-button>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
 
-			<!-- Grades Tab -->
-			@if (currentTab() === 'grades') {
-				<div class="space-y-6">
-					@if (gradesLoading()) {
-						<div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 p-12 text-center">
-							<div
-								class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-purple-600 border-r-transparent mb-4"
-							></div>
-							<p class="text-gray-600">Cargando calificaciones...</p>
-						</div>
-					} @else if (childGrades().length === 0) {
-						<div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 p-12 text-center">
-							<p class="text-gray-600">No hay calificaciones disponibles</p>
-						</div>
-					} @else {
-						@for (classGrades of childGrades(); track classGrades.classId) {
-							<div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 overflow-hidden">
-								<!-- Class Header -->
-								<div class="bg-gradient-to-r from-purple-600 to-pink-600 p-6">
-									<div class="flex items-center justify-between">
-										<div>
-											<h3 class="text-xl font-bold text-white">{{ classGrades.className }}</h3>
-											<p class="text-purple-100 text-sm">{{ classGrades.teacherName }}</p>
-										</div>
-										<div class="text-right">
-											<p class="text-purple-100 text-sm">Promedio</p>
-											<p class="text-3xl font-bold text-white">{{ classGrades.average.toFixed(1) }}%</p>
-											<span [class]="'text-2xl font-bold ' + getGradeLetterColor(classGrades.gradeLetter)">
-												{{ classGrades.gradeLetter }}
-											</span>
-										</div>
-									</div>
-								</div>
+      <!-- Grades Tab -->
+      @if (currentTab() === 'grades') {
+        <div class="space-y-6">
+          @if (gradesLoading()) {
+            <div
+              class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 p-12 text-center"
+            >
+              <div
+                class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-purple-600 border-r-transparent mb-4"
+              ></div>
+              <p class="text-gray-600">Cargando calificaciones...</p>
+            </div>
+          } @else if (childGrades().length === 0) {
+            <div
+              class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 p-12 text-center"
+            >
+              <p class="text-gray-600">No hay calificaciones disponibles</p>
+            </div>
+          } @else {
+            @for (classGrades of childGrades(); track classGrades.classId) {
+              <div
+                class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 overflow-hidden"
+              >
+                <!-- Class Header -->
+                <div class="bg-gradient-to-r from-purple-600 to-pink-600 p-6">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h3 class="text-xl font-bold text-white">{{ classGrades.className }}</h3>
+                      <p class="text-purple-100 text-sm">{{ classGrades.teacherName }}</p>
+                    </div>
+                    <div class="text-right">
+                      <p class="text-purple-100 text-sm">Promedio</p>
+                      <p class="text-3xl font-bold text-white">
+                        {{ classGrades.average.toFixed(1) }}%
+                      </p>
+                      <span
+                        [class]="
+                          'text-2xl font-bold ' + getGradeLetterColor(classGrades.gradeLetter)
+                        "
+                      >
+                        {{ classGrades.gradeLetter }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
 
-								<!-- Grades List -->
-								<div class="p-6">
-									@if (classGrades.grades.length > 0) {
-										<div class="space-y-3">
-											@for (grade of classGrades.grades; track grade.id) {
-												<div class="border border-gray-200 rounded-lg p-4">
-													<div class="flex items-start justify-between">
-														<div class="flex-1">
-															<div class="flex items-center gap-2 mb-1">
-																<h4 class="font-medium text-gray-900">{{ grade.gradeName }}</h4>
-																<span class="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded-full">
-																	{{ getGradeTypeLabel(grade.gradeType) }}
-																</span>
-															</div>
-															<p class="text-sm text-gray-600">
-																{{ grade.earnedPoints }} / {{ grade.maxPoints }} puntos
-															</p>
-															@if (grade.comments) {
-																<p class="text-sm text-gray-500 mt-1">{{ grade.comments }}</p>
-															}
-														</div>
-														<div class="text-right">
-															<p class="text-2xl font-bold text-purple-600">{{ grade.gradeValue.toFixed(0) }}%</p>
-														</div>
-													</div>
-												</div>
-											}
-										</div>
-									} @else {
-										<p class="text-gray-500">No hay calificaciones publicadas</p>
-									}
-								</div>
-							</div>
-						}
-					}
-				</div>
-			}
+                <!-- Grades List -->
+                <div class="p-6">
+                  @if (classGrades.grades.length > 0) {
+                    <div class="space-y-3">
+                      @for (grade of classGrades.grades; track grade.id) {
+                        <div class="border border-gray-200 rounded-lg p-4">
+                          <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                              <div class="flex items-center gap-2 mb-1">
+                                <h4 class="font-medium text-gray-900">{{ grade.gradeName }}</h4>
+                                <span
+                                  class="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded-full"
+                                >
+                                  {{ getGradeTypeLabel(grade.gradeType) }}
+                                </span>
+                              </div>
+                              <p class="text-sm text-gray-600">
+                                {{ grade.earnedPoints }} / {{ grade.maxPoints }} puntos
+                              </p>
+                              @if (grade.comments) {
+                                <p class="text-sm text-gray-500 mt-1">{{ grade.comments }}</p>
+                              }
+                            </div>
+                            <div class="text-right">
+                              <p class="text-2xl font-bold text-purple-600">
+                                {{ grade.gradeValue.toFixed(0) }}%
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  } @else {
+                    <p class="text-gray-500">No hay calificaciones publicadas</p>
+                  }
+                </div>
+              </div>
+            }
+          }
+        </div>
+      }
 
-			<!-- Requests Tab -->
-			@if (currentTab() === 'requests') {
-				<div class="space-y-6">
-					<!-- Submit Request Button -->
-					<div class="flex justify-end">
-						<app-button [variant]="'primary'" [size]="'md'" (click)="openRequestModal()">
-							<span class="material-symbols-outlined text-lg mr-2">add</span>
-							Nueva Solicitud
-						</app-button>
-					</div>
+      <!-- Requests Tab -->
+      @if (currentTab() === 'requests') {
+        <div class="space-y-6">
+          <!-- Submit Request Button -->
+          <div class="flex justify-end">
+            <app-button [variant]="'primary'" [size]="'md'" (click)="openRequestModal()">
+              <span class="material-symbols-outlined text-lg mr-2">add</span>
+              Nueva Solicitud
+            </app-button>
+          </div>
 
-					<!-- Requests List -->
-					@if (requestLoading()) {
-						<div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 p-12 text-center">
-							<div
-								class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-purple-600 border-r-transparent mb-4"
-							></div>
-							<p class="text-gray-600">Cargando solicitudes...</p>
-						</div>
-					} @else if (absenceRequests().length === 0) {
-						<div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 p-12 text-center">
-							<div class="bg-gradient-to-br from-purple-500 to-pink-600 p-6 rounded-2xl shadow-lg inline-block mb-4">
-								<span class="material-symbols-outlined text-white text-5xl">inbox</span>
-							</div>
-							<p class="text-xl text-gray-600 font-medium">No hay solicitudes</p>
-						</div>
-					} @else {
-						<div class="space-y-4">
-							@for (request of absenceRequests(); track request.id) {
-								<div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 p-6">
-									<div class="flex items-start justify-between">
-										<div class="flex-1">
-											<div class="flex items-center gap-3 mb-2">
-												<span
-													[class]="'px-3 py-1 rounded-full text-xs font-semibold ' + getStatusColor(request.status)"
-												>
-													{{ getStatusLabel(request.status) }}
-												</span>
-											</div>
-											<p class="text-sm text-gray-700 mb-2">
-												<strong>Fechas:</strong> {{ formatDate(request.startDate) }}
-												@if (request.startDate !== request.endDate) {
-													- {{ formatDate(request.endDate) }}
-												}
-											</p>
-											<p class="text-sm text-gray-600">{{ request.reason }}</p>
-											@if (request.reviewNotes) {
-												<div class="mt-3 p-3 bg-gray-50 rounded-lg">
-													<p class="text-sm text-gray-500 mb-1">Comentarios del profesor:</p>
-													<p class="text-sm text-gray-700">{{ request.reviewNotes }}</p>
-												</div>
-											}
-										</div>
-									</div>
-								</div>
-							}
-						</div>
-					}
-				</div>
-			}
-		}
-	</div>
+          <!-- Requests List -->
+          @if (requestLoading()) {
+            <div
+              class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 p-12 text-center"
+            >
+              <div
+                class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-purple-600 border-r-transparent mb-4"
+              ></div>
+              <p class="text-gray-600">Cargando solicitudes...</p>
+            </div>
+          } @else if (absenceRequests().length === 0) {
+            <div
+              class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 p-12 text-center"
+            >
+              <div
+                class="bg-gradient-to-br from-purple-500 to-pink-600 p-6 rounded-2xl shadow-lg inline-block mb-4"
+              >
+                <span class="material-symbols-outlined text-white text-5xl">inbox</span>
+              </div>
+              <p class="text-xl text-gray-600 font-medium">No hay solicitudes</p>
+            </div>
+          } @else {
+            <div class="space-y-4">
+              @for (request of absenceRequests(); track request.id) {
+                <div
+                  class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 p-6"
+                >
+                  <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                      <div class="flex items-center gap-3 mb-2">
+                        <span
+                          [class]="
+                            'px-3 py-1 rounded-full text-xs font-semibold ' +
+                            getStatusColor(request.status)
+                          "
+                        >
+                          {{ getStatusLabel(request.status) }}
+                        </span>
+                      </div>
+                      <p class="text-sm text-gray-700 mb-2">
+                        <strong>Fechas:</strong> {{ formatDate(request.startDate) }}
+                        @if (request.startDate !== request.endDate) {
+                          - {{ formatDate(request.endDate) }}
+                        }
+                      </p>
+                      <p class="text-sm text-gray-600">{{ request.reason }}</p>
+                      @if (request.reviewNotes) {
+                        <div class="mt-3 p-3 bg-gray-50 rounded-lg">
+                          <p class="text-sm text-gray-500 mb-1">Comentarios del profesor:</p>
+                          <p class="text-sm text-gray-700">{{ request.reviewNotes }}</p>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
 </div>
 
 <!-- Request Modal -->
 @if (showRequestModal()) {
-	<div
-		class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-		role="dialog"
-		aria-modal="true"
-		(click)="closeRequestModal()"
-		(keydown.escape)="closeRequestModal()"
-	>
-		<div
-			class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
-			role="document"
-			(click)="$event.stopPropagation()"
-			(keydown)="$event.stopPropagation()"
-		>
-			<!-- Modal Header -->
-			<div class="bg-gradient-to-r from-purple-600 to-pink-600 p-6">
-				<h2 class="text-2xl font-bold text-white">Nueva Solicitud de Ausencia</h2>
-				<p class="text-purple-100 mt-1">{{ selectedChild()!.fullName }}</p>
-			</div>
+  <div
+    class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+    role="dialog"
+    aria-modal="true"
+    (click)="closeRequestModal()"
+    (keydown.escape)="closeRequestModal()"
+  >
+    <div
+      class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
+      role="document"
+      (click)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
+    >
+      <!-- Modal Header -->
+      <div class="bg-gradient-to-r from-purple-600 to-pink-600 p-6">
+        <h2 class="text-2xl font-bold text-white">Nueva Solicitud de Ausencia</h2>
+        <p class="text-purple-100 mt-1">{{ selectedChild()!.fullName }}</p>
+      </div>
 
-			<!-- Modal Body -->
-			<form (submit)="$event.preventDefault(); submitAbsenceRequest()" class="p-6 space-y-6">
-				<!-- Class Selector -->
-				<div>
-					<label for="class-select" class="block text-sm font-medium text-gray-700 mb-2">
-						Clase *
-					</label>
-					<select
-						id="class-select"
-						[value]="selectedClassId()"
-						(change)="selectedClassId.set($any($event.target).value)"
-						class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-						required
-					>
-						<option value="">Selecciona una clase</option>
-						@for (cls of classes(); track cls.id) {
-							<option [value]="cls.id">{{ cls.className }} - {{ cls.section }}</option>
-						}
-					</select>
-				</div>
+      <!-- Modal Body -->
+      <form (submit)="$event.preventDefault(); submitAbsenceRequest()" class="p-6 space-y-6">
+        <!-- Class Selector -->
+        <div>
+          <label for="class-select" class="block text-sm font-medium text-gray-700 mb-2">
+            Clase *
+          </label>
+          <select
+            id="class-select"
+            [value]="selectedClassId()"
+            (change)="selectedClassId.set($any($event.target).value)"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            required
+          >
+            <option value="">Selecciona una clase</option>
+            @for (cls of classes(); track cls.id) {
+              <option [value]="cls.id">{{ cls.className }} - {{ cls.section }}</option>
+            }
+          </select>
+        </div>
 
-				<!-- Date Range -->
-				<div class="grid grid-cols-2 gap-4">
-					<div>
-						<label for="start-date" class="block text-sm font-medium text-gray-700 mb-2">
-							Fecha de inicio *
-						</label>
-						<input
-							id="start-date"
-							type="date"
-							[value]="startDate()"
-							(input)="startDate.set($any($event.target).value)"
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-							required
-						/>
-					</div>
-					<div>
-						<label for="end-date" class="block text-sm font-medium text-gray-700 mb-2">
-							Fecha de fin *
-						</label>
-						<input
-							id="end-date"
-							type="date"
-							[value]="endDate()"
-							(input)="endDate.set($any($event.target).value)"
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-							required
-						/>
-					</div>
-				</div>
+        <!-- Date Range -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="start-date" class="block text-sm font-medium text-gray-700 mb-2">
+              Fecha de inicio *
+            </label>
+            <input
+              id="start-date"
+              type="date"
+              [value]="startDate()"
+              (input)="startDate.set($any($event.target).value)"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              required
+            />
+          </div>
+          <div>
+            <label for="end-date" class="block text-sm font-medium text-gray-700 mb-2">
+              Fecha de fin *
+            </label>
+            <input
+              id="end-date"
+              type="date"
+              [value]="endDate()"
+              (input)="endDate.set($any($event.target).value)"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              required
+            />
+          </div>
+        </div>
 
-				<!-- Reason -->
-				<div>
-					<label for="reason" class="block text-sm font-medium text-gray-700 mb-2">
-						Razón * (mínimo 10 caracteres)
-					</label>
-					<textarea
-						id="reason"
-						[value]="reason()"
-						(input)="reason.set($any($event.target).value)"
-						rows="4"
-						class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-						placeholder="Explica el motivo de la ausencia..."
-						required
-					></textarea>
-					<p class="text-xs text-gray-500 mt-1">{{ reason().length }} / 10 caracteres mínimo</p>
-				</div>
+        <!-- Reason -->
+        <div>
+          <label for="reason" class="block text-sm font-medium text-gray-700 mb-2">
+            Razón * (mínimo 10 caracteres)
+          </label>
+          <textarea
+            id="reason"
+            [value]="reason()"
+            (input)="reason.set($any($event.target).value)"
+            rows="4"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            placeholder="Explica el motivo de la ausencia..."
+            required
+          ></textarea>
+          <p class="text-xs text-gray-500 mt-1">{{ reason().length }} / 10 caracteres mínimo</p>
+        </div>
 
-				<!-- File Attachment -->
-				<div>
-					<div class="block text-sm font-medium text-gray-700 mb-2">
-						Adjuntar documento (opcional)
-					</div>
-					@if (!attachmentFile()) {
-						<label
-							for="file-upload"
-							class="flex items-center justify-center w-full p-4 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-purple-500 transition-colors"
-						>
-							<div class="text-center">
-								<span class="material-symbols-outlined text-gray-400 text-4xl mb-2">upload_file</span>
-								<p class="text-sm text-gray-600">Click para subir archivo</p>
-								<p class="text-xs text-gray-500 mt-1">PDF, JPG, PNG (Máx. 5MB)</p>
-							</div>
-							<input
-								id="file-upload"
-								type="file"
-								accept=".pdf,.jpg,.jpeg,.png"
-								(change)="onFileSelected($event)"
-								class="hidden"
-							/>
-						</label>
-					} @else {
-						<div class="flex items-center justify-between p-4 bg-purple-50 border border-purple-200 rounded-lg">
-							<div class="flex items-center gap-3">
-								<span class="material-symbols-outlined text-purple-600">description</span>
-								<div>
-									<p class="text-sm font-medium text-gray-900">{{ attachmentFile()!.name }}</p>
-									<p class="text-xs text-gray-500">
-										{{ (attachmentFile()!.size / 1024 / 1024).toFixed(2) }} MB
-									</p>
-								</div>
-							</div>
-							<button
-								type="button"
-								(click)="removeAttachment()"
-								class="text-red-600 hover:text-red-700 p-1"
-							>
-								<span class="material-symbols-outlined">close</span>
-							</button>
-						</div>
-					}
-				</div>
+        <!-- File Attachment -->
+        <div>
+          <div class="block text-sm font-medium text-gray-700 mb-2">
+            Adjuntar documento (opcional)
+          </div>
+          @if (!attachmentFile()) {
+            <label
+              for="file-upload"
+              class="flex items-center justify-center w-full p-4 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-purple-500 transition-colors"
+            >
+              <div class="text-center">
+                <span class="material-symbols-outlined text-gray-400 text-4xl mb-2"
+                  >upload_file</span
+                >
+                <p class="text-sm text-gray-600">Click para subir archivo</p>
+                <p class="text-xs text-gray-500 mt-1">PDF, JPG, PNG (Máx. 5MB)</p>
+              </div>
+              <input
+                id="file-upload"
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png"
+                (change)="onFileSelected($event)"
+                class="hidden"
+              />
+            </label>
+          } @else {
+            <div
+              class="flex items-center justify-between p-4 bg-purple-50 border border-purple-200 rounded-lg"
+            >
+              <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-purple-600">description</span>
+                <div>
+                  <p class="text-sm font-medium text-gray-900">{{ attachmentFile()!.name }}</p>
+                  <p class="text-xs text-gray-500">
+                    {{ (attachmentFile()!.size / 1024 / 1024).toFixed(2) }} MB
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                (click)="removeAttachment()"
+                class="text-red-600 hover:text-red-700 p-1"
+              >
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </div>
+          }
+        </div>
 
-				<!-- Error Message -->
-				@if (formError()) {
-					<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-						{{ formError() }}
-					</div>
-				}
-			</form>
+        <!-- Error Message -->
+        @if (formError()) {
+          <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            {{ formError() }}
+          </div>
+        }
+      </form>
 
-			<!-- Modal Footer -->
-			<div class="p-6 bg-gray-50 flex items-center justify-end gap-3">
-				<app-button [variant]="'ghost'" [size]="'md'" (click)="closeRequestModal()" [disabled]="requestLoading()">
-					Cancelar
-				</app-button>
-				<app-button
-					[variant]="'primary'"
-					[size]="'md'"
-					(click)="submitAbsenceRequest()"
-					[disabled]="!canSubmitRequest()"
-				>
-					{{ requestLoading() ? 'Enviando...' : 'Enviar Solicitud' }}
-				</app-button>
-			</div>
-		</div>
-	</div>
+      <!-- Modal Footer -->
+      <div class="p-6 bg-gray-50 flex items-center justify-end gap-3">
+        <app-button
+          [variant]="'ghost'"
+          [size]="'md'"
+          (click)="closeRequestModal()"
+          [disabled]="requestLoading()"
+        >
+          Cancelar
+        </app-button>
+        <app-button
+          [variant]="'primary'"
+          [size]="'md'"
+          (click)="submitAbsenceRequest()"
+          [disabled]="!canSubmitRequest()"
+        >
+          {{ requestLoading() ? 'Enviando...' : 'Enviar Solicitud' }}
+        </app-button>
+      </div>
+    </div>
+  </div>
 }
