@@ -1,0 +1,188 @@
+<!-- Hero Section -->
+<app-section spacing="xl" background="blue">
+  <div class="text-center max-w-4xl mx-auto">
+    <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">Centro de Ayuda</h1>
+    <p class="text-xl text-gray-700 mb-8">
+      Encuentra respuestas a tus preguntas y aprende a aprovechar al máximo la plataforma
+    </p>
+  </div>
+</app-section>
+
+<!-- Resources Section -->
+<app-section spacing="xl" background="white">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-12">
+      <h2 class="text-4xl font-bold text-gray-900 mb-4">Recursos de Ayuda</h2>
+      <p class="text-lg text-gray-600">Múltiples formas de obtener la ayuda que necesitas</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      @for (resource of resources(); track resource.id) {
+        <app-card [hover]="true" padding="lg">
+          <div class="text-center">
+            <div class="inline-flex items-center justify-center mb-4">
+              <div class="bg-gradient-to-br from-emerald-500 to-teal-600 p-6 rounded-2xl shadow-lg">
+                <span class="material-symbols-outlined text-white text-5xl">
+                  {{ resource.icon }}
+                </span>
+              </div>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ resource.title }}</h3>
+            <p class="text-sm text-gray-600 mb-4">{{ resource.description }}</p>
+            <app-button [variant]="'outline'" [size]="'sm'" [fullWidth]="true">
+              {{ resource.action }}
+            </app-button>
+          </div>
+        </app-card>
+      }
+    </div>
+  </div>
+</app-section>
+
+<!-- FAQ Categories -->
+<app-section spacing="xl" background="gray">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-12">
+      <h2 class="text-4xl font-bold text-gray-900 mb-4">Preguntas Frecuentes</h2>
+      <p class="text-lg text-gray-600">Encuentra respuestas rápidas a preguntas comunes</p>
+    </div>
+
+    <div class="space-y-8">
+      @for (category of faqCategories(); track category.id) {
+        <div>
+          <!-- Category Header -->
+          <div class="flex items-center gap-3 mb-4">
+            <div class="bg-gradient-to-br from-blue-500 to-indigo-600 p-3 rounded-xl shadow-lg">
+              <span class="material-symbols-outlined text-white text-3xl">
+                {{ category.icon }}
+              </span>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900">{{ category.title }}</h3>
+          </div>
+
+          <!-- Questions -->
+          <div class="space-y-3">
+            @for (question of category.questions; track question.id) {
+              <div
+                class="bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-gray-200 overflow-hidden transition-all"
+                [class.ring-2]="expandedQuestion() === question.id"
+                [class.ring-blue-500]="expandedQuestion() === question.id"
+              >
+                <!-- Question Header (clickable) -->
+                <button
+                  type="button"
+                  (click)="toggleQuestion(question.id)"
+                  class="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
+                >
+                  <span class="text-lg font-semibold text-gray-900 pr-4">
+                    {{ question.question }}
+                  </span>
+                  <span
+                    class="material-symbols-outlined text-gray-500 flex-shrink-0 transition-transform"
+                    [class.rotate-180]="expandedQuestion() === question.id"
+                  >
+                    expand_more
+                  </span>
+                </button>
+
+                <!-- Answer (expandable) -->
+                @if (expandedQuestion() === question.id) {
+                  <div
+                    class="px-4 pb-4 text-gray-700 leading-relaxed border-t border-gray-200 pt-4"
+                  >
+                    {{ question.answer }}
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</app-section>
+
+<!-- Quick Tips Section -->
+<app-section spacing="xl" background="white">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-12">
+      <h2 class="text-4xl font-bold text-gray-900 mb-4">Consejos Rápidos</h2>
+      <p class="text-lg text-gray-600">Trucos y sugerencias para mejorar tu experiencia</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <app-card padding="lg">
+        <div class="flex items-start gap-4">
+          <div class="bg-gradient-to-br from-yellow-500 to-orange-600 p-3 rounded-xl shadow-lg">
+            <span class="material-symbols-outlined text-white text-3xl">tips_and_updates</span>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">
+              Mantén tu información actualizada
+            </h3>
+            <p class="text-gray-600">
+              Actualiza regularmente tu perfil y configuración para recibir notificaciones
+              relevantes y mantener la comunicación efectiva.
+            </p>
+          </div>
+        </div>
+      </app-card>
+
+      <app-card padding="lg">
+        <div class="flex items-start gap-4">
+          <div class="bg-gradient-to-br from-purple-500 to-pink-600 p-3 rounded-xl shadow-lg">
+            <span class="material-symbols-outlined text-white text-3xl">notifications_active</span>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Configura tus notificaciones</h3>
+            <p class="text-gray-600">
+              Personaliza qué notificaciones recibes para estar informado sin sentirte abrumado.
+              Ajusta la configuración desde tu panel.
+            </p>
+          </div>
+        </div>
+      </app-card>
+
+      <app-card padding="lg">
+        <div class="flex items-start gap-4">
+          <div class="bg-gradient-to-br from-green-500 to-emerald-600 p-3 rounded-xl shadow-lg">
+            <span class="material-symbols-outlined text-white text-3xl">phone_android</span>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Usa la versión móvil</h3>
+            <p class="text-gray-600">
+              La plataforma está optimizada para móviles. Accede desde cualquier dispositivo y
+              mantén el control sobre la marcha.
+            </p>
+          </div>
+        </div>
+      </app-card>
+
+      <app-card padding="lg">
+        <div class="flex items-start gap-4">
+          <div class="bg-gradient-to-br from-blue-500 to-cyan-600 p-3 rounded-xl shadow-lg">
+            <span class="material-symbols-outlined text-white text-3xl">backup</span>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Exporta tus datos</h3>
+            <p class="text-gray-600">
+              Descarga reportes y datos en formato PDF o Excel para mantener registros offline y
+              realizar análisis adicionales.
+            </p>
+          </div>
+        </div>
+      </app-card>
+    </div>
+  </div>
+</app-section>
+
+<!-- CTA Section -->
+<app-section spacing="xl" background="blue">
+  <div class="text-center max-w-3xl mx-auto">
+    <h2 class="text-4xl font-bold text-gray-900 mb-4">¿No encontraste lo que buscabas?</h2>
+    <p class="text-xl text-gray-700 mb-8">
+      Nuestro equipo de soporte está listo para ayudarte con cualquier pregunta o problema
+    </p>
+    <app-button variant="primary" size="lg" (click)="goContact()"> Contactar Soporte </app-button>
+  </div>
+</app-section>
