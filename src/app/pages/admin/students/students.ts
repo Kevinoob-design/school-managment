@@ -149,7 +149,7 @@ export class StudentsTab implements OnInit {
       if (digits.length >= 7) formatted += `-${digits.slice(6, 10)}`;
     }
     if (digits.length < 1) formatted = '';
-    
+
     if (field === 'phone') {
       this.phone.set(formatted);
     } else if (field === 'parentPhone') {

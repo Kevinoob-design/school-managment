@@ -29,7 +29,7 @@
               <span class="material-symbols-outlined text-white text-5xl">account_circle</span>
             </div>
           }
-          
+
           <!-- Hover Overlay -->
           <label
             class="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
@@ -38,14 +38,9 @@
               <span class="material-symbols-outlined text-white text-3xl">photo_camera</span>
               <p class="text-white text-xs mt-1">Cambiar</p>
             </div>
-            <input
-              type="file"
-              accept="image/*"
-              (change)="onFileSelected($event)"
-              class="hidden"
-            />
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" class="hidden" />
           </label>
-          
+
           <!-- Remove Photo Button (if new photo selected) -->
           @if (photoFile()) {
             <button
@@ -201,8 +196,8 @@
           <div>
             <h3 class="text-lg font-semibold text-gray-900 mb-2">Privacidad</h3>
             <p class="text-gray-600 text-sm">
-              Tu información personal está protegida y solo es visible para ti y los
-              administradores autorizados.
+              Tu información personal está protegida y solo es visible para ti y los administradores
+              autorizados.
             </p>
           </div>
         </div>

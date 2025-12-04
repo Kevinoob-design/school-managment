@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { collection, query, where, getDocs, addDoc } from '@angular/fire/firestore';
 import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
 import { Button } from '../../shared/ui/button/button';
@@ -13,8 +14,9 @@ import {
   AbsenceRequest,
 } from '../../shared/services/absence-request.service';
 import { AuthService } from '../../shared/services/auth.service';
+import { FinancialService, PaymentRecord } from '../../shared/services/financial.service';
 
-type TabType = 'overview' | 'grades' | 'requests';
+type TabType = 'overview' | 'grades' | 'requests' | 'financial';
 
 interface ChildGrades {
   classId: string;
@@ -30,11 +32,15 @@ interface ChildOverview {
   classesCount: number;
   attendanceRate: number;
   loading: boolean;
+  outstandingBalance: number;
+  overdueBalance: number;
+  nextDueDate: string | null;
+  nextDueAmount: number;
 }
 
 @Component({
   selector: 'app-parent-dashboard',
-  imports: [Button],
+  imports: [Button, DatePipe],
   templateUrl: './parent.html',
   styleUrl: './parent.sass',
 })
@@ -47,6 +53,7 @@ export class ParentDashboard implements OnInit {
   private readonly absenceRequestService = inject(AbsenceRequestService);
   private readonly auth = inject(AuthService);
   private readonly storage = inject(Storage);
+  private readonly financialService = inject(FinancialService);
 
   protected readonly loading = signal(true);
   protected readonly children = signal<Student[]>([]);
@@ -70,6 +77,15 @@ export class ParentDashboard implements OnInit {
   protected readonly showRequestModal = signal(false);
   protected readonly requestLoading = signal(false);
 
+  // Financial data
+  protected readonly payments = signal<PaymentRecord[]>([]);
+  protected readonly financialLoading = signal(false);
+  protected readonly financialBalance = signal<{
+    total: number;
+    overdue: number;
+    upcoming: number;
+  }>({ total: 0, overdue: 0, upcoming: 0 });
+
   // Request form fields
   protected readonly selectedClassId = signal('');
   protected readonly startDate = signal('');
@@ -82,6 +98,7 @@ export class ParentDashboard implements OnInit {
     { value: 'overview', label: 'Resumen', icon: 'dashboard' },
     { value: 'grades', label: 'Calificaciones', icon: 'grade' },
     { value: 'requests', label: 'Solicitudes', icon: 'inbox' },
+    { value: 'financial', label: 'Pagos', icon: 'payments' },
   ];
 
   protected readonly pendingRequests = computed(() => {
@@ -114,6 +131,10 @@ export class ParentDashboard implements OnInit {
       classesCount: 0,
       attendanceRate: 0,
       loading: true,
+      outstandingBalance: 0,
+      overdueBalance: 0,
+      nextDueDate: null,
+      nextDueAmount: 0,
     }));
     this.childrenOverview.set(overviews);
 
@@ -143,6 +164,25 @@ export class ParentDashboard implements OnInit {
             attendanceRate = count > 0 ? totalRate / count : 0;
           }
 
+          // Get financial data using child's tenantId
+          const balance = await this.financialService.calculateStudentBalanceWithTenant(
+            child.id!,
+            child.tenantId,
+          );
+          const payments = await this.financialService.getPaymentsByStudentWithTenant(
+            child.id!,
+            child.tenantId,
+          );
+          const upcomingPayments = payments
+            .filter((p) => {
+              if (!p.dueDate || p.status === 'conciliado') return false;
+              const due = new Date(p.dueDate).getTime();
+              return due >= Date.now();
+            })
+            .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+
+          const nextDuePayment = upcomingPayments[0];
+
           // Update the overview
           const updated = [...this.childrenOverview()];
           updated[index] = {
@@ -150,6 +190,12 @@ export class ParentDashboard implements OnInit {
             classesCount,
             attendanceRate,
             loading: false,
+            outstandingBalance: balance.total,
+            overdueBalance: balance.overdue,
+            nextDueDate: nextDuePayment?.dueDate || null,
+            nextDueAmount: nextDuePayment
+              ? Math.max(nextDuePayment.amountExpected - nextDuePayment.amountPaid, 0)
+              : 0,
           };
           this.childrenOverview.set(updated);
         } catch (error) {
@@ -262,6 +308,11 @@ export class ParentDashboard implements OnInit {
     if (this.currentTab() === 'requests') {
       await this.loadAbsenceRequests();
     }
+
+    // Load financial data if on financial tab
+    if (this.currentTab() === 'financial') {
+      await this.loadFinancialData();
+    }
   }
 
   private async getClassesByTenantId(
@@ -300,6 +351,8 @@ export class ParentDashboard implements OnInit {
       await this.loadGrades();
     } else if (tab === 'requests' && this.absenceRequests().length === 0) {
       await this.loadAbsenceRequests();
+    } else if (tab === 'financial' && this.payments().length === 0) {
+      await this.loadFinancialData();
     }
   }
 
@@ -598,6 +651,77 @@ export class ParentDashboard implements OnInit {
       month: 'short',
       day: 'numeric',
     });
+  }
+
+  private async loadFinancialData(): Promise<void> {
+    const child = this.selectedChild();
+    if (!child?.id) return;
+
+    this.financialLoading.set(true);
+    try {
+      // Use child's tenantId since parents don't have one
+      const payments = await this.financialService.getPaymentsByStudentWithTenant(
+        child.id,
+        child.tenantId,
+      );
+      this.payments.set(payments);
+
+      const balance = await this.financialService.calculateStudentBalanceWithTenant(
+        child.id,
+        child.tenantId,
+      );
+      this.financialBalance.set(balance);
+    } catch (error) {
+      console.error('Error loading financial data:', error);
+    } finally {
+      this.financialLoading.set(false);
+    }
+  }
+
+  protected formatCurrency(amount: number, currency = 'MXN'): string {
+    try {
+      return new Intl.NumberFormat('es-MX', {
+        style: 'currency',
+        currency,
+        maximumFractionDigits: 2,
+      }).format(amount);
+    } catch {
+      return `${currency} ${amount.toFixed(2)}`;
+    }
+  }
+
+  protected getPaymentStatusClass(status: string): string {
+    switch (status) {
+      case 'conciliado':
+        return 'bg-emerald-100 text-emerald-700';
+      case 'pagado':
+        return 'bg-blue-100 text-blue-700';
+      case 'pendiente':
+        return 'bg-amber-100 text-amber-700';
+      case 'fallido':
+        return 'bg-rose-100 text-rose-700';
+      default:
+        return 'bg-gray-100 text-gray-700';
+    }
+  }
+
+  protected getPaymentStatusLabel(status: string): string {
+    switch (status) {
+      case 'pendiente':
+        return 'Pendiente';
+      case 'pagado':
+        return 'Pagado';
+      case 'conciliado':
+        return 'Conciliado';
+      case 'fallido':
+        return 'Fallido';
+      default:
+        return status;
+    }
+  }
+
+  protected isPaymentOverdue(payment: PaymentRecord): boolean {
+    return this.financialService.isPaymentOverdue(payment);
   }
 
   protected async logout(): Promise<void> {
