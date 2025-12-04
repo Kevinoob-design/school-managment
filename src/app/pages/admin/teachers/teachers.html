@@ -137,7 +137,8 @@
         <div class="p-6 space-y-4">
           <app-input
             label="Nombre Completo"
-            placeholder="Ej: Juan Pérez"
+            placeholder="Ej: Juan Pérez López"
+            icon="person"
             [value]="fullName()"
             [required]="true"
             (valueChange)="fullName.set($event)"
@@ -146,7 +147,8 @@
           <app-input
             label="Email"
             type="email"
-            placeholder="profesor@ejemplo.com"
+            placeholder="profesor@escuela.edu.do"
+            icon="email"
             [value]="email()"
             [required]="true"
             (valueChange)="email.set($event)"
@@ -155,18 +157,16 @@
           <app-input
             label="Teléfono"
             type="tel"
-            placeholder="555-1234"
+            placeholder="(809) 555-5555"
+            icon="phone"
             [value]="phoneNumber()"
             [required]="true"
-            (valueChange)="phoneNumber.set($event)"
+            (valueChange)="onPhoneInput($event)"
           />
 
           <!-- Subjects Multi-select -->
           <div>
-            <div class="block text-sm font-medium text-gray-700 mb-2">
-              Asignaturas
-              <span class="text-red-500">*</span>
-            </div>
+            <div class="block text-sm font-medium text-gray-700 mb-2">Asignaturas *</div>
             <div class="border border-gray-300 rounded-lg p-4 space-y-2 max-h-48 overflow-y-auto">
               @if (subjects().length === 0) {
                 <p class="text-sm text-gray-500 italic">No hay asignaturas disponibles</p>

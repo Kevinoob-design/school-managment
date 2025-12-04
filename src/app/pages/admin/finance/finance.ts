@@ -1,10 +1,11 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Button } from '../../../shared/ui/button/button';
 import { Input } from '../../../shared/ui/input/input';
 import {
   BillingCycle,
   DueDateConfig,
+  DueDateRuleType,
   FeeCategory,
   FeeDefinition,
   FinancialService,
@@ -12,6 +13,7 @@ import {
   PaymentStatus,
   PenaltyType,
 } from '../../../shared/services/financial.service';
+import { StudentService, Student } from '../../../shared/services/student.service';
 
 type GooglePayEnvironment = 'TEST' | 'PRODUCTION';
 
@@ -94,18 +96,20 @@ declare const google: GooglePayNamespace;
 
 @Component({
   selector: 'app-finance-tab',
-  imports: [CommonModule, Button, Input],
+  imports: [CommonModule, DatePipe, Button, Input],
   templateUrl: './finance.html',
   styleUrl: './finance.sass',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class FinanceTab implements OnInit {
   private readonly financialService = inject(FinancialService);
+  private readonly studentService = inject(StudentService);
 
   protected loading = signal(true);
   protected feeCatalog = signal<FeeDefinition[]>([]);
   protected dueDateConfigs = signal<DueDateConfig[]>([]);
   protected paymentRecords = signal<PaymentRecord[]>([]);
+  protected students = signal<Student[]>([]);
 
   protected showFeeModal = signal(false);
   protected showDueModal = signal(false);
@@ -127,7 +131,11 @@ export class FinanceTab implements OnInit {
 
   // Due date form signals
   protected dueConfigFeeId = signal('');
+  protected dueRuleType = signal<DueDateRuleType | 'none'>('none');
   protected dueDate = signal('');
+  protected dueRuleDay = signal('');
+  protected dueRuleMonth = signal('');
+  protected dueWarningDays = signal('7');
   protected dueGracePeriodDays = signal('5');
   protected duePenaltyType = signal<PenaltyType>('porcentaje');
   protected duePenaltyValue = signal('');
@@ -137,6 +145,7 @@ export class FinanceTab implements OnInit {
   protected dueFormError = signal('');
 
   // Payment form signals
+  protected paymentStudentId = signal('');
   protected paymentFeeId = signal('');
   protected paymentPayerName = signal('');
   protected paymentPayerEmail = signal('');
@@ -173,6 +182,34 @@ export class FinanceTab implements OnInit {
   protected readonly penaltyTypeOptions: { value: PenaltyType; label: string }[] = [
     { value: 'porcentaje', label: 'Porcentaje (%)' },
     { value: 'monto', label: 'Monto fijo' },
+  ];
+
+  protected readonly ruleTypeOptions: {
+    value: DueDateRuleType | 'none';
+    label: string;
+    description: string;
+  }[] = [
+    { value: 'none', label: 'Fecha fija', description: 'Una fecha específica (ej. 2024-12-15)' },
+    {
+      value: 'monthly-day',
+      label: 'Día del mes',
+      description: 'Cada mes en el día especificado (ej. día 5)',
+    },
+    {
+      value: 'monthly-last',
+      label: 'Último día del mes',
+      description: 'El último día de cada mes',
+    },
+    {
+      value: 'quarterly-day',
+      label: 'Día trimestral',
+      description: 'Primer mes del trimestre en el día especificado',
+    },
+    {
+      value: 'yearly-date',
+      label: 'Fecha anual',
+      description: 'Cada año en la misma fecha (ej. 1 de agosto)',
+    },
   ];
 
   protected readonly paymentStatusOptions: { value: PaymentStatus; label: string }[] = [
@@ -358,15 +395,17 @@ export class FinanceTab implements OnInit {
   private async loadData(): Promise<void> {
     this.loading.set(true);
     try {
-      const [fees, configs, payments] = await Promise.all([
+      const [fees, configs, payments, students] = await Promise.all([
         this.financialService.getFeeCatalog(),
         this.financialService.getDueDateConfigs(),
         this.financialService.getPaymentRecords(),
+        this.studentService.getStudents(),
       ]);
 
       this.feeCatalog.set(fees);
       this.dueDateConfigs.set(configs);
       this.paymentRecords.set(payments);
+      this.students.set(students);
     } finally {
       this.loading.set(false);
     }
@@ -474,7 +513,19 @@ export class FinanceTab implements OnInit {
   protected openEditDueModal(config: DueDateConfig): void {
     this.editingDueConfig.set(config);
     this.dueConfigFeeId.set(config.feeId);
-    this.dueDate.set(config.dueDate);
+
+    // Handle rule-based or fixed date
+    if (config.dueDateRule) {
+      this.dueRuleType.set(config.dueDateRule.type);
+      this.dueRuleDay.set(config.dueDateRule.day?.toString() ?? '');
+      this.dueRuleMonth.set(config.dueDateRule.month?.toString() ?? '');
+      this.dueDate.set(config.dueDateRule.fixedDate ?? '');
+    } else {
+      this.dueRuleType.set('none');
+      this.dueDate.set(config.dueDate ?? '');
+    }
+
+    this.dueWarningDays.set(config.warningDaysBefore.toString());
     this.dueGracePeriodDays.set(config.gracePeriodDays.toString());
     this.duePenaltyType.set(config.penaltyType);
     this.duePenaltyValue.set(config.penaltyValue.toString());
@@ -492,7 +543,11 @@ export class FinanceTab implements OnInit {
 
   private resetDueForm(): void {
     this.dueConfigFeeId.set('');
+    this.dueRuleType.set('none');
     this.dueDate.set('');
+    this.dueRuleDay.set('');
+    this.dueRuleMonth.set('');
+    this.dueWarningDays.set('7');
     this.dueGracePeriodDays.set('5');
     this.duePenaltyType.set('porcentaje');
     this.duePenaltyValue.set('');
@@ -508,8 +563,24 @@ export class FinanceTab implements OnInit {
       return;
     }
 
-    if (!this.dueDate()) {
+    const selectedRuleType = this.dueRuleType();
+
+    // Validate based on rule type
+    if (selectedRuleType === 'none' && !this.dueDate()) {
       this.dueFormError.set('Define una fecha limite.');
+      return;
+    }
+
+    if (
+      (selectedRuleType === 'monthly-day' || selectedRuleType === 'quarterly-day') &&
+      !this.dueRuleDay()
+    ) {
+      this.dueFormError.set('Especifica el día del mes (1-31).');
+      return;
+    }
+
+    if (selectedRuleType === 'yearly-date' && (!this.dueRuleMonth() || !this.dueRuleDay())) {
+      this.dueFormError.set('Especifica el mes y día para la fecha anual.');
       return;
     }
 
@@ -537,11 +608,34 @@ export class FinanceTab implements OnInit {
     const feeName = fee?.name ?? this.editingDueConfig()?.feeName ?? 'Tarifa';
 
     const notes = this.dueNotes().trim();
+    const warningDays = Number.parseInt(this.dueWarningDays(), 10) || 7;
+
+    // Build due date rule or use fixed date
+    let dueDateRule = undefined;
+    let dueDate = undefined;
+
+    if (selectedRuleType === 'none') {
+      dueDate = this.dueDate();
+    } else if (selectedRuleType === 'monthly-last') {
+      dueDateRule = { type: 'monthly-last' as const };
+    } else if (selectedRuleType === 'monthly-day') {
+      const day = Number.parseInt(this.dueRuleDay(), 10);
+      dueDateRule = { type: 'monthly-day' as const, day };
+    } else if (selectedRuleType === 'quarterly-day') {
+      const day = Number.parseInt(this.dueRuleDay(), 10);
+      dueDateRule = { type: 'quarterly-day' as const, day };
+    } else if (selectedRuleType === 'yearly-date') {
+      const day = Number.parseInt(this.dueRuleDay(), 10);
+      const month = Number.parseInt(this.dueRuleMonth(), 10);
+      dueDateRule = { type: 'yearly-date' as const, day, month };
+    }
 
     const payload = {
       feeId: this.dueConfigFeeId(),
       feeName,
-      dueDate: this.dueDate(),
+      ...(dueDate ? { dueDate } : {}),
+      ...(dueDateRule ? { dueDateRule } : {}),
+      warningDaysBefore: warningDays,
       gracePeriodDays: gracePeriod,
       penaltyType: this.duePenaltyType(),
       penaltyValue,
@@ -653,6 +747,7 @@ export class FinanceTab implements OnInit {
 
   protected openEditPaymentModal(payment: PaymentRecord): void {
     this.editingPayment.set(payment);
+    this.paymentStudentId.set(payment.studentId);
     this.paymentFeeId.set(payment.feeId);
     this.paymentPayerName.set(payment.payerName);
     this.paymentPayerEmail.set(payment.payerEmail);
@@ -670,6 +765,39 @@ export class FinanceTab implements OnInit {
     this.paymentFormError.set('');
     this.googlePayFeedback.set('');
     this.showPaymentModal.set(true);
+  }
+
+  protected onStudentSelected(): void {
+    const studentId = this.paymentStudentId();
+    const student = this.students().find((s) => s.id === studentId);
+    if (student) {
+      this.paymentPayerName.set(student.parentName);
+      this.paymentPayerEmail.set(student.parentEmail);
+    }
+  }
+
+  protected onFeeSelected(): void {
+    const feeId = this.paymentFeeId();
+    const fee = this.feeCatalog().find((f) => f.id === feeId);
+    if (fee) {
+      this.paymentAmountExpected.set(fee.amount.toString());
+      this.paymentCurrency.set(fee.currency);
+
+      // Find due date config for this fee
+      const dueConfig = this.dueDateConfigs().find((d) => d.feeId === feeId);
+      if (dueConfig) {
+        // Calculate due date from rule or use fixed date
+        let calculatedDueDate = '';
+        if (dueConfig.dueDateRule) {
+          calculatedDueDate = this.financialService.calculateDueDateFromRule(dueConfig.dueDateRule);
+        } else if (dueConfig.dueDate) {
+          calculatedDueDate = dueConfig.dueDate;
+        }
+        if (calculatedDueDate) {
+          this.paymentDueDate.set(calculatedDueDate);
+        }
+      }
+    }
   }
 
   protected closePaymentModal(): void {
@@ -709,6 +837,7 @@ export class FinanceTab implements OnInit {
   }
 
   private resetPaymentForm(): void {
+    this.paymentStudentId.set('');
     this.paymentFeeId.set('');
     this.paymentPayerName.set('');
     this.paymentPayerEmail.set('');
@@ -726,6 +855,11 @@ export class FinanceTab implements OnInit {
   }
 
   protected async savePayment(): Promise<void> {
+    if (!this.paymentStudentId()) {
+      this.paymentFormError.set('Selecciona un estudiante.');
+      return;
+    }
+
     if (!this.paymentFeeId()) {
       this.paymentFormError.set('Selecciona una tarifa asociada al pago.');
       return;
@@ -766,17 +900,22 @@ export class FinanceTab implements OnInit {
     }
 
     if (!this.paymentGoogleTransactionId().trim()) {
-      this.paymentFormError.set('Ingresa el ID de transaccion de Google Pay.');
+      this.paymentFormError.set('Ingresa el ID de transaccion.');
       return;
     }
 
     const fee = this.feeCatalog().find((item) => item.id === this.paymentFeeId());
     const feeName = fee?.name ?? this.editingPayment()?.feeName ?? 'Tarifa';
 
+    const student = this.students().find((s) => s.id === this.paymentStudentId());
+    const studentName = student?.fullName ?? this.editingPayment()?.studentName ?? 'Estudiante';
+
     const notes = this.paymentNotes().trim();
     const paymentDate = this.paymentDate() ? new Date(this.paymentDate()).getTime() : undefined;
 
     const payload = {
+      studentId: this.paymentStudentId(),
+      studentName,
       feeId: this.paymentFeeId(),
       feeName,
       payerName: this.paymentPayerName().trim(),

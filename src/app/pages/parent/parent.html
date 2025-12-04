@@ -160,25 +160,77 @@
                       </div>
                     </div>
 
+                    <!-- Financial Summary -->
+                    <div class="pt-3 border-t border-gray-200">
+                      <div class="flex items-center justify-between mb-2">
+                        <p class="text-xs text-gray-600 font-medium">Estado Financiero</p>
+                        @if (overview.overdueBalance > 0) {
+                          <span
+                            class="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-semibold rounded-full"
+                          >
+                            Mora
+                          </span>
+                        } @else if (overview.outstandingBalance > 0) {
+                          <span
+                            class="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full"
+                          >
+                            Pendiente
+                          </span>
+                        } @else {
+                          <span
+                            class="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full"
+                          >
+                            Al corriente
+                          </span>
+                        }
+                      </div>
+                      @if (overview.outstandingBalance > 0) {
+                        <div class="space-y-1">
+                          <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Saldo pendiente:</span>
+                            <span
+                              class="font-semibold"
+                              [class]="
+                                overview.overdueBalance > 0 ? 'text-red-600' : 'text-gray-900'
+                              "
+                            >
+                              {{ formatCurrency(overview.outstandingBalance) }}
+                            </span>
+                          </div>
+                          @if (overview.nextDueDate) {
+                            <div class="flex items-center justify-between text-xs">
+                              <span class="text-gray-500">Próximo vencimiento:</span>
+                              <span class="text-gray-700">
+                                {{ overview.nextDueDate | date: 'shortDate' : 'es-MX' }}
+                              </span>
+                            </div>
+                          }
+                        </div>
+                      }
+                    </div>
+
                     <!-- Action Buttons -->
-                    <div class="flex gap-2 pt-3 border-t border-gray-200">
+                    <div class="grid grid-cols-3 gap-2 pt-3 border-t border-gray-200">
                       <app-button
                         [variant]="'outline'"
                         [size]="'sm'"
-                        class="flex-1"
                         (click)="selectChild(overview.student); selectTab('grades')"
                       >
-                        <span class="material-symbols-outlined text-sm mr-1">grade</span>
-                        Calificaciones
+                        <span class="material-symbols-outlined text-sm">grade</span>
                       </app-button>
                       <app-button
                         [variant]="'outline'"
                         [size]="'sm'"
-                        class="flex-1"
                         (click)="selectChild(overview.student); selectTab('requests')"
                       >
-                        <span class="material-symbols-outlined text-sm mr-1">inbox</span>
-                        Solicitudes
+                        <span class="material-symbols-outlined text-sm">inbox</span>
+                      </app-button>
+                      <app-button
+                        [variant]="overview.overdueBalance > 0 ? 'primary' : 'outline'"
+                        [size]="'sm'"
+                        (click)="selectChild(overview.student); selectTab('financial')"
+                      >
+                        <span class="material-symbols-outlined text-sm">payments</span>
                       </app-button>
                     </div>
                   }
@@ -342,6 +394,176 @@
                       }
                     </div>
                   </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Financial Tab -->
+      @if (currentTab() === 'financial') {
+        <div class="space-y-6">
+          <!-- Loading State -->
+          @if (financialLoading()) {
+            <div
+              class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 p-12 text-center"
+            >
+              <div
+                class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-purple-600 border-r-transparent mb-4"
+              ></div>
+              <p class="text-gray-600">Cargando información financiera...</p>
+            </div>
+          } @else {
+            <!-- Summary Cards -->
+            <div class="grid gap-4 md:grid-cols-3">
+              <div
+                class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 p-6"
+              >
+                <div class="flex items-center gap-4">
+                  <div class="bg-purple-100 p-3 rounded-full">
+                    <span class="material-symbols-outlined text-purple-600"
+                      >account_balance_wallet</span
+                    >
+                  </div>
+                  <div>
+                    <p class="text-sm text-gray-600">Total Adeudado</p>
+                    <p class="text-2xl font-bold text-purple-600">
+                      {{ formatCurrency(financialBalance().total) }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-red-100 p-6"
+              >
+                <div class="flex items-center gap-4">
+                  <div class="bg-red-100 p-3 rounded-full">
+                    <span class="material-symbols-outlined text-red-600">warning</span>
+                  </div>
+                  <div>
+                    <p class="text-sm text-gray-600">Vencido</p>
+                    <p class="text-2xl font-bold text-red-600">
+                      {{ formatCurrency(financialBalance().overdue) }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-blue-100 p-6"
+              >
+                <div class="flex items-center gap-4">
+                  <div class="bg-blue-100 p-3 rounded-full">
+                    <span class="material-symbols-outlined text-blue-600">schedule</span>
+                  </div>
+                  <div>
+                    <p class="text-sm text-gray-600">Próximo a Vencer</p>
+                    <p class="text-2xl font-bold text-blue-600">
+                      {{ formatCurrency(financialBalance().upcoming) }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Payment History -->
+            <div
+              class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100"
+            >
+              <div class="p-6 border-b border-gray-200">
+                <h3 class="text-xl font-bold text-gray-900">Historial de Pagos</h3>
+              </div>
+
+              @if (payments().length === 0) {
+                <div class="p-12 text-center">
+                  <div
+                    class="bg-gradient-to-br from-purple-500 to-pink-600 p-6 rounded-2xl shadow-lg inline-block mb-4"
+                  >
+                    <span class="material-symbols-outlined text-white text-5xl">payments</span>
+                  </div>
+                  <p class="text-xl text-gray-600 font-medium">Sin pagos registrados</p>
+                </div>
+              } @else {
+                <div class="overflow-x-auto">
+                  <table class="w-full">
+                    <thead class="bg-gray-50 border-b border-gray-200">
+                      <tr>
+                        <th
+                          class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          Concepto
+                        </th>
+                        <th
+                          class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          Periodo
+                        </th>
+                        <th
+                          class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          Monto
+                        </th>
+                        <th
+                          class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          Fecha Límite
+                        </th>
+                        <th
+                          class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          Estado
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                      @for (payment of payments(); track payment.id) {
+                        <tr class="hover:bg-gray-50 transition-colors">
+                          <td class="px-6 py-4 whitespace-nowrap">
+                            <p class="font-medium text-gray-900">{{ payment.feeName }}</p>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap">
+                            <p class="text-sm text-gray-900">{{ payment.billingPeriod }}</p>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap">
+                            <div>
+                              <p class="font-semibold text-gray-900">
+                                {{ formatCurrency(payment.amountPaid, payment.currency) }}
+                              </p>
+                              <p class="text-xs text-gray-500">
+                                Esperado:
+                                {{ formatCurrency(payment.amountExpected, payment.currency) }}
+                              </p>
+                            </div>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap">
+                            <p class="text-sm text-gray-900">
+                              {{ payment.dueDate | date: 'mediumDate' : 'es-MX' }}
+                            </p>
+                            @if (isPaymentOverdue(payment)) {
+                              <p class="text-xs text-red-600 font-medium">Vencido</p>
+                            }
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap">
+                            <span
+                              [class]="
+                                'px-3 py-1 rounded-full text-xs font-semibold ' +
+                                getPaymentStatusClass(payment.status)
+                              "
+                            >
+                              {{ getPaymentStatusLabel(payment.status) }}
+                            </span>
+                            @if (payment.receiptNumber) {
+                              <p class="text-xs text-gray-500 mt-1">
+                                Comprobante: {{ payment.receiptNumber }}
+                              </p>
+                            }
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
                 </div>
               }
             </div>

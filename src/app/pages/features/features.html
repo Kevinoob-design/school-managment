@@ -1,0 +1,136 @@
+<!-- Hero Section -->
+<app-section spacing="xl" background="blue">
+  <div class="text-center max-w-4xl mx-auto">
+    <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+      Características de la Plataforma
+    </h1>
+    <p class="text-xl text-gray-700 mb-8">
+      Descubre todas las herramientas y funcionalidades que hacen de nuestro portal la solución
+      completa para la gestión escolar moderna
+    </p>
+  </div>
+</app-section>
+
+<!-- Features Grid -->
+<app-section spacing="xl" background="white">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      @for (feature of features(); track feature.id) {
+        <app-card [hover]="true" padding="lg">
+          <div class="flex flex-col h-full">
+            <div class="flex items-center justify-center mb-6">
+              <div class="bg-gradient-to-br from-blue-500 to-indigo-600 p-6 rounded-2xl shadow-lg">
+                <span class="material-symbols-outlined text-white text-5xl">
+                  {{ feature.icon }}
+                </span>
+              </div>
+            </div>
+            <h3 class="text-2xl font-semibold text-gray-900 mb-3 text-center">
+              {{ feature.title }}
+            </h3>
+            <p class="text-gray-600 mb-4 text-center">{{ feature.description }}</p>
+            <ul class="space-y-2 mt-auto">
+              @for (benefit of feature.benefits; track benefit) {
+                <li class="flex items-start text-sm text-gray-700">
+                  <span class="material-symbols-outlined text-green-600 text-lg mr-2 flex-shrink-0">
+                    check_circle
+                  </span>
+                  <span>{{ benefit }}</span>
+                </li>
+              }
+            </ul>
+          </div>
+        </app-card>
+      }
+    </div>
+  </div>
+</app-section>
+
+<!-- Key Benefits Section -->
+<app-section spacing="xl" background="gray">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-12">
+      <h2 class="text-4xl font-bold text-gray-900 mb-4">¿Por qué elegir nuestro portal?</h2>
+      <p class="text-lg text-gray-600">
+        Beneficios clave que transformarán la gestión de tu institución educativa
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-blue-100 p-8">
+        <div class="flex items-start gap-4">
+          <div class="bg-gradient-to-br from-green-500 to-emerald-600 p-4 rounded-xl shadow-lg">
+            <span class="material-symbols-outlined text-white text-4xl">trending_up</span>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Eficiencia Mejorada</h3>
+            <p class="text-gray-600">
+              Automatiza tareas administrativas y reduce el tiempo de gestión en un 60%, liberando
+              recursos para enfocarte en lo que realmente importa: la educación.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-blue-100 p-8">
+        <div class="flex items-start gap-4">
+          <div class="bg-gradient-to-br from-blue-500 to-cyan-600 p-4 rounded-xl shadow-lg">
+            <span class="material-symbols-outlined text-white text-4xl">groups</span>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Colaboración Mejorada</h3>
+            <p class="text-gray-600">
+              Conecta a padres, maestros y administradores en una sola plataforma, mejorando la
+              comunicación y el trabajo en equipo.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-blue-100 p-8">
+        <div class="flex items-start gap-4">
+          <div class="bg-gradient-to-br from-purple-500 to-pink-600 p-4 rounded-xl shadow-lg">
+            <span class="material-symbols-outlined text-white text-4xl">insights</span>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Decisiones Informadas</h3>
+            <p class="text-gray-600">
+              Accede a reportes y análisis en tiempo real para tomar decisiones basadas en datos y
+              mejorar continuamente el rendimiento académico.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-blue-100 p-8">
+        <div class="flex items-start gap-4">
+          <div class="bg-gradient-to-br from-orange-500 to-red-600 p-4 rounded-xl shadow-lg">
+            <span class="material-symbols-outlined text-white text-4xl">verified_user</span>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Seguridad Garantizada</h3>
+            <p class="text-gray-600">
+              Protección de datos de nivel empresarial con cumplimiento de normativas
+              internacionales para mantener segura la información sensible.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-section>
+
+<!-- CTA Section -->
+<app-section spacing="xl" background="blue">
+  <div class="text-center max-w-3xl mx-auto">
+    <h2 class="text-4xl font-bold text-gray-900 mb-4">¿Listo para transformar tu escuela?</h2>
+    <p class="text-xl text-gray-700 mb-8">
+      Únete a instituciones educativas en toda República Dominicana que ya confían en nuestra
+      plataforma para optimizar su gestión educativa
+    </p>
+    <div class="flex gap-4 justify-center flex-wrap">
+      <app-button variant="primary" size="lg" (click)="goSignUp()"> Comenzar Ahora </app-button>
+      <app-button variant="outline" size="lg" (click)="goContact()"> Contactar Ventas </app-button>
+    </div>
+  </div>
+</app-section>

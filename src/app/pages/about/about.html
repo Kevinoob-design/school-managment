@@ -1,0 +1,167 @@
+<!-- Hero Section -->
+<app-section spacing="xl" background="blue">
+  <div class="text-center max-w-4xl mx-auto">
+    <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">Sobre Nosotros</h1>
+    <p class="text-xl text-gray-700 mb-8">
+      Comprometidos con la transformación digital de la educación a través de tecnología innovadora
+      y accesible
+    </p>
+  </div>
+</app-section>
+
+<!-- Mission Section -->
+<app-section spacing="xl" background="white">
+  <div class="max-w-4xl mx-auto">
+    <div class="text-center mb-12">
+      <div class="inline-flex items-center justify-center mb-6">
+        <div class="bg-gradient-to-br from-blue-500 to-indigo-600 p-6 rounded-2xl shadow-lg">
+          <span class="material-symbols-outlined text-white text-6xl">flag</span>
+        </div>
+      </div>
+      <h2 class="text-4xl font-bold text-gray-900 mb-6">Nuestra Misión</h2>
+      <p class="text-lg text-gray-700 leading-relaxed">
+        Transformar la educación en República Dominicana democratizando el acceso a herramientas de
+        gestión escolar de clase mundial, proporcionando a instituciones educativas de todos los
+        tamaños la tecnología necesaria para optimizar sus procesos administrativos y mejorar la
+        experiencia educativa de estudiantes, padres y maestros.
+      </p>
+    </div>
+  </div>
+</app-section>
+
+<!-- Vision Section -->
+<app-section spacing="xl" background="gray">
+  <div class="max-w-4xl mx-auto">
+    <div class="text-center mb-12">
+      <div class="inline-flex items-center justify-center mb-6">
+        <div class="bg-gradient-to-br from-purple-500 to-pink-600 p-6 rounded-2xl shadow-lg">
+          <span class="material-symbols-outlined text-white text-6xl">visibility</span>
+        </div>
+      </div>
+      <h2 class="text-4xl font-bold text-gray-900 mb-6">Nuestra Visión</h2>
+      <p class="text-lg text-gray-700 leading-relaxed">
+        Ser la plataforma líder de gestión educativa en República Dominicana y el Caribe, reconocida
+        por nuestra innovación continua, excelencia en el servicio y compromiso inquebrantable con
+        la mejora de la calidad educativa a través de la tecnología.
+      </p>
+    </div>
+  </div>
+</app-section>
+
+<!-- Values Section -->
+<app-section spacing="xl" background="white">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-12">
+      <h2 class="text-4xl font-bold text-gray-900 mb-4">Nuestros Valores</h2>
+      <p class="text-lg text-gray-600">Los principios que guían nuestro trabajo diario</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      @for (value of values(); track value.id) {
+        <app-card [hover]="true" padding="lg">
+          <div class="flex items-start gap-4">
+            <div class="bg-gradient-to-br from-blue-500 to-indigo-600 p-4 rounded-xl shadow-lg">
+              <span class="material-symbols-outlined text-white text-4xl">
+                {{ value.icon }}
+              </span>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ value.title }}</h3>
+              <p class="text-gray-600">{{ value.description }}</p>
+            </div>
+          </div>
+        </app-card>
+      }
+    </div>
+  </div>
+</app-section>
+
+<!-- Team Section -->
+<app-section spacing="xl" background="gray">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-12">
+      <h2 class="text-4xl font-bold text-gray-900 mb-4">Nuestro Equipo</h2>
+      <p class="text-lg text-gray-600">
+        Profesionales dedicados trabajando juntos para crear la mejor experiencia
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      @for (member of teamMembers(); track member.id) {
+        <app-card [hover]="true" padding="lg">
+          <div class="text-center">
+            <div class="inline-flex items-center justify-center mb-4">
+              <div
+                class="bg-gradient-to-br from-emerald-500 to-teal-600 p-6 rounded-full shadow-lg"
+              >
+                <span class="material-symbols-outlined text-white text-4xl">
+                  {{ member.icon }}
+                </span>
+              </div>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ member.name }}</h3>
+            <p class="text-sm text-gray-600">{{ member.role }}</p>
+          </div>
+        </app-card>
+      }
+    </div>
+  </div>
+</app-section>
+
+<!-- Stats Section -->
+<app-section spacing="xl" background="white">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-12">
+      <h2 class="text-4xl font-bold text-gray-900 mb-4">Nuestro Impacto</h2>
+      <p class="text-lg text-gray-600">Cifras que reflejan nuestro compromiso con la educación</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div class="text-center">
+        <div class="bg-gradient-to-br from-blue-500 to-indigo-600 p-4 rounded-2xl shadow-lg mb-4">
+          <span class="material-symbols-outlined text-white text-5xl">school</span>
+        </div>
+        <div class="text-4xl font-bold text-gray-900 mb-2">150+</div>
+        <p class="text-gray-600">Escuelas Activas</p>
+      </div>
+
+      <div class="text-center">
+        <div class="bg-gradient-to-br from-green-500 to-emerald-600 p-4 rounded-2xl shadow-lg mb-4">
+          <span class="material-symbols-outlined text-white text-5xl">people</span>
+        </div>
+        <div class="text-4xl font-bold text-gray-900 mb-2">15K+</div>
+        <p class="text-gray-600">Estudiantes</p>
+      </div>
+
+      <div class="text-center">
+        <div class="bg-gradient-to-br from-purple-500 to-pink-600 p-4 rounded-2xl shadow-lg mb-4">
+          <span class="material-symbols-outlined text-white text-5xl">co_present</span>
+        </div>
+        <div class="text-4xl font-bold text-gray-900 mb-2">2K+</div>
+        <p class="text-gray-600">Maestros</p>
+      </div>
+
+      <div class="text-center">
+        <div class="bg-gradient-to-br from-orange-500 to-red-600 p-4 rounded-2xl shadow-lg mb-4">
+          <span class="material-symbols-outlined text-white text-5xl">star</span>
+        </div>
+        <div class="text-4xl font-bold text-gray-900 mb-2">4.8/5</div>
+        <p class="text-gray-600">Calificación</p>
+      </div>
+    </div>
+  </div>
+</app-section>
+
+<!-- CTA Section -->
+<app-section spacing="xl" background="blue">
+  <div class="text-center max-w-3xl mx-auto">
+    <h2 class="text-4xl font-bold text-gray-900 mb-4">Únete a Nuestra Comunidad</h2>
+    <p class="text-xl text-gray-700 mb-8">
+      Forma parte de las instituciones que están transformando la educación con tecnología
+    </p>
+    <div class="flex gap-4 justify-center flex-wrap">
+      <app-button variant="primary" size="lg" (click)="goSignUp()"> Comenzar Ahora </app-button>
+      <app-button variant="outline" size="lg" (click)="goContact()"> Contáctanos </app-button>
+    </div>
+  </div>
+</app-section>

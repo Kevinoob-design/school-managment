@@ -6,8 +6,14 @@ import { AdminDashboard } from './pages/admin/admin';
 import { TeacherDashboard } from './pages/teacher/teacher';
 import { ParentDashboard } from './pages/parent/parent';
 import { AnnouncementsPage } from './pages/announcements/announcements';
+import { FeaturesPage } from './pages/features/features';
+import { AboutPage } from './pages/about/about';
+import { ContactPage } from './pages/contact/contact';
+import { HelpPage } from './pages/help/help';
+import { ProfilePage } from './pages/profile/profile';
+import { SettingsPage } from './pages/settings/settings';
 import { roleGuard } from './shared/guards/role.guard';
-import { redirectAuthenticatedGuard } from './core/guards/auth-guard';
+import { redirectAuthenticatedGuard, requireAuthGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
   {
@@ -28,6 +34,32 @@ export const routes: Routes = [
   {
     path: 'announcements',
     component: AnnouncementsPage,
+  },
+  {
+    path: 'features',
+    component: FeaturesPage,
+  },
+  {
+    path: 'about',
+    component: AboutPage,
+  },
+  {
+    path: 'contact',
+    component: ContactPage,
+  },
+  {
+    path: 'help',
+    component: HelpPage,
+  },
+  {
+    path: 'profile',
+    component: ProfilePage,
+    canActivate: [requireAuthGuard],
+  },
+  {
+    path: 'settings',
+    component: SettingsPage,
+    canActivate: [requireAuthGuard],
   },
   {
     path: 'admin',

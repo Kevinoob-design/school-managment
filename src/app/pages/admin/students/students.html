@@ -235,7 +235,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <app-input
               [label]="'Nombre Completo'"
-              [placeholder]="'Juan Pérez García'"
+              [placeholder]="'Ej: Juan Pérez García'"
               [icon]="'person'"
               [value]="fullName()"
               (valueChange)="fullName.set($event)"
@@ -256,7 +256,7 @@
             <app-input
               [label]="'Email'"
               [type]="'email'"
-              [placeholder]="'estudiante@ejemplo.com'"
+              [placeholder]="'estudiante@escuela.edu.do'"
               [icon]="'email'"
               [value]="email()"
               (valueChange)="email.set($event)"
@@ -266,17 +266,17 @@
             <app-input
               [label]="'Teléfono'"
               [type]="'tel'"
-              [placeholder]="'5512345678'"
+              [placeholder]="'(809) 555-5555'"
               [icon]="'phone'"
               [value]="phone()"
-              (valueChange)="phone.set($event)"
+              (valueChange)="onPhoneInput($event, 'phone')"
               [required]="true"
               [invalid]="phone().trim().length > 0 && !isPhoneValid(phone().trim())"
             />
             <div class="md:col-span-2">
               <app-input
                 [label]="'Dirección'"
-                [placeholder]="'Calle Principal #123, Colonia Centro'"
+                [placeholder]="'Ej: Calle Duarte #45, Sector Los Jardines'"
                 [icon]="'home'"
                 [value]="address()"
                 (valueChange)="address.set($event)"
@@ -325,7 +325,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <app-input
               [label]="'Nombre Completo'"
-              [placeholder]="'María García López'"
+              [placeholder]="'Ej: María García López'"
               [icon]="'person'"
               [value]="parentName()"
               (valueChange)="parentName.set($event)"
@@ -335,7 +335,7 @@
             <app-input
               [label]="'Email'"
               [type]="'email'"
-              [placeholder]="'padre@ejemplo.com'"
+              [placeholder]="'padre@correo.com'"
               [icon]="'email'"
               [value]="parentEmail()"
               (valueChange)="parentEmail.set($event)"
@@ -345,10 +345,10 @@
             <app-input
               [label]="'Teléfono'"
               [type]="'tel'"
-              [placeholder]="'5587654321'"
+              [placeholder]="'(809) 555-5555'"
               [icon]="'phone'"
               [value]="parentPhone()"
-              (valueChange)="parentPhone.set($event)"
+              (valueChange)="onPhoneInput($event, 'parentPhone')"
               [required]="true"
               [invalid]="parentPhone().trim().length > 0 && !isPhoneValid(parentPhone().trim())"
             />
@@ -361,7 +361,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <app-input
               [label]="'Nombre Completo'"
-              [placeholder]="'Contacto de emergencia'"
+              [placeholder]="'Ej: Ana Martínez'"
               [icon]="'person'"
               [value]="emergencyContact()"
               (valueChange)="emergencyContact.set($event)"
@@ -373,10 +373,10 @@
             <app-input
               [label]="'Teléfono'"
               [type]="'tel'"
-              [placeholder]="'5511223344'"
+              [placeholder]="'(809) 555-5555'"
               [icon]="'phone'"
               [value]="emergencyPhone()"
-              (valueChange)="emergencyPhone.set($event)"
+              (valueChange)="onPhoneInput($event, 'emergencyPhone')"
               [required]="true"
               [invalid]="
                 emergencyPhone().trim().length > 0 && !isPhoneValid(emergencyPhone().trim())
