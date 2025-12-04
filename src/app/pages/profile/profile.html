@@ -75,9 +75,9 @@
         <!-- Display Name -->
         <div>
           <app-input
-            [label]="'Nombre Completo *'"
+            [label]="'Nombre Completo'"
             [type]="'text'"
-            [placeholder]="'Tu nombre completo'"
+            [placeholder]="'Ingresa tu nombre completo'"
             [icon]="'person'"
             [value]="displayName()"
             (valueChange)="displayName.set($event)"
@@ -90,9 +90,9 @@
         <!-- Email -->
         <div>
           <app-input
-            [label]="'Email *'"
+            [label]="'Email'"
             [type]="'email'"
-            [placeholder]="'tu@email.com'"
+            [placeholder]="'Ingresa tu correo'"
             [icon]="'mail'"
             [value]="email()"
             (valueChange)="email.set($event)"
@@ -108,12 +108,12 @@
         <!-- Phone Number -->
         <div>
           <app-input
-            [label]="'Teléfono'"
+            [label]="'Número de Teléfono'"
             [type]="'tel'"
-            [placeholder]="'+1 (809) 555-1234'"
+            [placeholder]="'(809) 555-5555'"
             [icon]="'phone'"
             [value]="phoneNumber()"
-            (valueChange)="phoneNumber.set($event)"
+            (valueChange)="onPhoneInput($event)"
           />
         </div>
 

@@ -136,7 +136,27 @@ export class StudentsTab implements OnInit {
   }
 
   protected isPhoneValid(phone: string): boolean {
-    return phone.length >= 10;
+    // Check if phone matches (809) 555-5555 format
+    return /\(\d{3}\) \d{3}-\d{4}/.test(phone);
+  }
+
+  protected onPhoneInput(raw: string, field: 'phone' | 'parentPhone' | 'emergencyPhone'): void {
+    const digits = raw.replace(/\D/g, '').slice(0, 10);
+    let formatted = digits;
+    if (digits.length >= 1) {
+      formatted = `(${digits.slice(0, 3)}`;
+      if (digits.length >= 4) formatted += `) ${digits.slice(3, 6)}`;
+      if (digits.length >= 7) formatted += `-${digits.slice(6, 10)}`;
+    }
+    if (digits.length < 1) formatted = '';
+    
+    if (field === 'phone') {
+      this.phone.set(formatted);
+    } else if (field === 'parentPhone') {
+      this.parentPhone.set(formatted);
+    } else if (field === 'emergencyPhone') {
+      this.emergencyPhone.set(formatted);
+    }
   }
 
   protected isDateValid(date: string): boolean {

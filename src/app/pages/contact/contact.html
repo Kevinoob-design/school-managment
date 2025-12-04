@@ -45,9 +45,9 @@
         <!-- Name -->
         <div>
           <app-input
-            [label]="'Nombre Completo *'"
+            [label]="'Nombre Completo'"
             [type]="'text'"
-            [placeholder]="'Tu nombre completo'"
+            [placeholder]="'Ingresa tu nombre completo'"
             [value]="name()"
             (valueChange)="name.set($event)"
             [required]="true"
@@ -59,9 +59,9 @@
         <!-- Email -->
         <div>
           <app-input
-            [label]="'Email *'"
+            [label]="'Email'"
             [type]="'email'"
-            [placeholder]="'tu@email.com'"
+            [placeholder]="'Ingresa tu correo'"
             [icon]="'mail'"
             [value]="email()"
             (valueChange)="email.set($event)"
@@ -76,17 +76,17 @@
           <app-input
             [label]="'Teléfono'"
             [type]="'tel'"
-            [placeholder]="'+1 (809) 555-1234'"
+            [placeholder]="'(809) 555-5555'"
             [icon]="'phone'"
             [value]="phone()"
-            (valueChange)="phone.set($event)"
+            (valueChange)="onPhoneInput($event)"
           />
         </div>
 
         <!-- Message -->
         <div>
           <label for="message" class="block text-sm font-medium text-gray-700 mb-1.5">
-            Mensaje *
+            Mensaje
           </label>
           <textarea
             id="message"

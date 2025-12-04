@@ -1,4 +1,4 @@
-import { Component, signal, inject } from '@angular/core'
+import { Component, signal, inject, computed } from '@angular/core'
 import { Router } from '@angular/router'
 import { Button } from '../../shared/ui/button/button'
 import { Section } from '../../shared/ui/section/section'
@@ -39,12 +39,32 @@ export class SettingsPage {
 	protected readonly deleteError = signal('')
 	protected readonly showDeleteModal = signal(false)
 
+	private readonly passwordPolicy = {
+		minLength: 8,
+		requireUpper: true,
+		requireLower: true,
+		requireDigit: true,
+		requireSpecial: true,
+	} as const
+
+	protected passwordErrors = computed(() => {
+		const pwd = this.newPassword().trim()
+		const errors: string[] = []
+		if (pwd.length < this.passwordPolicy.minLength)
+			errors.push(`Al menos ${this.passwordPolicy.minLength} caracteres`)
+		if (this.passwordPolicy.requireUpper && !/[A-Z]/.test(pwd)) errors.push('Una letra mayúscula')
+		if (this.passwordPolicy.requireLower && !/[a-z]/.test(pwd)) errors.push('Una letra minúscula')
+		if (this.passwordPolicy.requireDigit && !/\d/.test(pwd)) errors.push('Un número')
+		if (this.passwordPolicy.requireSpecial && !/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pwd))
+			errors.push('Un carácter especial')
+		return errors
+	})
+
 	protected canChangePassword = (): boolean => {
 		if (this.passwordLoading()) return false
 		return (
 			this.currentPassword().trim().length >= 8 &&
-			this.newPassword().trim().length >= 8 &&
-			this.confirmPassword().trim().length >= 8 &&
+			this.passwordErrors().length === 0 &&
 			this.newPassword() === this.confirmPassword()
 		)
 	}

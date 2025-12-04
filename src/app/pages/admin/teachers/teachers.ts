@@ -100,6 +100,18 @@ export class TeachersTab implements OnInit {
     }
   }
 
+  protected onPhoneInput(raw: string): void {
+    const digits = raw.replace(/\D/g, '').slice(0, 10);
+    let formatted = digits;
+    if (digits.length >= 1) {
+      formatted = `(${digits.slice(0, 3)}`;
+      if (digits.length >= 4) formatted += `) ${digits.slice(3, 6)}`;
+      if (digits.length >= 7) formatted += `-${digits.slice(6, 10)}`;
+    }
+    if (digits.length < 1) formatted = '';
+    this.phoneNumber.set(formatted);
+  }
+
   protected async saveTeacher(): Promise<void> {
     // Validation
     if (!this.fullName().trim()) {
