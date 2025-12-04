@@ -10,8 +10,10 @@ import { FeaturesPage } from './pages/features/features';
 import { AboutPage } from './pages/about/about';
 import { ContactPage } from './pages/contact/contact';
 import { HelpPage } from './pages/help/help';
+import { ProfilePage } from './pages/profile/profile';
+import { SettingsPage } from './pages/settings/settings';
 import { roleGuard } from './shared/guards/role.guard';
-import { redirectAuthenticatedGuard } from './core/guards/auth-guard';
+import { redirectAuthenticatedGuard, requireAuthGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
   {
@@ -48,6 +50,16 @@ export const routes: Routes = [
   {
     path: 'help',
     component: HelpPage,
+  },
+  {
+    path: 'profile',
+    component: ProfilePage,
+    canActivate: [requireAuthGuard],
+  },
+  {
+    path: 'settings',
+    component: SettingsPage,
+    canActivate: [requireAuthGuard],
   },
   {
     path: 'admin',

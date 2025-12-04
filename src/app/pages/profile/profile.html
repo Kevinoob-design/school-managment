@@ -1,0 +1,212 @@
+<!-- Hero Section -->
+<app-section spacing="xl" background="blue">
+  <div class="text-center max-w-4xl mx-auto">
+    <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">Mi Perfil</h1>
+    <p class="text-xl text-gray-700 mb-8">
+      Actualiza tu información personal y preferencias de cuenta
+    </p>
+  </div>
+</app-section>
+
+<!-- Profile Form Section -->
+<app-section spacing="xl" background="white">
+  <div class="max-w-3xl mx-auto">
+    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-blue-100 p-8">
+      <!-- User Info Header -->
+      <div class="flex items-center gap-6 mb-8 pb-8 border-b border-gray-200">
+        <div class="relative group cursor-pointer">
+          <!-- Photo Display -->
+          @if (photoURL()) {
+            <img
+              [src]="photoURL()"
+              alt="Profile photo"
+              class="w-24 h-24 rounded-full object-cover border-4 border-blue-500 shadow-lg"
+            />
+          } @else {
+            <div
+              class="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center border-4 border-blue-500 shadow-lg"
+            >
+              <span class="material-symbols-outlined text-white text-5xl">account_circle</span>
+            </div>
+          }
+          
+          <!-- Hover Overlay -->
+          <label
+            class="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+          >
+            <div class="text-center">
+              <span class="material-symbols-outlined text-white text-3xl">photo_camera</span>
+              <p class="text-white text-xs mt-1">Cambiar</p>
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              (change)="onFileSelected($event)"
+              class="hidden"
+            />
+          </label>
+          
+          <!-- Remove Photo Button (if new photo selected) -->
+          @if (photoFile()) {
+            <button
+              type="button"
+              (click)="removePhoto($event)"
+              class="absolute -top-1 -right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-7 h-7 flex items-center justify-center shadow-lg transition-all hover:scale-110"
+              title="Quitar foto nueva"
+            >
+              <span class="material-symbols-outlined" style="font-size: 18px">close</span>
+            </button>
+          }
+        </div>
+        <div class="flex-1">
+          <h2 class="text-2xl font-bold text-gray-900">{{ displayName() || 'Usuario' }}</h2>
+          <p class="text-gray-600 mt-1">{{ email() }}</p>
+          @if (role()) {
+            <span
+              class="inline-block mt-2 px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 text-blue-800"
+            >
+              {{ getRoleLabel(role()) }}
+            </span>
+          }
+        </div>
+      </div>
+
+      <form (submit)="$event.preventDefault(); saveProfile()" class="space-y-6">
+        <!-- Display Name -->
+        <div>
+          <app-input
+            [label]="'Nombre Completo *'"
+            [type]="'text'"
+            [placeholder]="'Tu nombre completo'"
+            [icon]="'person'"
+            [value]="displayName()"
+            (valueChange)="displayName.set($event)"
+            [required]="true"
+            [invalid]="displayName().trim().length > 0 && displayName().trim().length < 2"
+            [errorMessage]="'El nombre debe tener al menos 2 caracteres'"
+          />
+        </div>
+
+        <!-- Email -->
+        <div>
+          <app-input
+            [label]="'Email *'"
+            [type]="'email'"
+            [placeholder]="'tu@email.com'"
+            [icon]="'mail'"
+            [value]="email()"
+            (valueChange)="email.set($event)"
+            [required]="true"
+            [invalid]="email().trim().length > 0 && !isEmailValid(email().trim())"
+            [errorMessage]="'Ingresa un email válido'"
+          />
+          <p class="text-xs text-gray-500 mt-1">
+            Cambiar tu email requerirá que vuelvas a iniciar sesión
+          </p>
+        </div>
+
+        <!-- Phone Number -->
+        <div>
+          <app-input
+            [label]="'Teléfono'"
+            [type]="'tel'"
+            [placeholder]="'+1 (809) 555-1234'"
+            [icon]="'phone'"
+            [value]="phoneNumber()"
+            (valueChange)="phoneNumber.set($event)"
+          />
+        </div>
+
+        <!-- Photo Status Message -->
+        @if (photoFile()) {
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-blue-600">info</span>
+              <div class="flex-1">
+                <p class="text-sm text-blue-900 font-medium">Nueva foto seleccionada</p>
+                <p class="text-xs text-blue-700 mt-1">
+                  La foto se actualizará cuando guardes los cambios
+                </p>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Error Message -->
+        @if (formError()) {
+          <div
+            class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center gap-2"
+          >
+            <span class="material-symbols-outlined">error</span>
+            <span>{{ formError() }}</span>
+          </div>
+        }
+
+        <!-- Success Message -->
+        @if (formSuccess()) {
+          <div
+            class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-center gap-2"
+          >
+            <span class="material-symbols-outlined">check_circle</span>
+            <span>{{ formSuccess() }}</span>
+          </div>
+        }
+
+        <!-- Submit Button -->
+        <div>
+          <app-button
+            [variant]="'primary'"
+            [size]="'lg'"
+            [fullWidth]="true"
+            [disabled]="!canSubmit() || loading()"
+            (click)="saveProfile()"
+          >
+            {{ loading() ? 'Guardando…' : 'Guardar Cambios' }}
+          </app-button>
+        </div>
+      </form>
+    </div>
+  </div>
+</app-section>
+
+<!-- Info Section -->
+<app-section spacing="xl" background="gray">
+  <div class="max-w-4xl mx-auto">
+    <div class="text-center mb-8">
+      <h2 class="text-3xl font-bold text-gray-900 mb-4">Información de Cuenta</h2>
+      <p class="text-gray-600">Detalles importantes sobre tu perfil</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-gray-200 p-6">
+        <div class="flex items-start gap-4">
+          <div class="bg-gradient-to-br from-blue-500 to-indigo-600 p-3 rounded-xl shadow-lg">
+            <span class="material-symbols-outlined text-white text-3xl">shield</span>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Seguridad</h3>
+            <p class="text-gray-600 text-sm">
+              Para cambiar tu contraseña o gestionar la seguridad de tu cuenta, ve a la sección de
+              Configuración.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-gray-200 p-6">
+        <div class="flex items-start gap-4">
+          <div class="bg-gradient-to-br from-green-500 to-emerald-600 p-3 rounded-xl shadow-lg">
+            <span class="material-symbols-outlined text-white text-3xl">verified_user</span>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Privacidad</h3>
+            <p class="text-gray-600 text-sm">
+              Tu información personal está protegida y solo es visible para ti y los
+              administradores autorizados.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-section>
