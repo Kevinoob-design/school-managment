@@ -48,7 +48,12 @@ interface ResetTeacherPasswordData {
  * Create a teacher account with Firebase Authentication
  * Only the admin who owns the teacher can call this function
  */
-export const createTeacherAccount = onCall<CreateTeacherAccountData>(async (request) => {
+export const createTeacherAccount = onCall<CreateTeacherAccountData>(
+  {
+    cors: true,
+    invoker: 'private', // Requires Firebase Auth token from SDK
+  },
+  async (request) => {
   // Check authentication
   if (!request.auth) {
     throw new HttpsError('unauthenticated', 'Usuario no autenticado');
@@ -156,7 +161,12 @@ export const createTeacherAccount = onCall<CreateTeacherAccountData>(async (requ
  * Reset a teacher's password
  * Only the admin who owns the teacher can call this function
  */
-export const resetTeacherPassword = onCall<ResetTeacherPasswordData>(async (request) => {
+export const resetTeacherPassword = onCall<ResetTeacherPasswordData>(
+  {
+    cors: true,
+    invoker: 'private', // Requires Firebase Auth token from SDK
+  },
+  async (request) => {
   // Check authentication
   if (!request.auth) {
     throw new HttpsError('unauthenticated', 'Usuario no autenticado');
